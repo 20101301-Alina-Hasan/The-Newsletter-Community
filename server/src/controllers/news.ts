@@ -16,9 +16,11 @@ export const getNews = async (req: Request, res: Response) => {
         }
 
         res.status(200).json({ news: newsList });
+        return;
     } catch (error) {
         console.error("Error fetching news:", error);
         res.status(500).json({ message: "Internal server error." });
+        return;
     }
 };
 
@@ -30,15 +32,18 @@ export const createNews = async (req: AuthRequest, res: Response) => {
 
         if (!user_id) {
             res.status(403).json({ message: "Unauthorized: User ID not found." });
+            return;
         }
 
         if (!title || !releaseDate || !description) {
             res.status(400).json({ message: "All fields are required." });
+            return;
         }
 
         const existingNews = await db.News.findOne({ where: { title: title } });
         if (existingNews) {
             res.status(400).json({ message: 'Title already exists.' });
+            return;
         }
 
         let thumbnailUrl;
@@ -58,9 +63,11 @@ export const createNews = async (req: AuthRequest, res: Response) => {
         });
 
         res.status(201).json({ message: "News created successfully!", news });
+        return;
     } catch (error) {
         console.error("Error creating news:", error);
         res.status(500).json({ message: "Internal server error." });
+        return;
     }
 };
 
@@ -73,12 +80,14 @@ export const updateNews = async (req: AuthRequest, res: Response) => {
 
         if (!title || !releaseDate || !description) {
             res.status(400).json({ message: "All fields are required." });
+            return;
         }
 
         const news = await db.News.findOne({ where: { news_id, user_id } });
 
         if (!news) {
             res.status(404).json({ message: "News not found or unauthorized." });
+            return;
         }
 
         let thumbnailUrl = news.thumbnail;
@@ -106,9 +115,11 @@ export const updateNews = async (req: AuthRequest, res: Response) => {
         });
 
         res.status(200).json({ message: "News updated successfully!", news });
+        return;
     } catch (error) {
         console.error("Error updating news:", error);
         res.status(500).json({ message: "Internal server error." });
+        return;
     }
 };
 
@@ -120,12 +131,14 @@ export const deleteNews = async (req: AuthRequest, res: Response) => {
 
         if (!user_id) {
             res.status(403).json({ message: "Unauthorized: User ID not found." });
+            return;
         }
 
         const news = await db.News.findOne({ where: { news_id, user_id } });
 
         if (!news) {
             res.status(404).json({ message: "News not found or unauthorized." });
+            return;
         }
 
         // Optional: Delete thumbnail from Cloudinary
@@ -140,8 +153,10 @@ export const deleteNews = async (req: AuthRequest, res: Response) => {
         // Delete the news item
         await news.destroy();
         res.status(200).json({ message: "News deleted successfully!" });
+        return;
     } catch (error) {
         console.error("Error deleting news:", error);
         res.status(500).json({ message: "Internal server error." });
+        return;
     }
 };

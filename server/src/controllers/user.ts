@@ -19,6 +19,7 @@ export const signup = async (req: Request, res: Response) => {
         // Validate input
         if (!name || !username || !email || !password) {
             res.status(400).json({ message: 'All fields are required.' });
+            return;
         }
         // Check if user already exists
         const existingUser = await db.User.findOne({
@@ -33,6 +34,7 @@ export const signup = async (req: Request, res: Response) => {
         if (existingUser) {
             const field = existingUser.email === email ? 'Email' : 'Username';
             res.status(400).json({ message: `${field} already registered.` });
+            return;
         }
 
         // Hash password
@@ -40,7 +42,7 @@ export const signup = async (req: Request, res: Response) => {
 
         // Create new user
         const user = await db.User.create({ name, username, email, password: hashedPassword });
-        console.log(user);
+
         if (user) {
             // Create JWT session token
             const token = createSession(user.user_id);
@@ -63,18 +65,22 @@ export const signup = async (req: Request, res: Response) => {
                 },
                 token,
             });
+            return;
         } else {
             res.status(409).json({ message: "Invalid user details." });
+            return;
         }
 
     } catch (error) {
         if (error instanceof Error) {
             console.error('Error during registration:', error.message);
             res.status(500).json({ message: 'Server error. Please try again later.' });
+            return;
         }
 
         console.error('Unknown error during registration:', error);
         res.status(500).json({ message: 'An unknown error occurred.' });
+        return;
     }
 };
 
@@ -85,6 +91,7 @@ export const login = async (req: Request, res: Response) => {
         // Validate input
         if (!email || !password) {
             res.status(400).json({ message: 'Email and password are required.' });
+            return;
         }
 
         // Find user by email
@@ -94,12 +101,14 @@ export const login = async (req: Request, res: Response) => {
 
         if (!user) {
             res.status(401).json({ message: 'Invalid email or password.' });
+            return;
         }
 
         // Compare passwords
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             res.status(401).json({ message: 'Invalid email or password.' });
+            return;
         }
 
         // Create JWT session token
@@ -127,5 +136,6 @@ export const login = async (req: Request, res: Response) => {
     } catch (error) {
         console.error('Error during login:', error);
         res.status(500).json({ message: 'Server error. Please try again later.' });
+        return;
     }
 };

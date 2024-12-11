@@ -10,6 +10,9 @@ import cookieParser from 'cookie-parser';
 import userRoutes from './routes/user';
 import newsRoutes from './routes/news';
 import commentRoutes from './routes/comment';
+import tagRoutes from './routes/tag';
+import upvoteRoutes from './route/upvote';
+// import bookmarkRoutes from'./route/bookmark';
 
 dotenv.config();
 
@@ -19,7 +22,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
-// To handle larger request bodies (for base64 images)
+
+// To handle larger request bodies (for base64 images) <-- Let's come back to this later!!
 app.use(bodyParser.json({ limit: '10mb' })); // Increase the limit (default is 100kb)
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 
@@ -28,8 +32,8 @@ app.get('/', (req, res) => { res.send('Server is running...'); });
 app.use('/api/users', userRoutes);
 app.use('/api/news', newsRoutes);
 app.use('/api/comments', commentRoutes);
-// app.use('/api/tags', tagRoutes);
-// app.use('/api/upvotes', uvoteRoutes);
+app.use('/api/tags', tagRoutes);
+app.use('/api/upvotes', uvoteRoutes);
 // app.use('/api/bookmarks', bookmarkRoutes);
 app.get('*', (req, res) => { res.status(404).send('Sorry, not found 😞'); })
 
