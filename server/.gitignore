@@ -1,0 +1,1 @@
+[ "$(grep '^.env' .gitignore)" == "" ] && echo '.env' >> .gitignore
