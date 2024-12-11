@@ -1,17 +1,18 @@
-import { Response } from "express";
+import { Request, Response } from "express";
 import { AuthRequest } from "../interfaces/auth";
 import { addCloudinaryImage, deleteCloudinaryImage } from "../utils/cloudinary";
 import db from "../models";
 
-// getNews, filterNews, sortNews, esClient
+// Update getNews -> filterNews, sortNews -> use esClient
 
 // Get all news items
-export const getNews = async (req: AuthRequest, res: Response) => {
+export const getNews = async (req: Request, res: Response) => {
     try {
         const newsList = await db.News.findAll();
 
         if (!newsList || newsList.length === 0) {
             res.status(404).json({ message: "No news found." });
+            return;
         }
 
         res.status(200).json({ news: newsList });
@@ -25,9 +26,9 @@ export const getNews = async (req: AuthRequest, res: Response) => {
 export const createNews = async (req: AuthRequest, res: Response) => {
     try {
         const { title, releaseDate, description, thumbnail } = req.body;
-        const userId = req.user?.userId;
+        const user_id = req.user?.userId;
 
-        if (!userId) {
+        if (!user_id) {
             res.status(403).json({ message: "Unauthorized: User ID not found." });
         }
 
@@ -49,7 +50,7 @@ export const createNews = async (req: AuthRequest, res: Response) => {
 
         // Create news item in the database
         const news = await db.News.create({
-            user_id: userId,
+            user_id,
             title,
             releaseDate,
             description,
@@ -66,15 +67,15 @@ export const createNews = async (req: AuthRequest, res: Response) => {
 // Update a news item
 export const updateNews = async (req: AuthRequest, res: Response) => {
     try {
-        const { id } = req.params;
+        const { news_id } = req.params;
         const { title, releaseDate, description, thumbnail } = req.body;
-        const userId = req.user?.userId;
+        const user_id = req.user?.userId;
 
         if (!title || !releaseDate || !description) {
             res.status(400).json({ message: "All fields are required." });
         }
 
-        const news = await db.News.findOne({ where: { news_id: id, user_id: userId } });
+        const news = await db.News.findOne({ where: { news_id, user_id } });
 
         if (!news) {
             res.status(404).json({ message: "News not found or unauthorized." });
@@ -114,14 +115,14 @@ export const updateNews = async (req: AuthRequest, res: Response) => {
 // Delete a news item
 export const deleteNews = async (req: AuthRequest, res: Response) => {
     try {
-        const { id } = req.params;
-        const userId = req.user?.userId;
+        const { news_id } = req.params;
+        const user_id = req.user?.userId;
 
-        if (!userId) {
+        if (!user_id) {
             res.status(403).json({ message: "Unauthorized: User ID not found." });
         }
 
-        const news = await db.News.findOne({ where: { news_id: id, user_id: userId } });
+        const news = await db.News.findOne({ where: { news_id, user_id } });
 
         if (!news) {
             res.status(404).json({ message: "News not found or unauthorized." });

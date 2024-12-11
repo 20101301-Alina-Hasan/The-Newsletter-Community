@@ -11,9 +11,9 @@ router.get('/', getNews);
 router.post('/', verifyToken, createNews);
 
 // Update News
-router.put('/:id', verifyToken, updateNews);
+router.put('/:news_id', verifyToken, updateNews);
 
 // Delete News
-router.delete('/:id', verifyToken, deleteNews);
+router.delete('/:news_id', verifyToken, deleteNews);
 
 export default router;

@@ -9,6 +9,7 @@ import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import userRoutes from './routes/user';
 import newsRoutes from './routes/news';
+import commentRoutes from './routes/comment';
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 app.get('/', (req, res) => { res.send('Server is running...'); });
 app.use('/api/users', userRoutes);
 app.use('/api/news', newsRoutes);
+app.use('/api/comments', newsRoutes);
 app.get('*', (req, res) => { res.status(404).send('Sorry, not found 😞'); })
 
 // Create HTTP Server
