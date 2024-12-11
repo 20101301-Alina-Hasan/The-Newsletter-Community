@@ -25,7 +25,8 @@ export const getUpvotes = async (req: Request, res: Response) => {
 
 // Get user upvote on an article
 export const getUserUpvotes = async (req: AuthRequest, res: Response) => {
-    const { news_id, user_id } = req.params;
+    const { news_id } = req.params;
+    const user_id = req.user.userId;
 
     if (!news_id || !user_id) {
         res.status(400).json({ message: "News ID and User ID are required." });
@@ -49,7 +50,8 @@ export const getUserUpvotes = async (req: AuthRequest, res: Response) => {
 
 // Add user upvote
 export const addUpvote = async (req: AuthRequest, res: Response) => {
-    const { news_id, user_id } = req.params;
+    const { news_id } = req.params;
+    const user_id = req.user.userId;
 
     if (!news_id || !user_id) {
         res.status(400).json({ message: "News ID and User ID are required." });
@@ -81,7 +83,8 @@ export const addUpvote = async (req: AuthRequest, res: Response) => {
 
 // Delete user upvote
 export const removeUpvote = async (req: AuthRequest, res: Response) => {
-    const { news_id, user_id } = req.params;
+    const { news_id } = req.params;
+    const user_id = req.user.userId;
 
     if (!news_id || !user_id) {
         res.status(400).json({ message: "News ID and User ID are required." });

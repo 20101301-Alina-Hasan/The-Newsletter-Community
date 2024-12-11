@@ -12,7 +12,7 @@ import newsRoutes from './routes/news';
 import commentRoutes from './routes/comment';
 import tagRoutes from './routes/tag';
 import upvoteRoutes from './routes/upvote';
-// import bookmarkRoutes from'./route/bookmark';
+import bookmarkRoutes from './routes/bookmark';
 
 dotenv.config();
 
@@ -34,7 +34,7 @@ app.use('/api/news', newsRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/tags', tagRoutes);
 app.use('/api/upvotes', upvoteRoutes);
-// app.use('/api/bookmarks', bookmarkRoutes);
+app.use('/api/bookmarks', bookmarkRoutes);
 app.get('*', (req, res) => { res.status(404).send('Sorry, not found 😞'); })
 
 // Create HTTP Server

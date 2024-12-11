@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { AuthRequest } from "../interfaces/auth";
 import db from "../models";
 
-// Get all comments on a news article
+// Get Comments on a Specific News Artcile
 export const getComments = async (req: Request, res: Response) => {
     const { news_id } = req.params;
 
@@ -18,12 +18,11 @@ export const getComments = async (req: Request, res: Response) => {
             order: [['created_at', 'ASC']], // Order by creation date
         });
 
-        if (!comments || comments.length === 0) {
-            res.status(404).json({ message: 'No comments found for this news article.' });
-            return;
-        }
+        const commentCount = await db.Comment.count({
+            where: { news_id },
+        });
 
-        res.status(200).json({ comments });
+        res.status(200).json({ comments, totalComments: commentCount });
         return;
     } catch (error) {
         console.error('Error fetching comments:', error);
@@ -31,6 +30,7 @@ export const getComments = async (req: Request, res: Response) => {
         return;
     }
 };
+
 
 // Add a comment to a news article
 export const addComment = async (req: AuthRequest, res: Response) => {

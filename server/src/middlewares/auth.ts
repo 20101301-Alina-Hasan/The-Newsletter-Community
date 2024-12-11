@@ -24,10 +24,8 @@ export const verifyToken = async (req: AuthRequest, res: Response, next: NextFun
     }
 
     try {
-        const session = getSession(token);
-
+        const session = getSession(token)
         req.user = session;
-        console.log(req.user);
         next();
     } catch (error) {
         if (error instanceof Error) {
