@@ -1,6 +1,6 @@
 import express from 'express';
 import { verifyToken } from '../middlewares/auth';
-import { getUpvotes, getUserUpvotes, addUpvote, deleteUpvote } from '../controllers/upvote';
+import { getUpvotes, getUserUpvotes, addUpvote, removeUpvote } from '../controllers/upvote';
 
 const router = express.Router();
 
@@ -14,6 +14,6 @@ router.get('/:news_id/:user_id', verifyToken, getUserUpvotes);
 router.post('/:news_id/:user_id', verifyToken, addUpvote);
 
 // Delete Upvote
-router.delete('/:news_id/:user_id', verifyToken, deleteUpvote);
+router.delete('/:news_id/:user_id', verifyToken, removeUpvote);
 
 export default router;

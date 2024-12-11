@@ -88,7 +88,6 @@ export const deleteTag = async (req: AuthRequest, res: Response) => {
         // Find the tag
         const tag = await db.Tag.findByPk(tag_id);
 
-
         if (!tag) {
             res.status(404).json({ message: 'Tag not found.' });
             return;

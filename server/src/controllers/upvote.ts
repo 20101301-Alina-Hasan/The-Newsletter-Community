@@ -2,107 +2,109 @@ import { Request, Response } from "express";
 import { AuthRequest } from "../interfaces/auth";
 import db from "../models";
 
-// Get all comments on a news article
+// Get all upvotes of an article
 export const getUpvotes = async (req: Request, res: Response) => {
     const { news_id } = req.params;
 
     if (!news_id) {
-        res.status(400).json({ message: 'News ID is required.' });
+        res.status(400).json({ message: "News ID is required." });
         return;
     }
 
     try {
-        const comments = await db.Comment.findAll({
+        const upvotesCount = await db.Upvote.count({
             where: { news_id },
-            include: [{ model: db.User, attributes: ['username'] }], // Include user info (username)
-            order: [['created_at', 'ASC']], // Order by creation date
         });
 
-        if (!comments || comments.length === 0) {
-            res.status(404).json({ message: 'No comments found for this news article.' });
-            return;
-        }
-
-        res.status(200).json({ comments });
-        return;
+        res.status(200).json({ news_id, upvotesCount });
     } catch (error) {
-        console.error('Error fetching comments:', error);
-        res.status(500).json({ message: 'Internal server error.' });
-        return;
+        console.error("Error fetching upvotes:", error);
+        res.status(500).json({ message: "Internal server error." });
     }
 };
 
-// 
+// Get user upvote on an article
 export const getUserUpvotes = async (req: AuthRequest, res: Response) => {
-    const { news_id } = req.params;
-    const { comment } = req.body;
+    const { news_id, user_id } = req.params;
 
-    if (!news_id || !comment) {
-        res.status(400).json({ message: 'News ID and comment text are required.' });
+    if (!news_id || !user_id) {
+        res.status(400).json({ message: "News ID and User ID are required." });
         return;
     }
 
     try {
-        const newComment = await db.Comment.create({
-            user_id: req.user.userId, // Get user ID from the token
-            news_id,
-            comment,
+        const userUpvote = await db.Upvote.findOne({
+            where: { news_id, user_id },
         });
 
-        res.status(201).json({ message: 'Comment added successfully.', comment: newComment });
+        // res.status(200).json({ upvote: userUpvote });
+        res.status(200).json({ hasUpvoted: !!userUpvote });
         return;
     } catch (error) {
-        console.error('Error adding comment:', error);
-        res.status(500).json({ message: 'Internal server error.' });
+        console.error("Error fetching user upvote:", error);
+        res.status(500).json({ message: "Internal server error." });
         return;
     }
 };
 
-// Add a comment to a news article
+// Add user upvote
 export const addUpvote = async (req: AuthRequest, res: Response) => {
-    const { news_id } = req.params;
-    const { comment } = req.body;
+    const { news_id, user_id } = req.params;
 
-    if (!news_id || !comment) {
-        res.status(400).json({ message: 'News ID and comment text are required.' });
+    if (!news_id || !user_id) {
+        res.status(400).json({ message: "News ID and User ID are required." });
         return;
     }
 
     try {
-        const newComment = await db.Comment.create({
-            user_id: req.user.userId, // Get user ID from the token
-            news_id,
-            comment,
+        // Check if upvote already exists
+        const existingUpvote = await db.Upvote.findOne({
+            where: { news_id, user_id },
         });
 
-        res.status(201).json({ message: 'Comment added successfully.', comment: newComment });
-        return;
-    } catch (error) {
-        console.error('Error adding comment:', error);
-        res.status(500).json({ message: 'Internal server error.' });
-        return;
-    }
-};
-
-// Update a comment
-export const deleteUpvote = async (req: AuthRequest, res: Response) => {
-    const { comment_id } = req.params;
-
-    try {
-        const existingComment = await db.Comment.findOne({ where: { comment_id } });
-
-        if (!existingComment) {
-            res.status(404).json({ message: 'Comment not found or you are not the author.' });
+        if (existingUpvote) {
+            res.status(400).json({ message: "User has already upvoted this news." });
             return;
         }
 
-        await existingComment.destroy();
+        const newUpvote = await db.Upvote.create({
+            news_id,
+            user_id,
+        });
 
-        res.status(200).json({ message: 'Comment deleted successfully.' });
-        return;
+        res.status(201).json({ message: "User upvoted successfully.", upvote: newUpvote });
     } catch (error) {
-        console.error('Error deleting comment:', error);
-        res.status(500).json({ message: 'Internal server error.' });
-        return;
+        console.error("Error adding upvote:", error);
+        res.status(500).json({ message: "Internal server error." });
     }
 };
+
+// Delete user upvote
+export const removeUpvote = async (req: AuthRequest, res: Response) => {
+    const { news_id, user_id } = req.params;
+
+    if (!news_id || !user_id) {
+        res.status(400).json({ message: "News ID and User ID are required." });
+        return;
+    }
+
+    try {
+        // Find the upvote
+        const upvote = await db.Upvote.findOne({
+            where: { news_id, user_id },
+        });
+
+        if (!upvote) {
+            res.status(404).json({ message: "User did not upvote this news." });
+            return;
+        }
+
+        await upvote.destroy();
+
+        res.status(200).json({ message: "User upvote removed successfully." });
+    } catch (error) {
+        console.error("Error removing upvote:", error);
+        res.status(500).json({ message: "Internal server error." });
+    }
+};
+

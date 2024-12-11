@@ -1,4 +1,5 @@
 import { Sequelize } from 'sequelize';
+import db from './index';
 
 export const sequelize = new Sequelize('newsportal', 'postgres', 'alina', {
     host: 'localhost',
@@ -14,3 +15,5 @@ export const connectDB = async () => {
         console.log(`😞 Sorry, something went wrong! ${error}`);
     }
 };
+
+
