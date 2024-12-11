@@ -1,1 +1,1 @@
-"# news-portal" 
+# News Portal inspired by daily.dev extension
