@@ -1,8 +1,11 @@
 import express from 'express';
 import { verifyToken } from '../middlewares/auth';
-import { createNews, updateNews, deleteNews } from '../controllers/news';
+import { getNews, createNews, updateNews, deleteNews } from '../controllers/news';
 
 const router = express.Router();
+
+// Get News
+router.get('/', getNews);
 
 // Create News
 router.post('/', verifyToken, createNews);

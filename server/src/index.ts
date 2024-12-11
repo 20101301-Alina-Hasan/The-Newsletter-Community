@@ -1,4 +1,5 @@
 import express from 'express';
+import bodyParser from 'body-parser';
 import cors from 'cors';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
@@ -17,6 +18,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
+// To handle larger request bodies (for base64 images)
+app.use(bodyParser.json({ limit: '10mb' })); // Increase the limit (default is 100kb)
+app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 
 // Routes
 app.get('/', (req, res) => { res.send('Server is running...'); });
@@ -31,7 +35,7 @@ const httpServer = createServer(app);
 const io = new Server(httpServer, {
     cors: {
         origin: 'http://localhost:5173',
-        methods: ['GET', 'POST'],
+        methods: ['GET', 'POST', 'PUT', 'DELETE'],
         credentials: true
     },
 });

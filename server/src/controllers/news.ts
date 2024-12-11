@@ -5,6 +5,22 @@ import db from "../models";
 
 // getNews, filterNews, sortNews, esClient
 
+// Get all news items
+export const getNews = async (req: AuthRequest, res: Response) => {
+    try {
+        const newsList = await db.News.findAll();
+
+        if (!newsList || newsList.length === 0) {
+            res.status(404).json({ message: "No news found." });
+        }
+
+        res.status(200).json({ news: newsList });
+    } catch (error) {
+        console.error("Error fetching news:", error);
+        res.status(500).json({ message: "Internal server error." });
+    }
+};
+
 // Create a news item
 export const createNews = async (req: AuthRequest, res: Response) => {
     try {
@@ -94,7 +110,6 @@ export const updateNews = async (req: AuthRequest, res: Response) => {
         res.status(500).json({ message: "Internal server error." });
     }
 };
-
 
 // Delete a news item
 export const deleteNews = async (req: AuthRequest, res: Response) => {
