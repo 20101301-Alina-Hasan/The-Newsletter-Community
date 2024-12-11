@@ -30,7 +30,8 @@ export const getComments = async (req: Request, res: Response) => {
 
 // Add a comment to a news article
 export const addComment = async (req: AuthRequest, res: Response) => {
-    const { news_id, comment } = req.body;
+    const { news_id } = req.params;
+    const { comment } = req.body;
 
     if (!news_id || !comment) {
         res.status(400).json({ message: 'News ID and comment text are required.' });

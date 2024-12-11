@@ -27,7 +27,10 @@ app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 app.get('/', (req, res) => { res.send('Server is running...'); });
 app.use('/api/users', userRoutes);
 app.use('/api/news', newsRoutes);
-app.use('/api/comments', newsRoutes);
+app.use('/api/comments', commentRoutes);
+// app.use('/api/tags', tagRoutes);
+// app.use('/api/upvotes', uvoteRoutes);
+// app.use('/api/bookmarks', bookmarkRoutes);
 app.get('*', (req, res) => { res.status(404).send('Sorry, not found 😞'); })
 
 // Create HTTP Server
