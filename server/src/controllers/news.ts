@@ -1,8 +1,11 @@
 import { Response } from "express";
-import cloudinary from "../config/cloudinary";
 import { AuthRequest } from "../interfaces/auth";
+import { addCloudinaryImage, deleteCloudinaryImage } from "../utils/cloudinary";
 import db from "../models";
 
+// getNews, filterNews, sortNews, esClient
+
+// Create a news item
 export const createNews = async (req: AuthRequest, res: Response) => {
     try {
         const { title, releaseDate, description, thumbnail } = req.body;
@@ -25,12 +28,7 @@ export const createNews = async (req: AuthRequest, res: Response) => {
 
         // If thumbnail provided and it's base64 (Image), upload it to Cloudinary
         if (thumbnail && thumbnail.startsWith('data:image/')) {
-            const result = await cloudinary.uploader.upload(thumbnail, {
-                folder: "news_thumbnails",
-                use_filename: true,
-                unique_filename: false,
-            });
-            thumbnailUrl = result.secure_url;
+            thumbnailUrl = await addCloudinaryImage(thumbnail);
         }
 
         // Create news item in the database
@@ -48,7 +46,6 @@ export const createNews = async (req: AuthRequest, res: Response) => {
         res.status(500).json({ message: "Internal server error." });
     }
 };
-
 
 // Update a news item
 export const updateNews = async (req: AuthRequest, res: Response) => {
@@ -71,13 +68,16 @@ export const updateNews = async (req: AuthRequest, res: Response) => {
 
         // If a new thumbnail URL or base64 is provided
         if (thumbnail && thumbnail.startsWith('data:image/')) {
-            // If it's base64, upload to Cloudinary
-            const result = await cloudinary.uploader.upload(thumbnail, {
-                folder: "news_thumbnails",
-                use_filename: true,
-                unique_filename: false,
-            });
-            thumbnailUrl = result.secure_url;
+            // If there's an old thumbnail, delete it from Cloudinary first
+            if (news.thumbnail) {
+                try {
+                    await deleteCloudinaryImage(news.thumbnail);
+                } catch (cloudinaryError) {
+                    console.error("Error deleting old thumbnail from Cloudinary:", cloudinaryError);
+                }
+            }
+            // Upload new thumbnail to Cloudinary
+            thumbnailUrl = await addCloudinaryImage(thumbnail);
         }
 
         // Update the news item
@@ -104,26 +104,26 @@ export const deleteNews = async (req: AuthRequest, res: Response) => {
 
         if (!userId) {
             res.status(403).json({ message: "Unauthorized: User ID not found." });
-        } else {
-            const news = await db.News.findOne({ where: { news_id: id, user_id: userId } });
+        }
 
-            if (!news) {
-                res.status(404).json({ message: "News not found or unauthorized." });
-            } else {
-                // Optional: Delete thumbnail from Cloudinary
-                if (news.thumbnail) {
-                    try {
-                        const publicId = news.thumbnail.split("/").pop()?.split(".")[0]; // Extract public ID
-                        await cloudinary.uploader.destroy(`news_thumbnails/${publicId}`);
-                    } catch (cloudinaryError) {
-                        console.error("Error deleting thumbnail from Cloudinary:", cloudinaryError);
-                    }
-                }
+        const news = await db.News.findOne({ where: { news_id: id, user_id: userId } });
 
-                await news.destroy();
-                res.status(200).json({ message: "News deleted successfully!" });
+        if (!news) {
+            res.status(404).json({ message: "News not found or unauthorized." });
+        }
+
+        // Optional: Delete thumbnail from Cloudinary
+        if (news.thumbnail) {
+            try {
+                await deleteCloudinaryImage(news.thumbnail);
+            } catch (cloudinaryError) {
+                console.error("Error deleting thumbnail from Cloudinary:", cloudinaryError);
             }
         }
+
+        // Delete the news item
+        await news.destroy();
+        res.status(200).json({ message: "News deleted successfully!" });
     } catch (error) {
         console.error("Error deleting news:", error);
         res.status(500).json({ message: "Internal server error." });

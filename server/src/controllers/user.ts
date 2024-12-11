@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import { createSession } from '../utils/createSession';
+import { createSession } from '../utils/session';
 import { Request, Response } from "express";
 import { Op } from 'sequelize';
 import db from '../models';

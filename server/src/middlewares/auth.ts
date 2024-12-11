@@ -1,5 +1,5 @@
 import { Response, NextFunction } from 'express';
-import { getSession } from '../utils/getSession';
+import { getSession } from '../utils/session';
 import { AuthRequest } from '../interfaces/auth';
 
 export const verifyToken = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
