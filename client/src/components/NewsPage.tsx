@@ -32,7 +32,7 @@ export const NewsPage = ({ fetchNewsFunction, emptyMessage, errorMessage }: News
     }, [fetchNewsFunction, errorMessage]);
 
     if (loading) {
-        return <div className='font-semibold'>Loading...</div>;
+        return <div className='text-2xl text-base-content font-semibold'>Loading...</div>;
     }
 
     if (error) {
@@ -42,7 +42,7 @@ export const NewsPage = ({ fetchNewsFunction, emptyMessage, errorMessage }: News
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {newsList.length === 0 ? (
-                <p>{emptyMessage}</p>
+                <p className='text-2xl text-base-content font-semibold'>{emptyMessage}</p>
             ) : (
                 newsList.map((news) => (
                     <NewsCard key={news.news_id} {...news} />
