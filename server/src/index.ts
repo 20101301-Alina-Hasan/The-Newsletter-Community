@@ -22,9 +22,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
-
-// To handle larger request bodies (for base64 images) <-- Let's come back to this later!!
-app.use(bodyParser.json({ limit: '10mb' })); // Increase the limit (default is 100kb)
+// Handle Large Request Bodies (for base64 images) 
+app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 
 // Routes
@@ -51,10 +50,10 @@ const io = new Server(httpServer, {
 
 // Handle Socket.io Connection
 io.on('connection', (socket) => {
-    console.log(`User connected: ${socket.id}`);
+    console.log(`Client connected: ${socket.id}`);
 
     socket.on('disconnect', () => {
-        console.log(`User disconnected: ${socket.id}`);
+        console.log(`Client disconnected: ${socket.id}`);
     });
 });
 

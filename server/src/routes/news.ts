@@ -1,19 +1,13 @@
 import express from 'express';
-import { verifyToken } from '../middlewares/auth';
-import { getNews, createNews, updateNews, deleteNews } from '../controllers/news';
+import { authenticateUser } from '../middlewares/auth';
+import { getNews, getUserNews, createNews, updateNews, deleteNews } from '../controllers/news';
 
 const router = express.Router();
 
-// Get News
 router.get('/', getNews);
-
-// Create News
-router.post('/', verifyToken, createNews);
-
-// Update News
-router.put('/:news_id', verifyToken, updateNews);
-
-// Delete News
-router.delete('/:news_id', verifyToken, deleteNews);
+router.get('/user', authenticateUser, getUserNews);
+router.post('/', authenticateUser, createNews);
+router.put('/:news_id', authenticateUser, updateNews);
+router.delete('/:news_id', authenticateUser, deleteNews);
 
 export default router;

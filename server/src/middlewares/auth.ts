@@ -2,7 +2,7 @@ import { Response, NextFunction } from 'express';
 import { getSession } from '../utils/session';
 import { AuthRequest } from '../interfaces/auth';
 
-export const verifyToken = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+export const authenticateUser = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
     const header = req.headers.authorization;
 
     if (!header) {

@@ -5,13 +5,13 @@ import db from "../models";
 
 // Update getNews -> filterNews, sortNews -> use esClient
 
-// Get all news items
-export const getNews = async (req: Request, res: Response) => {
+// Common function to fetch news
+const fetchNews = async (query: object, res: Response) => {
     try {
-        const newsList = await db.News.findAll();
+        const newsList = await db.News.findAll(query);
 
         if (!newsList || newsList.length === 0) {
-            res.status(404).json({ message: "No news found." });
+            res.status(200).json({ message: "No news found." });
             return;
         }
 
@@ -22,6 +22,23 @@ export const getNews = async (req: Request, res: Response) => {
         res.status(500).json({ message: "Internal server error." });
         return;
     }
+};
+
+// Get all news articles
+export const getNews = async (req: Request, res: Response): Promise<void> => {
+    await fetchNews({}, res);
+};
+
+// Get all user articles
+export const getUserNews = async (req: AuthRequest, res: Response): Promise<void> => {
+    const userId = req.user?.userId;
+
+    if (!userId) {
+        res.status(400).json({ message: "User ID is required." });
+        return;
+    }
+
+    await fetchNews({ where: { user_id: userId } }, res);
 };
 
 // Create a news item
