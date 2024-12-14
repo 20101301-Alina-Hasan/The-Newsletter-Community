@@ -2,20 +2,10 @@ import { useState } from "react"
 import { Upvote } from "./Upvote"
 import { Comment } from "./Comment"
 import { Bookmark } from "./Bookmark"
-import { News } from "./News"
+import { News } from "./NewsView"
+import { NewsProps } from "../interfaces/News"
 
-interface NewsCardProps {
-    title: string
-    releaseDate: string
-    description: string
-    thumbnail: string
-    upvotes: number
-    comments: number
-    tags: string[]
-    username: string
-}
-
-export function NewsCard({ title, releaseDate, description, thumbnail, upvotes, comments, tags, username }: NewsCardProps) {
+export function NewsCard({ title, releaseDate, description, thumbnail, upvotes, comments, tags, username }: NewsProps['news']) {
     const [isNewsOpen, setIsNewsOpen] = useState(false)
 
     return (

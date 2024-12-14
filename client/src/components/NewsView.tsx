@@ -1,23 +1,9 @@
 import { Upvote } from "./Upvote";
 import { Comment } from "./Comment";
 import { Bookmark } from "./Bookmark";
+import { NewsProps } from "../interfaces/News";
 
-interface News {
-    isOpen: boolean;
-    onClose: () => void;
-    news: {
-        title: string;
-        releaseDate: string;
-        description: string;
-        thumbnail: string;
-        upvotes: number;
-        comments: number;
-        tags: string[];
-        username: string;
-    };
-}
-
-export function News({ isOpen, onClose, news }: News) {
+export function News({ isOpen, onClose, news }: NewsProps) {
     return (
         <>
             {isOpen && (
