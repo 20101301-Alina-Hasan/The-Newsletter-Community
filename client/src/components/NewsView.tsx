@@ -3,7 +3,7 @@ import { Comment } from "./Comment";
 import { Bookmark } from "./Bookmark";
 import { NewsProps } from "../interfaces/News";
 
-export function News({ isOpen, onClose, news }: NewsProps) {
+export function NewsView({ isOpen, onClose, news }: NewsProps) {
     return (
         <>
             {isOpen && (

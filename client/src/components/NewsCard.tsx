@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Upvote } from "./Upvote";
 import { Comment } from "./Comment";
 import { Bookmark } from "./Bookmark";
-import { News } from "./NewsView";
+import { NewsView } from "./NewsView";
 import { NewsProps } from "../interfaces/News";
 
 export function NewsCard({
@@ -16,7 +16,6 @@ export function NewsCard({
     username
 }: NewsProps['news']) {
     const [isNewsOpen, setIsNewsOpen] = useState(false);
-
     return (
         <>
             <div
@@ -69,7 +68,7 @@ export function NewsCard({
                     </div>
                 </div>
             </div>
-            <News
+            <NewsView
                 isOpen={isNewsOpen}
                 onClose={() => setIsNewsOpen(false)}
                 news={{
