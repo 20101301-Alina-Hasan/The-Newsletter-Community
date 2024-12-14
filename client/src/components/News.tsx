@@ -7,9 +7,9 @@ interface News {
     onClose: () => void;
     news: {
         title: string;
-        date: string;
+        releaseDate: string;
         description: string;
-        image: string;
+        thumbnail: string;
         upvotes: number;
         comments: number;
         tags: string[];
@@ -44,7 +44,7 @@ export function News({ isOpen, onClose, news }: News) {
 
 
                             <div className="text-md my-6">
-                                <span className="p-1 px-4 bg-amber-300 text-gray-900">{news.date}</span>
+                                <span className="p-1 px-4 bg-amber-300 text-gray-900">{news.releaseDate}</span>
                                 <span className="p-1 pl-4 bg-amber-400 text-gray-950 font-semibold pr-48 rounded-r-lg">
                                     @{news.username}
                                 </span>
@@ -60,7 +60,7 @@ export function News({ isOpen, onClose, news }: News) {
 
                             <div className="bg-base-200 rounded-lg px-6 py-6 pb-8">
                                 <img
-                                    src={news.image}
+                                    src={news.thumbnail}
                                     alt={news.title}
                                     className="w-96 h-full rounded-lg object-cover wrap float-left mr-12 mb-6"
                                 />

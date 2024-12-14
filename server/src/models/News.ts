@@ -23,7 +23,7 @@ export const NewsModel = (sequelize: Sequelize) => {
                 allowNull: false,
             },
             title: {
-                type: DataTypes.STRING(50),
+                type: DataTypes.STRING(255),
                 unique: true,
                 allowNull: false,
             },

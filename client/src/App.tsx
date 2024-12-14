@@ -1,19 +1,26 @@
 import './App.css'
+import { io } from 'socket.io-client';
 import { useEffect } from 'react';
 import { Navbar } from './components/Navbar';
 import { Tab } from './components/Tab';
 import { NewsCard } from "./components/NewsCard";
 import { sampleNews } from './mock/sampleNews';
-import { connectSocket, disconnectSocket } from './config/socketConnection';
 
 function App() {
   useEffect(() => {
-    connectSocket();
+    const socket = io('http://localhost:3000');
 
+    socket.on('connect', () => {
+      console.log('Server Connected', socket.id);
+    });
+
+    socket.on('disconnect', () => {
+      console.log('Server Disconnected');
+    });
     return () => {
-      disconnectSocket();
+      socket.disconnect();
     };
-  }, []);
+  })
 
   return (
     <>

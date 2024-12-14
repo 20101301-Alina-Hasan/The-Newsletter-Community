@@ -18,11 +18,7 @@ export const getComments = async (req: Request, res: Response) => {
             order: [['created_at', 'ASC']], // Order by creation date
         });
 
-        const commentCount = await db.Comment.count({
-            where: { news_id },
-        });
-
-        res.status(200).json({ comments, totalComments: commentCount });
+        res.status(200).json({ comments });
         return;
     } catch (error) {
         console.error('Error fetching comments:', error);

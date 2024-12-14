@@ -1,19 +1,61 @@
 import { Request, Response } from "express";
 import { AuthRequest } from "../interfaces/auth";
 import { addCloudinaryImage, deleteCloudinaryImage } from "../utils/cloudinary";
+import { formatDate } from "../utils/formatDate";
 import db from "../models";
 
 // Update getNews -> filterNews, sortNews -> use esClient
 
-// Common function to fetch news
 const fetchNews = async (query: object, res: Response) => {
     try {
-        const newsList = await db.News.findAll(query);
+        const defaultQuery = {
+            ...query,
+            order: [['releaseDate', 'DESC']], // Sort by releaseDate in descending order
+            include: [
+                {
+                    model: db.User, // Include the User model
+                    attributes: ['username'], // Only fetch the username
+                },
+                {
+                    model: db.Tag, // Include the Tag model
+                    attributes: ['tag'], // Only fetch the tag names
+                    through: {
+                        attributes: [] // We don't need the 'News_To_Tags' join table fields
+                    }
+                }
+            ]
+        };
+
+        let newsList = await db.News.findAll(defaultQuery);
 
         if (!newsList || newsList.length === 0) {
             res.status(200).json({ message: "No news found." });
             return;
         }
+
+        // Iterate over the news list and fetch upvote count for each news
+        newsList = await Promise.all(newsList.map(async (news: any) => {
+            const upvotes = await db.Upvote.count({
+                where: { news_id: news.news_id },
+            });
+
+            const commentCount = await db.Comment.count({
+                where: { news_id: news.news_id },
+            });
+
+            return {
+                news_id: news.news_id,
+                user_id: news.user_id,
+                title: news.title,
+                releaseDate: formatDate(news.releaseDate),
+                description: news.description,
+                thumbnail: news.thumbnail,
+                username: news.User.username,
+                tags: news.Tags.map((tag: any) => tag.tag),
+                upvotes,
+                commentCount
+            };
+        }));
 
         res.status(200).json({ news: newsList });
         return;
@@ -23,6 +65,7 @@ const fetchNews = async (query: object, res: Response) => {
         return;
     }
 };
+
 
 // Get all news articles
 export const getNews = async (req: Request, res: Response): Promise<void> => {
@@ -68,6 +111,8 @@ export const createNews = async (req: AuthRequest, res: Response) => {
         // If thumbnail provided and it's base64 (Image), upload it to Cloudinary
         if (thumbnail && thumbnail.startsWith('data:image/')) {
             thumbnailUrl = await addCloudinaryImage(thumbnail);
+        } else {
+            thumbnailUrl = thumbnail;
         }
 
         // Create news item in the database

@@ -2,26 +2,26 @@ import { Request, Response } from "express";
 import { AuthRequest } from "../interfaces/auth";
 import db from "../models";
 
-// Get all upvotes of an article
-export const getUpvotes = async (req: Request, res: Response) => {
-    const { news_id } = req.params;
+// // Get all upvotes of an article
+// export const getUpvotes = async (req: Request, res: Response) => {
+//     const { news_id } = req.params;
 
-    if (!news_id) {
-        res.status(400).json({ message: "News ID is required." });
-        return;
-    }
+//     if (!news_id) {
+//         res.status(400).json({ message: "News ID is required." });
+//         return;
+//     }
 
-    try {
-        const upvotesCount = await db.Upvote.count({
-            where: { news_id },
-        });
+//     try {
+//         const upvotesCount = await db.Upvote.count({
+//             where: { news_id },
+//         });
 
-        res.status(200).json({ news_id, upvotesCount });
-    } catch (error) {
-        console.error("Error fetching upvotes:", error);
-        res.status(500).json({ message: "Internal server error." });
-    }
-};
+//         res.status(200).json({ news_id, upvotesCount });
+//     } catch (error) {
+//         console.error("Error fetching upvotes:", error);
+//         res.status(500).json({ message: "Internal server error." });
+//     }
+// };
 
 // Get user upvote on an article
 export const getUserUpvotes = async (req: AuthRequest, res: Response) => {

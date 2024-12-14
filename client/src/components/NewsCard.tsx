@@ -6,16 +6,16 @@ import { News } from "./News"
 
 interface NewsCardProps {
     title: string
-    date: string
+    releaseDate: string
     description: string
-    image: string
+    thumbnail: string
     upvotes: number
     comments: number
     tags: string[]
     username: string
 }
 
-export function NewsCard({ title, date, description, image, upvotes, comments, tags, username }: NewsCardProps) {
+export function NewsCard({ title, releaseDate, description, thumbnail, upvotes, comments, tags, username }: NewsCardProps) {
     const [isNewsOpen, setIsNewsOpen] = useState(false)
 
     return (
@@ -26,7 +26,7 @@ export function NewsCard({ title, date, description, image, upvotes, comments, t
             >
                 <figure>
                     <img
-                        src={image}
+                        src={thumbnail}
                         alt={title}
                         className="w-full h-64 object-cover object-center"
                     />
@@ -37,7 +37,7 @@ export function NewsCard({ title, date, description, image, upvotes, comments, t
                         <div className="space-y-2">
                             <h2 className="card-title">{title}</h2>
                             <div className="flex items-center gap-2 text-sm py-2">
-                                <span>{date}</span>
+                                <span>{releaseDate}</span>
                                 <span className="ml-1 w-[0.1rem] h-[1.2rem] bg-amber-400" />
                                 <span className="font-semibold">@{username}</span>
                             </div>
@@ -45,13 +45,13 @@ export function NewsCard({ title, date, description, image, upvotes, comments, t
                                 {tags.slice(0, 3).map((tag, index) => (
                                     <div
                                         key={index}
-                                        className="badge badge-outline badge-md"
+                                        className="badge badge-outline badge-md font-semibold"
                                     >
                                         #{tag}
                                     </div>
                                 ))}
                                 {tags.length > 3 && (
-                                    <div className="badge badge-outline badge-md">
+                                    <div className="badge badge-outline badge-md font-semibold">
                                         +{tags.length - 3}
                                     </div>
                                 )}
@@ -75,9 +75,9 @@ export function NewsCard({ title, date, description, image, upvotes, comments, t
                 onClose={() => setIsNewsOpen(false)}
                 news={{
                     title,
-                    date,
+                    releaseDate,
                     description,
-                    image,
+                    thumbnail,
                     upvotes,
                     comments,
                     tags,
