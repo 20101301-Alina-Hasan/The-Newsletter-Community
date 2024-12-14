@@ -62,7 +62,7 @@ export function News({ isOpen, onClose, news }: NewsProps) {
                                 <div className="flex justify-between m-6">
                                     <div className="flex justify-start gap-4">
                                         <Upvote count={news.upvotes} />
-                                        <Comment count={news.comments} />
+                                        <Comment count={news.commentCount} />
                                     </div>
                                     <div className="justify-end">
                                         <Bookmark />

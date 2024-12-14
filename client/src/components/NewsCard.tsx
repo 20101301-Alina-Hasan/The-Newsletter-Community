@@ -1,12 +1,21 @@
-import { useState } from "react"
-import { Upvote } from "./Upvote"
-import { Comment } from "./Comment"
-import { Bookmark } from "./Bookmark"
-import { News } from "./NewsView"
-import { NewsProps } from "../interfaces/News"
+import { useState } from "react";
+import { Upvote } from "./Upvote";
+import { Comment } from "./Comment";
+import { Bookmark } from "./Bookmark";
+import { News } from "./NewsView";
+import { NewsProps } from "../interfaces/News";
 
-export function NewsCard({ title, releaseDate, description, thumbnail, upvotes, comments, tags, username }: NewsProps['news']) {
-    const [isNewsOpen, setIsNewsOpen] = useState(false)
+export function NewsCard({
+    title,
+    releaseDate,
+    description,
+    thumbnail,
+    upvotes,
+    commentCount,
+    tags,
+    username
+}: NewsProps['news']) {
+    const [isNewsOpen, setIsNewsOpen] = useState(false);
 
     return (
         <>
@@ -55,7 +64,7 @@ export function NewsCard({ title, releaseDate, description, thumbnail, upvotes, 
                         </div>
                         <div className="flex items-center gap-4">
                             <Upvote count={upvotes} />
-                            <Comment count={comments} />
+                            <Comment count={commentCount} />
                         </div>
                     </div>
                 </div>
@@ -69,11 +78,11 @@ export function NewsCard({ title, releaseDate, description, thumbnail, upvotes, 
                     description,
                     thumbnail,
                     upvotes,
-                    comments,
+                    commentCount,
                     tags,
                     username
                 }}
             />
         </>
-    )
+    );
 }
