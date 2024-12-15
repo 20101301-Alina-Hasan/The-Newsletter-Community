@@ -3,7 +3,7 @@ import { AuthRequest } from "../interfaces/auth";
 import { formatDate } from "../utils/formatDate";
 import db from "../models";
 
-// Update getNews -> filterNews, sortNews -> use esClient
+// Update getNews -> filterNews, searchNews, bookmarkNews -> use esClient
 
 const getNews = async (query: object, res: Response) => {
     try {
@@ -139,7 +139,7 @@ export const createNews = async (req: AuthRequest, res: Response) => {
 export const updateNews = async (req: AuthRequest, res: Response) => {
     try {
         const { news_id } = req.params;
-        const { title, releaseDate, description, thumbnail } = req.body;
+        const { title, releaseDate, description, thumbnail, tags } = req.body;
         const user_id = req.user?.userId;
 
         if (!title || !releaseDate || !description) {
@@ -154,12 +154,31 @@ export const updateNews = async (req: AuthRequest, res: Response) => {
             return;
         }
 
+        // Update news fields
         await news.update({
             title,
             releaseDate,
             description,
             thumbnail
         });
+
+        // Update tags if provided
+        if (tags && Array.isArray(tags) && tags.length > 0) {
+            const validatedTags = tags.map(tag => tag.trim()).filter(tag => tag.length > 0);
+
+            // Find or create new tags
+            const tagRecords = await Promise.all(
+                validatedTags.map(async (tag: string) => {
+                    const [newTag] = await db.Tag.findOrCreate({
+                        where: { tag }
+                    });
+                    return newTag;
+                })
+            );
+
+            // Clear existing associations and add the updated tags
+            await news.setTags(tagRecords);
+        }
 
         res.status(200).json({ message: "News updated successfully!", news });
         return;
@@ -169,6 +188,7 @@ export const updateNews = async (req: AuthRequest, res: Response) => {
         return;
     }
 };
+
 
 
 export const deleteNews = async (req: AuthRequest, res: Response) => {

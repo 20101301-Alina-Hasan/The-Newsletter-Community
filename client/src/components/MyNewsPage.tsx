@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { MyNewsCard } from "./MyNewsCard";
-import { NewsProps, MyNewsPageProps } from '../interfaces/News';
+import { NewsProps, MyNewsPageProps } from '../interfaces/newsInterface';
 
 export const MyNewsPage = ({ fetchNewsFunction, emptyMessage, errorMessage }: MyNewsPageProps) => {
     const [newsList, setNewsList] = useState<NewsProps['news'][]>([]);

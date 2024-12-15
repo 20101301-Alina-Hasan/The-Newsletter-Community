@@ -1,6 +1,6 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import Cookies from 'js-cookie';
-import { NewsProps } from '../interfaces/News';
+import { NewsProps } from '../interfaces/newsInterface';
 
 const fetchNews = async (endpoint: string, config?: AxiosRequestConfig): Promise<NewsProps['news'][]> => {
     try {
@@ -36,10 +36,6 @@ export const fetchUserNews = async (): Promise<NewsProps['news'][]> => {
 export const createNews = async (formData: FormData) => {
     try {
         const token = Cookies.get('access_token');
-        // console.log("FormData content:");
-        // for (const [key, value] of formData.entries()) {
-        //     console.log(`${key}: ${value}`);
-        // }
         const response = await axios.post('http://localhost:3000/api/news/', formData, {
             headers: {
                 'Content-Type': 'application/json',

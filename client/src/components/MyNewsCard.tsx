@@ -1,14 +1,14 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import { Upvote } from "./Upvote";
 import { Comment } from "./Comment";
 import { Bookmark } from "./Bookmark";
 import { NewsView } from "./NewsView";
-import { UpdateNewsPage } from "./UpdateNewsPage";
-import { NewsProps } from "../interfaces/News";
+import { NewsProps } from "../interfaces/newsInterface";
+import { useNavigate } from "react-router-dom";
 import { showToast } from "../utils/toast";
 import Cookies from 'js-cookie';
 import axios from "axios";
-
 
 export function MyNewsCard({
     news_id,
@@ -24,7 +24,7 @@ export function MyNewsCard({
 }: NewsProps["news"] & { onDelete: (news_id: number) => void }) {
     const [isNewsOpen, setIsNewsOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
-    const [isEditModalOpen, setIsEditModalOpen] = useState(false); // State for controlling modal visibility
+    const navigate = useNavigate();
 
     const handleDelete = async () => {
         try {
@@ -37,14 +37,10 @@ export function MyNewsCard({
                 },
                 withCredentials: true,
             });
-
             showToast('success', 'News successfully deleted!');
-
             if (onDelete) {
                 onDelete(news_id);
             }
-
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
             showToast('error', `${error.message}: An error occurred while deleting the news.`);
         } finally {
@@ -101,7 +97,16 @@ export function MyNewsCard({
                         <li>
                             <button
                                 className="block w-full text-left"
-                                onClick={() => setIsEditModalOpen(true)} // Open the edit modal on click
+                                onClick={() => navigate('/edit', {
+                                    state: {
+                                        news_id,
+                                        title,
+                                        releaseDate,
+                                        description,
+                                        thumbnail,
+                                        tags
+                                    }
+                                })}
                             >
                                 Edit
                             </button>
@@ -174,18 +179,6 @@ export function MyNewsCard({
                     username,
                 }}
             />
-
-            {isEditModalOpen && (
-                <UpdateNewsPage
-                    isOpen={isEditModalOpen}
-                    onClose={() => setIsEditModalOpen(false)}
-                    news_id={news_id}
-                    currentTitle={title}
-                    currentDescription={description}
-                    currentThumbnail={thumbnail}
-                    currentTags={tags}
-                />
-            )}
         </>
     );
 }

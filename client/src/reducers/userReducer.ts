@@ -1,4 +1,4 @@
-import { userAction, userState } from "../interfaces/User";
+import { userAction, userState } from "../interfaces/userInterfaces";
 
 export const userReducer = (state: userState, action: userAction): userState => {
   const { type, payload } = action;

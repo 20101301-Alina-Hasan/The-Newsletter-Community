@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { NewsCard } from "./NewsCard";
-import { NewsProps } from '../interfaces/News';
+import { NewsProps } from '../interfaces/newsInterface';
 
 interface NewsPageProps {
     fetchNewsFunction: () => Promise<NewsProps['news'][]>;

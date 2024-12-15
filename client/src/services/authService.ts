@@ -10,10 +10,7 @@ export const loginUser = async (email: string, password: string) => {
 
         if (response.status === 200) {
             const { token } = response.data;
-
             Cookies.set('access_token', token, { expires: 30 });
-            // console.log(token);
-
             return response.data;
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any

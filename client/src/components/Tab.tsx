@@ -1,8 +1,8 @@
 import { useState, useContext, useEffect } from 'react';
-import { UserContext, UserContextType } from '../interfaces/User';
+import { UserContext, UserContextType } from '../interfaces/userInterfaces';
 import { NewsPage } from './NewsPage';
 import { MyNewsPage } from './MyNewsPage';
-import { fetchAllNews, fetchUserNews } from '../services/news';
+import { fetchAllNews, fetchUserNews } from '../services/newsService';
 import { AuthenticationCard } from './AuthenticationCard';
 import { useLocation } from 'react-router-dom';
 

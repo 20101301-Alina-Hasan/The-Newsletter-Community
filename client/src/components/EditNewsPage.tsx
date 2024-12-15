@@ -1,46 +1,33 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { UserContext, UserContextType } from '../interfaces/User';
-import { useNavigate } from 'react-router-dom';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { showToast } from '../utils/toast';
-import { UpdateNewsPageProps } from '../interfaces/News';
-import { updateNews } from '../services/news';
-import { tags } from '../mock/sampleTags';
+import { updateNews } from '../services/newsService';
+import { tags as mockTags } from '../mock/mockTags';
 
-
-export function UpdateNewsPage({
-    isOpen,
-    onClose,
-    news_id,
-    currentTitle,
-    currentDescription,
-    currentThumbnail,
-    currentTags
-}: UpdateNewsPageProps) {
-    const { userState } = useContext(UserContext) as UserContextType;
-    const [title, setTitle] = useState(currentTitle);
-    const [content, setContent] = useState(currentDescription);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [thumbnail, setThumbnail] = useState<File | null>(null);
-    const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
-    const [selectedTags, setSelectedTags] = useState<string[]>([]);
-    const [isUploading, setIsUploading] = useState(false);
+export function EditNewsPage() {
+    const location = useLocation();
     const navigate = useNavigate();
 
-    useEffect(() => {
-        if (!userState.token) {
-            navigate('/');
-        }
-    }, [userState.token, navigate]);
+    const { news_id, title: initialTitle, description: initialDescription, thumbnail: initialThumbnail, tags: initialTags } = location.state || {};
+
+    const [title, setTitle] = useState<string>(initialTitle || '');
+    const [content, setContent] = useState<string>(initialDescription || '');
+    const [thumbnail, setThumbnail] = useState<File | null>(null);
+    const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(initialThumbnail || null);
+    const [selectedTags, setSelectedTags] = useState<string[]>(initialTags || []);
+    const [isUploading, setIsUploading] = useState(false);
 
     useEffect(() => {
-        if (isOpen) {
-            setTitle(currentTitle);
-            setContent(currentDescription);
-            setThumbnailUrl(currentThumbnail || '');
-            setSelectedTags(currentTags);
+        if (location.state) {
+            setTitle(initialTitle || '');
+            setContent(initialDescription || '');
+            setThumbnailUrl(initialThumbnail || null);
+            setSelectedTags(initialTags || []);
         }
-    }, [isOpen, currentTitle, currentDescription, currentThumbnail, currentTags]);
+    }, [location.state, initialTitle, initialDescription, initialThumbnail, initialTags]);
 
     const handleTagToggle = (tag: string) => {
         setSelectedTags((prev) =>
@@ -52,7 +39,6 @@ export function UpdateNewsPage({
         const formData = new FormData();
         formData.append('file', file);
         formData.append('upload_preset', 'news_thumbnail_preset');
-
         try {
             setIsUploading(true);
             const response = await axios.post('https://api.cloudinary.com/v1_1/dganhxhid/image/upload', formData);
@@ -72,7 +58,6 @@ export function UpdateNewsPage({
                 const url = await uploadToCloudinary(file);
                 setThumbnail(file);
                 setThumbnailUrl(url);
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
             } catch (error: any) {
                 showToast('error', `${error.message}: Failed to upload image. Please try again.`);
             }
@@ -86,12 +71,10 @@ export function UpdateNewsPage({
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
         if (!title || !content) {
             showToast('error', 'Please fill in all required fields.');
             return;
         }
-
         try {
             const formData = new FormData();
             formData.append('title', title);
@@ -99,32 +82,20 @@ export function UpdateNewsPage({
             formData.append('description', content);
             if (thumbnailUrl) formData.append('thumbnail', thumbnailUrl);
             selectedTags.forEach((tag) => formData.append('tags[]', tag));
-
             await updateNews(formData, news_id);
-
-            setTitle('');
-            setContent('');
-            setThumbnail(null);
-            setThumbnailUrl(null);
-            setSelectedTags([]);
-            onClose();
-            showToast('success', 'Your article has been published successfully!');
+            showToast('success', 'Your article has been successfully updated.');
+            navigate('/');
         } catch (err) {
             console.error(err);
             showToast('error', 'An article with this title already exists. Please try another title.');
         }
     };
 
-    if (!isOpen) return null;
-
     return (
         <div className="fixed inset-0 bg-base-300 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
             <div className="relative mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-base-100">
                 <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-2xl font-bold text-base-content">Create New Article</h2>
-                    <button onClick={onClose} className="text-base-content hover:text-base-content/70">
-                        X
-                    </button>
+                    <h2 className="text-2xl font-bold text-base-content">Edit Your Article</h2>
                 </div>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
@@ -171,7 +142,7 @@ export function UpdateNewsPage({
                     <div>
                         <p className="text-sm font-medium text-base-content mb-2">Tags</p>
                         <div className="flex flex-wrap gap-2">
-                            {tags.map((tag) => (
+                            {mockTags.map((tag: string) => (
                                 <button
                                     key={tag}
                                     type="button"
@@ -187,11 +158,8 @@ export function UpdateNewsPage({
                         </div>
                     </div>
                     <div className="flex justify-end">
-                        <button
-                            type="submit"
-                            className="btn btn-primary"
-                        >
-                            Publish Article
+                        <button type="submit" className="btn btn-primary">
+                            Save
                         </button>
                     </div>
                 </form>

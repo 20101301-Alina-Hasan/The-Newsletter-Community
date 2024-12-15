@@ -3,7 +3,7 @@ import { Upvote } from "./Upvote";
 import { Comment } from "./Comment";
 import { Bookmark } from "./Bookmark";
 import { NewsView } from "./NewsView";
-import { NewsProps } from "../interfaces/News";
+import { NewsProps } from "../interfaces/newsInterface";
 
 export function NewsCard({
     news_id,

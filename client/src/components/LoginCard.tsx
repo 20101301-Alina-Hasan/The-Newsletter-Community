@@ -1,8 +1,8 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { loginUser } from '../services/auth';
+import { loginUser } from '../services/authService';
 import { showToast } from '../utils/toast';
-import { UserContext, UserContextType } from '../interfaces/User';
+import { UserContext, UserContextType } from '../interfaces/userInterfaces';
 
 export const LoginPage = () => {
     const [email, setEmail] = useState('');

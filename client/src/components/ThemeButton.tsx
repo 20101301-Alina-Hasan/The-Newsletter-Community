@@ -1,21 +1,7 @@
-import { useEffect, useState } from 'react';
-import { getStoredTheme, setStoredTheme, applyTheme } from '../utils/react/themeManager';
+import { useTheme } from '../contexts/themeContext';
 
 export function ThemeButton() {
-    const [isDark, setIsDark] = useState(getStoredTheme() === 'halloween');
-
-    useEffect(() => {
-        const storedTheme = getStoredTheme();
-        applyTheme(storedTheme);
-        setIsDark(storedTheme === 'halloween');
-    }, []);
-
-    const toggleTheme = () => {
-        const newTheme = isDark ? 'retro' : 'halloween';
-        setStoredTheme(newTheme);
-        applyTheme(newTheme);
-        setIsDark(!isDark);
-    };
+    const { toggleTheme, darkMode } = useTheme();
 
     return (
         <label className="swap swap-rotate">
@@ -23,7 +9,7 @@ export function ThemeButton() {
                 type="checkbox"
                 className="theme-controller"
                 onChange={toggleTheme}
-                checked={isDark}
+                checked={darkMode}
             />
             <svg
                 className="swap-on h-6 w-6 fill-current"

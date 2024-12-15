@@ -1,4 +1,4 @@
-import { CommentProps } from "../interfaces/Comment";
+import { CommentProps } from "../interfaces/commentInterface";
 
 export function Comment({ count }: CommentProps) {
     return (

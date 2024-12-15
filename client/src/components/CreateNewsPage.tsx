@@ -1,17 +1,17 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useContext, useEffect } from 'react';
-import { UserContext, UserContextType } from '../interfaces/User';
+import { UserContext, UserContextType } from '../interfaces/userInterfaces';
 import { useNavigate } from 'react-router-dom';
-import { createNews } from '../services/news';
-import { CreateNewsProps } from '../interfaces/News';
+import { createNews } from '../services/newsService';
 import { showToast } from '../utils/toast';
-import { tags } from '../mock/sampleTags';
+import { tags } from '../mock/mockTags';
 import axios from 'axios';
 
-export function CreateNewsPage({ onClose }: CreateNewsProps) {
+export function CreateNewsPage() {
     const { userState } = useContext(UserContext) as UserContextType;
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [thumbnail, setThumbnail] = useState<File | null>(null);
     const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -54,7 +54,6 @@ export function CreateNewsPage({ onClose }: CreateNewsProps) {
                 const url = await uploadToCloudinary(file);
                 setThumbnail(file);
                 setThumbnailUrl(url);
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
             } catch (error: any) {
                 showToast('error', `${error.message}: Failed to upload image. Please try again.`);
             }
@@ -89,23 +88,15 @@ export function CreateNewsPage({ onClose }: CreateNewsProps) {
             setThumbnail(null);
             setThumbnailUrl(null);
             setSelectedTags([]);
-            onClose();
-            showToast('success', 'Your article has been published successfully!');
-        } catch (err) {
-            console.error(err);
-            showToast('error', 'An article with this title already exists. Please try another title.');
+            showToast('success', 'Congratulations! You article has been published.');
+        } catch (error: any) {
+            showToast('error', `${error.message}: An article with this title already exists. Please try another title.`);
         }
     };
 
     return (
         <div className="fixed inset-0 bg-base-300 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
             <div className="relative mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-base-100">
-                <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-2xl font-bold text-base-content">Create New Article</h2>
-                    <button onClick={onClose} className="text-base-content hover:text-base-content/70">
-                        X
-                    </button>
-                </div>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
                         <input
@@ -166,12 +157,19 @@ export function CreateNewsPage({ onClose }: CreateNewsProps) {
                             ))}
                         </div>
                     </div>
-                    <div className="flex justify-end">
+                    <div className="flex justify-end space-x-2">
                         <button
                             type="submit"
                             className="btn btn-primary"
                         >
                             Publish Article
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => navigate('/')}
+                            className="btn btn-secondary"
+                        >
+                            Close
                         </button>
                     </div>
                 </form>

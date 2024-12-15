@@ -31,7 +31,7 @@ export interface MyNewsPageProps extends NewsPageProps {
     onDelete?: (news_id: number) => void;
 }
 
-export interface UpdateNewsPageProps {
+export interface EditNewsPageProps {
     isOpen: boolean;
     onClose: () => void;
     news_id: number;

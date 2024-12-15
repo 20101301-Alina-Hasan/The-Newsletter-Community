@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { registerUser } from '../services/auth';
-import { UserContext, UserContextType } from '../interfaces/User';
+import { registerUser } from '../services/authService';
+import { UserContext, UserContextType } from '../interfaces/userInterfaces';
 import { showToast } from '../utils/toast';
 
 export const SignupPage = () => {
