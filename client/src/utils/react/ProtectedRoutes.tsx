@@ -1,9 +1,9 @@
-// import { Outlet, Navigate } from "react-router-dom";
-// import auth from "./auth";
+import { Outlet, Navigate } from "react-router-dom";
+import Cookies from "js-cookie";
 
-// const ProtectedRoutes = () => {
-//     const user = auth.isAuthenticated();
-//     return user ? <Outlet /> : <Navigate to='/'/>
-// }
+const ProtectedRoutes = () => {
+    const token = Cookies.get("access-token");
+    return token ? <Outlet /> : <Navigate to='/auth' />
+}
 
-// export default ProtectedRoutes;
+export default ProtectedRoutes;

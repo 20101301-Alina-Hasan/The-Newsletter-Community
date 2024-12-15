@@ -1,16 +1,16 @@
 import './App.css';
-import { io } from 'socket.io-client';
 import { useEffect, useReducer, useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { Navbar } from './components/Navbar';
-import { Tab } from './components/Tab';
-import { AuthenticationCard } from './components/AuthenticationCard';
 import { applyTheme, getStoredTheme } from './utils/react/themeManager';
 import { UserContext } from './interfaces/User';
+import { io } from 'socket.io-client';
+import { Navbar } from './components/Navbar';
+import { Tab } from './components/Tab';
 import { userReducer } from './reducers/userReducer';
+import { ToastContainer } from 'react-toastify';
+import { Bookmark } from './components/Bookmark';
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import { CreateNewsPage } from './components/CreateNewsPage';
 
 function App() {
   const [userState, userDispatch] = useReducer(userReducer, {
@@ -54,11 +54,15 @@ function App() {
           } else {
             userDispatch({ type: 'logout' });
           }
+        } else {
+          userDispatch({ type: 'logout' });
         }
+        console.log(userState);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (err: any) {
         console.error("Error during user initialization:", err);
         if (err.message !== 'Request canceled') {
+          userDispatch({ type: 'logout' });
           setError(err.message);
         }
       }
@@ -74,9 +78,9 @@ function App() {
           <Navbar />
           <Routes>
             <Route path="/" element={<Tab />} />
-            <Route path="/auth" element={<AuthenticationCard />} />
-            <Route path="/create-news" element={<CreateNewsPage />} />
+            <Route path="/bookmark" element={<Bookmark />} />
           </Routes>
+          <ToastContainer />
         </div>
       </Router>
     </UserContext.Provider>

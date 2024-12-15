@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { SignupPage } from './SignupCard';
-import { LoginPage } from './LoginCard'; // Assuming you have a LoginPage component
+import { LoginPage } from './LoginCard';
 
 export const AuthenticationCard = () => {
     const [isLogin, setIsLogin] = useState(false);

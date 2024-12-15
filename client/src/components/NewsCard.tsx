@@ -6,6 +6,7 @@ import { NewsView } from "./NewsView";
 import { NewsProps } from "../interfaces/News";
 
 export function NewsCard({
+    news_id,
     title,
     releaseDate,
     description,
@@ -65,11 +66,11 @@ export function NewsCard({
                     </div>
                     <div className="w-full h-[0.1rem] bg-red-800 mt-4 mb-2"></div>
                     <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-4" onClick={(e) => e.stopPropagation()}>
                             <Upvote count={upvotes} />
                             <Comment count={commentCount} />
                         </div>
-                        <div>
+                        <div onClick={(e) => e.stopPropagation()}>
                             <Bookmark />
                         </div>
                     </div>
@@ -79,6 +80,7 @@ export function NewsCard({
                 isOpen={isNewsOpen}
                 onClose={() => setIsNewsOpen(false)}
                 news={{
+                    news_id,
                     title,
                     releaseDate,
                     description,

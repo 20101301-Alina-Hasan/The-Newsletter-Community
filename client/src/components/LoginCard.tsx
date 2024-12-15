@@ -5,7 +5,6 @@ import { showToast } from '../utils/toast';
 import { UserContext, UserContextType } from '../interfaces/User';
 
 export const LoginPage = () => {
-    // const [isLogin, setIsLogin] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState<string | null>(null);
@@ -19,7 +18,6 @@ export const LoginPage = () => {
         setError(null);
 
         if (!isEmailValid(email)) {
-            showToast('error', 'Invalid email address.');
             setError('Invalid email address.');
             return;
         }
@@ -35,7 +33,7 @@ export const LoginPage = () => {
                         user: result.user, // Assuming `result.user` contains the user details
                     },
                 });
-                showToast('success', 'Login successful! Redirecting...');
+                showToast('success', 'Logged in successfully!');
                 navigate('/');
             }
             // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -1,11 +1,10 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { registerUser } from '../services/auth';
-import { showToast } from '../utils/toast';
 import { UserContext, UserContextType } from '../interfaces/User';
+import { showToast } from '../utils/toast';
 
 export const SignupPage = () => {
-    // const [isLogin, setIsLogin] = useState(false);
     const [name, setName] = useState('');
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
@@ -23,19 +22,16 @@ export const SignupPage = () => {
         setError(null);
 
         if (!isEmailValid(email)) {
-            showToast('error', 'Invalid email address.');
             setError('Invalid email address.');
             return;
         }
 
         if (!isPasswordValid(password)) {
-            showToast('error', 'Password must be at least 8 characters long.');
             setError('Password must be at least 8 characters long.');
             return;
         }
 
         if (!isUsernameValid(username)) {
-            showToast('error', 'Username must be at least 3 characters long.');
             setError('Username must be at least 3 characters long.');
             return;
         }
@@ -50,13 +46,12 @@ export const SignupPage = () => {
                         user: result.user,
                     },
                 });
-                showToast('success', 'User registered successfully! Redirecting...');
+                showToast('success', 'User registered successfully!');
                 navigate('/');
             }
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (err: any) {
-            showToast('error', err.message);
-            setError(err.message);
+            setError(`Error: ${err.message}`);
         }
     };
 

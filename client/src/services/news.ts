@@ -36,10 +36,10 @@ export const fetchUserNews = async (): Promise<NewsProps['news'][]> => {
 export const createNews = async (formData: FormData) => {
     try {
         const token = Cookies.get('access_token');
-        console.log("FormData content:");
-        for (const [key, value] of formData.entries()) {
-            console.log(`${key}: ${value}`);
-        }
+        // console.log("FormData content:");
+        // for (const [key, value] of formData.entries()) {
+        //     console.log(`${key}: ${value}`);
+        // }
         const response = await axios.post('http://localhost:3000/api/news/', formData, {
             headers: {
                 'Content-Type': 'application/json',
@@ -52,3 +52,19 @@ export const createNews = async (formData: FormData) => {
         throw error;
     }
 };
+
+export const updateNews = async (formData: FormData, news_id: number) => {
+    try {
+        const token = Cookies.get('access_token');
+        const response = await axios.put(`http://localhost:3000/api/news/${news_id}`, formData, {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error creating article:', error);
+        throw error;
+    }
+}

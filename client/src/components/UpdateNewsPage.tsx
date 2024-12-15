@@ -1,16 +1,25 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { UserContext, UserContextType } from '../interfaces/User';
 import { useNavigate } from 'react-router-dom';
-import { createNews } from '../services/news';
-import { CreateNewsProps } from '../interfaces/News';
-import { showToast } from '../utils/toast';
-import { tags } from '../mock/sampleTags';
 import axios from 'axios';
+import { showToast } from '../utils/toast';
+import { UpdateNewsPageProps } from '../interfaces/News';
+import { updateNews } from '../services/news';
+import { tags } from '../mock/sampleTags';
 
-export function CreateNewsPage({ isOpen, onClose }: CreateNewsProps) {
+
+export function UpdateNewsPage({
+    isOpen,
+    onClose,
+    news_id,
+    currentTitle,
+    currentDescription,
+    currentThumbnail,
+    currentTags
+}: UpdateNewsPageProps) {
     const { userState } = useContext(UserContext) as UserContextType;
-    const [title, setTitle] = useState('');
-    const [content, setContent] = useState('');
+    const [title, setTitle] = useState(currentTitle);
+    const [content, setContent] = useState(currentDescription);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [thumbnail, setThumbnail] = useState<File | null>(null);
     const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
@@ -23,6 +32,15 @@ export function CreateNewsPage({ isOpen, onClose }: CreateNewsProps) {
             navigate('/');
         }
     }, [userState.token, navigate]);
+
+    useEffect(() => {
+        if (isOpen) {
+            setTitle(currentTitle);
+            setContent(currentDescription);
+            setThumbnailUrl(currentThumbnail || '');
+            setSelectedTags(currentTags);
+        }
+    }, [isOpen, currentTitle, currentDescription, currentThumbnail, currentTags]);
 
     const handleTagToggle = (tag: string) => {
         setSelectedTags((prev) =>
@@ -82,7 +100,7 @@ export function CreateNewsPage({ isOpen, onClose }: CreateNewsProps) {
             if (thumbnailUrl) formData.append('thumbnail', thumbnailUrl);
             selectedTags.forEach((tag) => formData.append('tags[]', tag));
 
-            await createNews(formData);
+            await updateNews(formData, news_id);
 
             setTitle('');
             setContent('');
@@ -181,5 +199,3 @@ export function CreateNewsPage({ isOpen, onClose }: CreateNewsProps) {
         </div>
     );
 }
-
-

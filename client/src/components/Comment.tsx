@@ -1,6 +1,4 @@
-interface CommentProps {
-    count: number
-}
+import { CommentProps } from "../interfaces/Comment";
 
 export function Comment({ count }: CommentProps) {
     return (

@@ -1,13 +1,21 @@
-import { useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { UserContext, UserContextType } from '../interfaces/User';
-import { useState } from 'react';
 import { NewsPage } from './NewsPage';
+import { MyNewsPage } from './MyNewsPage';
 import { fetchAllNews, fetchUserNews } from '../services/news';
 import { AuthenticationCard } from './AuthenticationCard';
+import { useLocation } from 'react-router-dom';
 
 export function Tab() {
     const [activeTab, setActiveTab] = useState('explore');
     const { userState } = useContext(UserContext) as UserContextType;
+    const location = useLocation();
+
+    useEffect(() => {
+        if (location.state && location.state.activeTab) {
+            setActiveTab(location.state.activeTab);
+        }
+    }, [location]);
 
     return (
         <div className="w-full bg-base-200">
@@ -40,7 +48,7 @@ export function Tab() {
 
                 {activeTab === 'myArticles' && userState.token && (
                     <div className="tab-pane">
-                        <NewsPage
+                        <MyNewsPage
                             fetchNewsFunction={fetchUserNews}
                             emptyMessage="You haven't posted any articles yet."
                             errorMessage="Failed to fetch your articles. Please try again."
