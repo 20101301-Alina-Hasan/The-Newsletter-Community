@@ -38,7 +38,6 @@ export const LoginPage = () => {
             }
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (err: any) {
-            showToast('error', err.message);
             setError(err.message);
         }
     };

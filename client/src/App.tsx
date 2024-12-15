@@ -1,6 +1,7 @@
 import './App.css';
 import { useEffect, useReducer, useState } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import ProtectedRoutes from './utils/react/ProtectedRoutes';
 import { ThemeProvider } from './contexts/themeContext';
 import { UserContext } from './interfaces/userInterfaces';
 import { userReducer } from './reducers/userReducer';
@@ -8,11 +9,12 @@ import { ToastContainer } from 'react-toastify';
 import { AuthenticationCard } from './components/AuthenticationCard';
 import { CreateNewsPage } from './components/CreateNewsPage';
 import { EditNewsPage } from './components/EditNewsPage';
+import { MyNewsPage } from './components/MyNewsPage';
 import { Navbar } from './components/Navbar';
-import { Tab } from './components/Tab';
 import { io } from 'socket.io-client';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import { NewsPage } from './components/NewsPage';
 
 function App() {
   const [userState, userDispatch] = useReducer(userReducer, {
@@ -72,21 +74,24 @@ function App() {
   }, []);
 
   return (
-    <ThemeProvider>
-      <UserContext.Provider value={{ userState, userDispatch }}>
+    <UserContext.Provider value={{ userState, userDispatch }}>
+      <ThemeProvider>
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Navbar />}>
-              <Route index element={<Tab />} />
+              <Route path="/" element={<NewsPage />} />
               <Route path="auth" element={<AuthenticationCard />} />
-              <Route path="create" element={<CreateNewsPage />} />
-              <Route path="edit" element={<EditNewsPage />} />
+              <Route element={<ProtectedRoutes />}>
+                <Route path="my-articles" element={<MyNewsPage />} />
+                <Route path="create" element={<CreateNewsPage />} />
+                <Route path="edit" element={<EditNewsPage />} />
+              </Route>
             </Route>
           </Routes>
           <ToastContainer />
         </BrowserRouter>
-      </UserContext.Provider>
-    </ThemeProvider>
+      </ThemeProvider>
+    </UserContext.Provider>
   );
 }
 

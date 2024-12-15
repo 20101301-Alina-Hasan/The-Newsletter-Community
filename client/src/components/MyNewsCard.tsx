@@ -19,9 +19,8 @@ export function MyNewsCard({
     upvotes,
     commentCount,
     tags,
-    username,
-    onDelete
-}: NewsProps["news"] & { onDelete: (news_id: number) => void }) {
+    username
+}: NewsProps["news"]) {
     const [isNewsOpen, setIsNewsOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
     const navigate = useNavigate();
@@ -37,10 +36,8 @@ export function MyNewsCard({
                 },
                 withCredentials: true,
             });
-            showToast('success', 'News successfully deleted!');
-            if (onDelete) {
-                onDelete(news_id);
-            }
+            showToast('success', 'Your article has been removed.');
+            navigate('/');
         } catch (error: any) {
             showToast('error', `${error.message}: An error occurred while deleting the news.`);
         } finally {

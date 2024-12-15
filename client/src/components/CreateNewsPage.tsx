@@ -88,7 +88,7 @@ export function CreateNewsPage() {
             setThumbnail(null);
             setThumbnailUrl(null);
             setSelectedTags([]);
-            showToast('success', 'Congratulations! You article has been published.');
+            showToast('success', 'Congratulations! Your article has been published.');
         } catch (error: any) {
             showToast('error', `${error.message}: An article with this title already exists. Please try another title.`);
         }
@@ -160,6 +160,7 @@ export function CreateNewsPage() {
                     <div className="flex justify-end space-x-2">
                         <button
                             type="submit"
+                            onClick={() => navigate('/my-articles')}
                             className="btn btn-primary"
                         >
                             Publish Article

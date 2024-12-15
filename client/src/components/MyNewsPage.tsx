@@ -1,33 +1,31 @@
 import { useEffect, useState } from 'react';
-import { MyNewsCard } from "./MyNewsCard";
-import { NewsProps, MyNewsPageProps } from '../interfaces/newsInterface';
+import { useNavigate } from 'react-router-dom';
+import { MyNewsCard } from './MyNewsCard';
+import { NewsProps } from '../interfaces/newsInterface';
+import { fetchUserNews } from '../services/newsService';
 
-export const MyNewsPage = ({ fetchNewsFunction, emptyMessage, errorMessage }: MyNewsPageProps) => {
+export const MyNewsPage = () => {
     const [newsList, setNewsList] = useState<NewsProps['news'][]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const loadNews = async () => {
             try {
-                const news = await fetchNewsFunction();
+                const news = await fetchUserNews();
                 setNewsList(news);
-
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
             } catch (error: any) {
                 console.error("Error loading news:", error);
-                setError(error.message || errorMessage || "An unexpected error occurred.");
+                setError(error.message || "An unexpected error occurred.");
             } finally {
                 setLoading(false);
             }
         };
 
         loadNews();
-    }, [fetchNewsFunction, errorMessage]);
-
-    const handleDelete = (news_id: number) => {
-        setNewsList((prevNews) => prevNews.filter(news => news.news_id !== news_id));
-    };
+    }, []);
 
     if (loading) {
         return <div className='min-h-screen bg-base-200 text-2xl text-base-content font-semibold'>Loading...</div>;
@@ -38,15 +36,21 @@ export const MyNewsPage = ({ fetchNewsFunction, emptyMessage, errorMessage }: My
     }
 
     return (
-        <div className="min-h-screen bg-base-200">
+        <div className="min-h-screen bg-base-300 px-32 py-14">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {newsList.length === 0 ? (
-                    <p className='text-2xl text-base-content font-semibold'>{emptyMessage}</p>
+                    <div className='space-y-2'>
+                        <p className='text-2xl text-base-content font-semibold'>You have yet to publish an article.
+                            <br />
+                            <strong className='text-secondary'>Create one now</strong> and contribute to the community
+                        </p>
+                        <a className="btn btn-primary h-12 font-bold" onClick={() => navigate('/create')}>
+                            Publish
+                        </a>
+                    </div>
                 ) : (
                     newsList.map((news) => (
-                        <MyNewsCard key={news.news_id}
-                            {...news}
-                            onDelete={handleDelete} />
+                        <MyNewsCard key={news.news_id} {...news} />
                     ))
                 )}
             </div>

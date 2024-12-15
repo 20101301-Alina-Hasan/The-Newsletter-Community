@@ -157,9 +157,12 @@ export function EditNewsPage() {
                             ))}
                         </div>
                     </div>
-                    <div className="flex justify-end">
-                        <button type="submit" className="btn btn-primary">
+                    <div className="flex justify-end space-x-2">
+                        <button type="submit" className="btn btn-primary" onClick={() => navigate('/my-articles')}>
                             Save
+                        </button>
+                        <button type="button" className="btn btn-secondary" onClick={() => navigate('/')}>
+                            Close
                         </button>
                     </div>
                 </form>

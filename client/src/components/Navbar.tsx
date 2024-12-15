@@ -1,16 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 import { UserContext, UserContextType } from '../interfaces/userInterfaces';
 import { ThemeButton } from './ThemeButton';
 import { FilterDropdown } from './FilterDropdown';
 import { useNavigate } from 'react-router-dom';
-// import { CreateNewsPage } from './CreateNewsPage';
 import { Outlet } from 'react-router-dom';
 import Cookies from 'js-cookie';
 
 export function Navbar() {
     const { userState, userDispatch } = useContext(UserContext) as UserContextType;
-    // const [isCreateNewsOpen, setIsCreateNewsOpen] = useState(false);
     const navigate = useNavigate();
 
     const handleLogout = () => {
@@ -19,18 +17,9 @@ export function Navbar() {
         navigate('/');
     };
 
-    const navigateToSignup = () => {
-        // navigate('/', { state: { activeTab: 'myArticles' } });
-        navigate('/auth');
-    };
-
-    const navigateToCreateNewsPage = () => {
-        navigate('/create');
-    };
-
     return (
         <div>
-            <div className="navbar bg-base-100 px-4 py-4 h-18">
+            <div className="navbar bg-base-100 px-4 py-4 h-18 shadow-md">
                 <div className="flex-1">
                     <a className="btn btn-ghost text-xl" onClick={() => navigate('/')}>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
@@ -48,7 +37,7 @@ export function Navbar() {
                 <div className="flex-1 justify-end">
                     <div className="flex items-center gap-2">
                         {userState.token ? (
-                            <a className="btn btn-primary h-12 font-extrabold" onClick={navigateToCreateNewsPage}>
+                            <a className="btn btn-primary h-12 font-extrabold" onClick={() => navigate('/create')}>
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
                                 </svg>
@@ -67,6 +56,8 @@ export function Navbar() {
                                         <>
                                             <div className="text-md text-center font-semibold">Hi, {userState.user?.name}!</div>
                                             <div className="divider divider-primary my-[2px]" />
+                                            <li><a onClick={() => navigate('/my-articles')}>My Articles</a></li>
+                                            <li><a onClick={() => navigate('/')}>Home</a></li>
                                             <li><a onClick={handleLogout}>Logout</a></li>
                                         </>
                                     ) : (
@@ -75,7 +66,9 @@ export function Navbar() {
                                             <div className="divider divider-primary my-[2px]" />
                                         </>
                                     )}
-                                    <li><a onClick={navigateToSignup}>Create an account?</a></li>
+                                    <div className='btn btn-md btn-base-100 mt-[2px] border-base-300 hover:btn-base-300'>
+                                        <a onClick={() => navigate('/auth')}>Create an account?</a>
+                                    </div>
                                 </ul>
                             </div>
                         </div>

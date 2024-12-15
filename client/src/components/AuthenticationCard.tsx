@@ -8,6 +8,7 @@ export const AuthenticationCard = () => {
     return (
         <div className="flex items-center justify-center min-h-screen bg-base-200">
             <div className="w-full max-w-md p-8 bg-base-100 rounded-lg shadow-md">
+
                 {isLogin ? (
                     <LoginPage />
                 ) : (
@@ -27,3 +28,9 @@ export const AuthenticationCard = () => {
     );
 };
 
+{/* <p className="text-2xl text-center text-base-content">
+    <span className="text-accent font-semibold">Want to share your thoughts?</span> <br />
+    <strong>Join us now</strong> and start posting your own articles. <br />
+    Become a member of our community <br />
+    in just a few minutes!
+</p> */}

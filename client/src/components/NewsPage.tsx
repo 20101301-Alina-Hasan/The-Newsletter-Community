@@ -1,14 +1,9 @@
 import { useEffect, useState } from 'react';
 import { NewsCard } from "./NewsCard";
 import { NewsProps } from '../interfaces/newsInterface';
+import { fetchAllNews } from '../services/newsService';
 
-interface NewsPageProps {
-    fetchNewsFunction: () => Promise<NewsProps['news'][]>;
-    emptyMessage: string;
-    errorMessage?: string;
-}
-
-export const NewsPage = ({ fetchNewsFunction, emptyMessage, errorMessage }: NewsPageProps) => {
+export const NewsPage = () => {
     const [newsList, setNewsList] = useState<NewsProps['news'][]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -16,20 +11,19 @@ export const NewsPage = ({ fetchNewsFunction, emptyMessage, errorMessage }: News
     useEffect(() => {
         const loadNews = async () => {
             try {
-                const news = await fetchNewsFunction();
+                const news = await fetchAllNews();
                 setNewsList(news);
-
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
             } catch (error: any) {
                 console.error("Error loading news:", error);
-                setError(error.message || errorMessage || "An unexpected error occurred.");
+                setError(error.message || "An unexpected error occurred.");
             } finally {
                 setLoading(false);
             }
         };
 
         loadNews();
-    }, [fetchNewsFunction, errorMessage]);
+    }, []);
 
     if (loading) {
         return <div className='min-h-screen bg-base-200 text-2xl text-base-content font-semibold'>Loading...</div>;
@@ -40,10 +34,10 @@ export const NewsPage = ({ fetchNewsFunction, emptyMessage, errorMessage }: News
     }
 
     return (
-        <div className="min-h-screen bg-base-200">
+        <div className="min-h-screen bg-base-300 px-32 py-14">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {newsList.length === 0 ? (
-                    <p className='text-2xl text-base-content font-semibold'>{emptyMessage}</p>
+                    <p className='text-2xl text-base-content font-semibold'>There are no news currently available.</p>
                 ) : (
                     newsList.map((news) => (
                         <NewsCard key={news.news_id} {...news} />
