@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { registerUser } from '../services/authService';
@@ -9,7 +10,13 @@ export const SignupPage = () => {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState<string | null>(null);
+    const [errors, setErrors] = useState({
+        name: '',
+        username: '',
+        email: '',
+        password: '',
+    });
+
     const navigate = useNavigate();
     const { userDispatch } = useContext(UserContext) as UserContextType;
 
@@ -19,22 +26,21 @@ export const SignupPage = () => {
 
     const handleSignup = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError(null);
+        const newErrors = {
+            name: '',
+            username: '',
+            email: '',
+            password: '',
+        };
 
-        if (!isEmailValid(email)) {
-            setError('Invalid email address.');
-            return;
-        }
+        if (!name.trim()) newErrors.name = 'Name is required.';
+        if (!isUsernameValid(username)) newErrors.username = 'Username must be at least 3 characters long.';
+        if (!isEmailValid(email)) newErrors.email = 'Invalid email address.';
+        if (!isPasswordValid(password)) newErrors.password = 'Password must be at least 8 characters long.';
 
-        if (!isPasswordValid(password)) {
-            setError('Password must be at least 8 characters long.');
-            return;
-        }
+        setErrors(newErrors);
 
-        if (!isUsernameValid(username)) {
-            setError('Username must be at least 3 characters long.');
-            return;
-        }
+        if (Object.values(newErrors).some((error) => error !== '')) return;
 
         try {
             const result = await registerUser(name, username, email, password);
@@ -49,16 +55,14 @@ export const SignupPage = () => {
                 showToast('success', 'User registered successfully!');
                 navigate('/');
             }
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } catch (err: any) {
-            setError(`Error: ${err.message}`);
+        } catch (error: any) {
+            showToast('error', `Error: ${error.message}`);
         }
     };
 
     return (
         <div>
             <h1 className="text-2xl font-bold text-center mb-6 text-base-content">Sign Up</h1>
-            {error && <div className="text-error text-center mb-4">{error}</div>}
             <form onSubmit={handleSignup} className="space-y-4">
                 <div className="form-control">
                     <label className="label">
@@ -69,9 +73,9 @@ export const SignupPage = () => {
                         placeholder="Enter your name"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                        required
-                        className="input input-bordered w-full"
+                        className={`input input-bordered w-full ${errors.name ? 'input-error' : ''}`}
                     />
+                    {errors.name && <p className="text-error mt-2">{errors.name}</p>}
                 </div>
                 <div className="form-control">
                     <label className="label">
@@ -82,9 +86,9 @@ export const SignupPage = () => {
                         placeholder="Enter your username"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
-                        required
-                        className="input input-bordered w-full"
+                        className={`input input-bordered w-full ${errors.username ? 'input-error' : ''}`}
                     />
+                    {errors.username && <p className="text-error mt-2">{errors.username}</p>}
                 </div>
                 <div className="form-control">
                     <label className="label">
@@ -95,9 +99,9 @@ export const SignupPage = () => {
                         placeholder="Enter your email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        required
-                        className="input input-bordered w-full"
+                        className={`input input-bordered w-full ${errors.email ? 'input-error' : ''}`}
                     />
+                    {errors.email && <p className="text-error mt-2">{errors.email}</p>}
                 </div>
                 <div className="form-control">
                     <label className="label">
@@ -108,14 +112,11 @@ export const SignupPage = () => {
                         placeholder="Enter your password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        required
-                        className="input input-bordered w-full"
+                        className={`input input-bordered w-full ${errors.password ? 'input-error' : ''}`}
                     />
+                    {errors.password && <p className="text-error mt-2">{errors.password}</p>}
                 </div>
-                <button
-                    type="submit"
-                    className="btn btn-primary w-full"
-                >
+                <button type="submit" className="btn btn-primary w-full">
                     Sign Up
                 </button>
             </form>

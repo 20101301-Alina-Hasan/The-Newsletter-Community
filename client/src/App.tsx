@@ -25,6 +25,34 @@ function App() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [error, setError] = useState('');
 
+  const initializeUser = async () => {
+    try {
+      const token = Cookies.get('access_token');
+      if (token) {
+        const response = await axios.get('http://localhost:3000/api/users/me', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (response.status === 200) {
+          userDispatch({ type: 'login', payload: { token, user: response.data.user } });
+        } else {
+          userDispatch({ type: 'logout' });
+        }
+      } else {
+        userDispatch({ type: 'logout' });
+      }
+      console.log(userState);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      console.error("Error during user initialization:", err);
+      if (err.message !== 'Request canceled') {
+        userDispatch({ type: 'logout' });
+        setError(err.message);
+      }
+    }
+  };
+
   useEffect(() => {
     const socket = io('http://localhost:3000');
 
@@ -42,34 +70,6 @@ function App() {
   }, []);
 
   useEffect(() => {
-    const initializeUser = async () => {
-      try {
-        const token = Cookies.get('access_token');
-        if (token) {
-          const response = await axios.get('http://localhost:3000/api/users/me', {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-          if (response.status === 200) {
-            userDispatch({ type: 'login', payload: { token, user: response.data.user } });
-          } else {
-            userDispatch({ type: 'logout' });
-          }
-        } else {
-          userDispatch({ type: 'logout' });
-        }
-        console.log(userState);
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (err: any) {
-        console.error("Error during user initialization:", err);
-        if (err.message !== 'Request canceled') {
-          userDispatch({ type: 'logout' });
-          setError(err.message);
-        }
-      }
-    };
-
     initializeUser();
   }, []);
 

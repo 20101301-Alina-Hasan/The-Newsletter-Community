@@ -5,6 +5,7 @@ import { ThemeButton } from './ThemeButton';
 import { FilterDropdown } from './FilterDropdown';
 import { useNavigate } from 'react-router-dom';
 import { Outlet } from 'react-router-dom';
+import { showToast } from '../utils/toast';
 import Cookies from 'js-cookie';
 
 export function Navbar() {
@@ -14,6 +15,7 @@ export function Navbar() {
     const handleLogout = () => {
         Cookies.remove('access_token');
         userDispatch({ type: 'logout', payload: undefined });
+        showToast('success', 'logged out successfully');
         navigate('/');
     };
 
