@@ -10,9 +10,9 @@ import { UserContext } from './interfaces/User';
 import { userReducer } from './reducers/userReducer';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import { CreateNewsPage } from './components/CreateNewsPage';
 
 function App() {
-  // Reducer for managing user state
   const [userState, userDispatch] = useReducer(userReducer, {
     token: '',
     user: null,
@@ -21,7 +21,6 @@ function App() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [error, setError] = useState('');
 
-  // Effect to handle WebSocket connection and theme management
   useEffect(() => {
     const socket = io('http://localhost:3000');
 
@@ -76,6 +75,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Tab />} />
             <Route path="/auth" element={<AuthenticationCard />} />
+            <Route path="/create-news" element={<CreateNewsPage />} />
           </Routes>
         </div>
       </Router>

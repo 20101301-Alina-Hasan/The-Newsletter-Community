@@ -16,19 +16,26 @@ export function NewsCard({
     username
 }: NewsProps['news']) {
     const [isNewsOpen, setIsNewsOpen] = useState(false);
+
     return (
         <>
             <div
                 onClick={() => setIsNewsOpen(true)}
                 className="card bg-base-100 border-[1px] border-gray-500 hover:border-primary transition-colors cursor-pointer"
             >
-                <figure>
-                    <img
-                        src={thumbnail}
-                        alt={title}
-                        className="w-full h-64 object-cover object-center"
-                    />
-                </figure>
+                {thumbnail ? (
+                    <figure>
+                        <img
+                            src={thumbnail}
+                            alt={title}
+                            className="w-full h-64 object-cover object-center"
+                        />
+                    </figure>
+                ) : (
+                    <div className="w-full h-64 bg-gray-200 flex items-center justify-center text-gray-500">
+                        No Image Available
+                    </div>
+                )}
 
                 <div className="card-body p-4">
                     <div className="flex items-start justify-between gap-2">
@@ -58,12 +65,12 @@ export function NewsCard({
                     </div>
                     <div className="w-full h-[0.1rem] bg-red-800 mt-4 mb-2"></div>
                     <div className="flex items-center justify-between">
-                        <div>
-                            <Bookmark />
-                        </div>
                         <div className="flex items-center gap-4">
                             <Upvote count={upvotes} />
                             <Comment count={commentCount} />
+                        </div>
+                        <div>
+                            <Bookmark />
                         </div>
                     </div>
                 </div>

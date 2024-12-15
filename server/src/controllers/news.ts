@@ -6,7 +6,7 @@ import db from "../models";
 
 // Update getNews -> filterNews, sortNews -> use esClient
 
-const fetchNews = async (query: object, res: Response) => {
+const getNews = async (query: object, res: Response) => {
     try {
         const defaultQuery = {
             ...query,
@@ -68,8 +68,8 @@ const fetchNews = async (query: object, res: Response) => {
 
 
 // Get all news articles
-export const getNews = async (req: Request, res: Response): Promise<void> => {
-    await fetchNews({}, res);
+export const getAllNews = async (req: Request, res: Response): Promise<void> => {
+    await getNews({}, res);
 };
 
 // Get all user articles
@@ -81,13 +81,14 @@ export const getUserNews = async (req: AuthRequest, res: Response): Promise<void
         return;
     }
 
-    await fetchNews({ where: { user_id: userId } }, res);
+    await getNews({ where: { user_id: userId } }, res);
 };
 
 // Create a news item
+// Create a news item and add tags
 export const createNews = async (req: AuthRequest, res: Response) => {
     try {
-        const { title, releaseDate, description, thumbnail } = req.body;
+        const { title, releaseDate, description, thumbnail, tags } = req.body;
         const user_id = req.user?.userId;
 
         if (!user_id) {
@@ -124,6 +125,25 @@ export const createNews = async (req: AuthRequest, res: Response) => {
             thumbnail: thumbnailUrl,
         });
 
+        // Handle tags if provided
+        if (tags && Array.isArray(tags) && tags.length > 0) {
+            // Optionally, validate tags
+            const validatedTags = tags.map(tag => tag.trim()).filter(tag => tag.length > 0);
+
+            // Find or create tags in one go
+            const tagRecords = await Promise.all(
+                validatedTags.map(async (tag: string) => {
+                    const [newTag] = await db.Tag.findOrCreate({
+                        where: { tag }
+                    });
+                    return newTag;
+                })
+            );
+
+            // Associate the tags with the news article in one go
+            await news.addTags(tagRecords); // `addTags` automatically adds associations to the junction table
+        }
+
         res.status(201).json({ message: "News created successfully!", news });
         return;
     } catch (error) {
@@ -132,6 +152,7 @@ export const createNews = async (req: AuthRequest, res: Response) => {
         return;
     }
 };
+
 
 // Update a news item
 export const updateNews = async (req: AuthRequest, res: Response) => {

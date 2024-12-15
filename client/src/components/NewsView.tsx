@@ -45,11 +45,12 @@ export function NewsView({ isOpen, onClose, news }: NewsProps) {
                             </div>
 
                             <div className="bg-base-200 rounded-lg px-6 py-6 pb-8">
-                                <img
+                                {news.thumbnail ? (<img
                                     src={news.thumbnail}
                                     alt={news.title}
                                     className="w-96 h-full rounded-lg object-cover wrap float-left mr-12 mb-6"
                                 />
+                                ) : null}
 
                                 <div className="flex-1">
                                     <p className="text-lg text-justify leading-loose">{news.description}</p>

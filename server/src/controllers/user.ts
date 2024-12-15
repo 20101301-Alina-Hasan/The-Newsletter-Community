@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs';
 import { createSession } from '../utils/session';
 import { Request, Response } from "express";
+import { AuthRequest } from '../interfaces/auth';
 import { Op } from 'sequelize';
 import db from '../models';
 
@@ -11,6 +12,44 @@ import db from '../models';
 //     "email": "john.doe@example.com",
 //     "password": "securePassword123"
 // }
+
+// {
+//     "name": "alina hasan",
+//     "email": "alina.hasan@gmail.com",
+//     "password":"abc@123",
+//     "username": "aly.theia"
+// }
+
+export const getUser = async (req: AuthRequest, res: Response) => {
+    try {
+        const user_id = req.user.userId;
+
+        if (!user_id) {
+            res.status(400).json({ message: 'User ID is required.' });
+            return;
+        }
+
+        const user = await db.User.findByPk(user_id, {
+            attributes: ['user_id', 'name', 'username', 'email'],
+        });
+
+        if (!user) {
+            res.status(404).json({ message: 'User not found.' });
+            return;
+        }
+
+        res.status(200).json({
+            message: 'User retrieved successfully.',
+            user
+        });
+        console.log("sending data...")
+        return;
+    } catch (error) {
+        console.error('Error retrieving user:', error);
+        res.status(500).json({ message: 'Server error. Please try again later.' });
+        return;
+    }
+};
 
 export const signup = async (req: Request, res: Response) => {
     try {

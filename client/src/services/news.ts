@@ -32,3 +32,23 @@ export const fetchUserNews = async (): Promise<NewsProps['news'][]> => {
     };
     return await fetchNews(endpoint, config);
 };
+
+export const createNews = async (formData: FormData) => {
+    try {
+        const token = Cookies.get('access_token');
+        console.log("FormData content:");
+        for (const [key, value] of formData.entries()) {
+            console.log(`${key}: ${value}`);
+        }
+        const response = await axios.post('http://localhost:3000/api/news/', formData, {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error creating article:', error);
+        throw error;
+    }
+};
