@@ -1,6 +1,6 @@
 import './App.css';
 import { useEffect, useReducer, useState } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { applyTheme, getStoredTheme } from './utils/react/themeManager';
 import { UserContext } from './interfaces/User';
 import { io } from 'socket.io-client';
@@ -8,9 +8,9 @@ import { Navbar } from './components/Navbar';
 import { Tab } from './components/Tab';
 import { userReducer } from './reducers/userReducer';
 import { ToastContainer } from 'react-toastify';
-import { Bookmark } from './components/Bookmark';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import { AuthenticationCard } from './components/AuthenticationCard';
 
 function App() {
   const [userState, userDispatch] = useReducer(userReducer, {
@@ -73,16 +73,15 @@ function App() {
 
   return (
     <UserContext.Provider value={{ userState, userDispatch }}>
-      <Router>
-        <div className="min-h-screen bg-base-200">
-          <Navbar />
-          <Routes>
-            <Route path="/" element={<Tab />} />
-            <Route path="/bookmark" element={<Bookmark />} />
-          </Routes>
-          <ToastContainer />
-        </div>
-      </Router>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Navbar />}>
+            <Route index element={<Tab />} />
+            <Route path="auth" element={<AuthenticationCard />} />
+          </Route>
+        </Routes>
+        <ToastContainer />
+      </BrowserRouter>
     </UserContext.Provider>
   );
 }

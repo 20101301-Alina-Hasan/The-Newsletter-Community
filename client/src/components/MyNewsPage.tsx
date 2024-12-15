@@ -30,24 +30,26 @@ export const MyNewsPage = ({ fetchNewsFunction, emptyMessage, errorMessage }: My
     };
 
     if (loading) {
-        return <div className='text-2xl text-base-content font-semibold'>Loading...</div>;
+        return <div className='min-h-screen bg-base-200 text-2xl text-base-content font-semibold'>Loading...</div>;
     }
 
     if (error) {
-        return <div className="text-red-500 font-semibold">Error: {error}</div>;
+        return <div className="min-h-screen bg-base-200 text-red-500 font-semibold">Error: {error}</div>;
     }
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {newsList.length === 0 ? (
-                <p className='text-2xl text-base-content font-semibold'>{emptyMessage}</p>
-            ) : (
-                newsList.map((news) => (
-                    <MyNewsCard key={news.news_id}
-                        {...news}
-                        onDelete={handleDelete} />
-                ))
-            )}
+        <div className="min-h-screen bg-base-200">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {newsList.length === 0 ? (
+                    <p className='text-2xl text-base-content font-semibold'>{emptyMessage}</p>
+                ) : (
+                    newsList.map((news) => (
+                        <MyNewsCard key={news.news_id}
+                            {...news}
+                            onDelete={handleDelete} />
+                    ))
+                )}
+            </div>
         </div>
     );
 };

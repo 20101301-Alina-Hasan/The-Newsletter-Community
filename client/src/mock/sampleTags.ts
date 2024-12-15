@@ -3,4 +3,5 @@ export const tags = [
     'Environment', 'Education', 'Sports', 'Entertainment', 'Travel',
     'Food', 'Fashion', 'Art', 'Music', 'Literature',
     'History', 'Philosophy', 'Religion', 'Social Issues', 'Innovation',
+    'Medicine', 'Geography', 'Dessert'
 ];

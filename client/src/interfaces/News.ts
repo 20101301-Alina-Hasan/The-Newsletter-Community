@@ -18,7 +18,6 @@ export interface NewsProps {
 }
 
 export interface CreateNewsProps {
-    isOpen: boolean;
     onClose: () => void;
 }
 

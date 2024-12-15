@@ -7,7 +7,7 @@ import { showToast } from '../utils/toast';
 import { tags } from '../mock/sampleTags';
 import axios from 'axios';
 
-export function CreateNewsPage({ isOpen, onClose }: CreateNewsProps) {
+export function CreateNewsPage({ onClose }: CreateNewsProps) {
     const { userState } = useContext(UserContext) as UserContextType;
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
@@ -96,8 +96,6 @@ export function CreateNewsPage({ isOpen, onClose }: CreateNewsProps) {
             showToast('error', 'An article with this title already exists. Please try another title.');
         }
     };
-
-    if (!isOpen) return null;
 
     return (
         <div className="fixed inset-0 bg-base-300 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
