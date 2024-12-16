@@ -141,18 +141,18 @@ export function NewsView() {
         };
 
         loadNews();
-    }, [news_id, userState.user?.user_id]); // Run effect when `news_id` or `user_id` changes
+    }, [news_id, userState.user?.user_id]);
 
     if (loading) {
-        return <div>Loading...</div>; // Show loading state
+        return <div className="p-4 font-serif">Loading...</div>;
     }
 
     if (error) {
-        return <div>Error: {error}</div>; // Show error state if something goes wrong
+        return <div>Error: {error}</div>;
     }
 
     if (!news) {
-        return <div>No news found.</div>; // Handle the case when no news is returned
+        return <div>No news found.</div>;
     }
 
     return (

@@ -1,12 +1,43 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { useState } from 'react'
+import { useState, useEffect } from 'react';
+import { addBookmark, removeBookmark } from '../services/bookmarkService';
+import { showToast } from '../utils/toast';
 
 export function Bookmark({ news_id, hasBookmarked }: { news_id: number, hasBookmarked: boolean }) {
-    const [isBookmarked, setIsBookmarked] = useState(false)
-    // console.log("bk:", news_id, hasBookmarked);
+    const [isBookmarked, setIsBookmarked] = useState(hasBookmarked);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleBookmark = async () => {
+        if (isLoading) return;
+        setIsLoading(true);
+
+        const newBookmarkState = !isBookmarked;
+        setIsBookmarked(newBookmarkState);
+
+        try {
+            if (newBookmarkState) {
+                await addBookmark(news_id);
+                showToast('success', 'Bookmark Added.');
+            } else {
+                await removeBookmark(news_id);
+                showToast('success', 'Bookmark Removed.');
+            }
+        } catch (error) {
+            console.error("Failed to update bookmark status:", error);
+            setIsBookmarked(!newBookmarkState);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        setIsBookmarked(hasBookmarked);
+    }, [hasBookmarked]);
+
     return (
         <button
-            onClick={() => setIsBookmarked(!isBookmarked)}
+            onClick={handleBookmark}
+            disabled={isLoading}
             className="hover:text-red-800 transition-colors"
         >
             {!isBookmarked ? (
@@ -19,6 +50,5 @@ export function Bookmark({ news_id, hasBookmarked }: { news_id: number, hasBookm
                 </svg>
             )}
         </button>
-    )
+    );
 }
-

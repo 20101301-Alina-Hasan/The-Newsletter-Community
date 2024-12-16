@@ -55,7 +55,7 @@ export const MyNewsPage = () => {
     };
 
     if (loading) {
-        return <div className='min-h-screen bg-base-200 text-2xl text-base-content font-semibold'>Loading...</div>;
+        return <div className="p-4 font-serif">Loading...</div>;
     }
 
     if (error) {
