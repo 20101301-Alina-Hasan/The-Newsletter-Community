@@ -61,8 +61,14 @@ export const SignupPage = () => {
     };
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-base-200">
-            <div className="w-full max-w-md p-8 bg-base-100 rounded-lg shadow-md">
+        <div className="flex flex-col items-center justify-center min-h-screen bg-base-200 p-16">
+            <p className="text-2xl text-center text-base-content mb-14">
+                <span className="text-accent font-semibold">Want to share your thoughts?</span> <br />
+                <strong>Join us now</strong> and start posting your own articles. <br />
+                Become a member of our community <br />
+                in just a few minutes!
+            </p>
+            <div className="w-full max-w-md p-8 bg-base-100 rounded-lg shadow-md mb-16">
                 <h1 className="text-2xl font-bold text-center mb-6 text-base-content">Sign Up</h1>
                 <form onSubmit={handleSignup} className="space-y-4">
                     <div className="form-control">
@@ -122,7 +128,7 @@ export const SignupPage = () => {
                     </button>
                 </form>
                 <p className="text-sm text-center mt-4 text-base-content">
-                    Don't have an account?
+                    Already have an account?
                     <button
                         onClick={() => navigate('/login')}
                         className="text-primary ml-2"
@@ -137,9 +143,3 @@ export const SignupPage = () => {
 
 
 
-{/* <p className="text-2xl text-center text-base-content">
-    <span className="text-accent font-semibold">Want to share your thoughts?</span> <br />
-    <strong>Join us now</strong> and start posting your own articles. <br />
-    Become a member of our community <br />
-    in just a few minutes!
-</p> */}

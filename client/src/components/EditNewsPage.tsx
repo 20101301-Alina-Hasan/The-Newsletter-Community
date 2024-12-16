@@ -83,7 +83,6 @@ export function EditNewsPage() {
             showToast('error', 'Please fill in all required fields.');
             return;
         }
-
         try {
             const formData = new FormData();
             formData.append('title', title);
@@ -94,7 +93,7 @@ export function EditNewsPage() {
             }
             await updateNews(formData, news_id);
             showToast('success', 'Your article has been successfully updated.');
-            navigate('/');
+            navigate('/my-articles');
         } catch (error: any) {
             showToast('error', `${error.message}: An article with this title already exists. Please try another title.`);
         }
@@ -171,11 +170,11 @@ export function EditNewsPage() {
                         <button
                             type="submit"
                             className="btn btn-primary"
-                            disabled={isUploading} // Disable the save button until upload is done
+                            disabled={isUploading}
                         >
                             Save
                         </button>
-                        <button type="button" className="btn btn-secondary" onClick={() => navigate('/')}>
+                        <button type="button" className="btn btn-secondary" onClick={() => navigate('/my-articles')}>
                             Close
                         </button>
                     </div>

@@ -4,7 +4,7 @@ import { Bookmark } from "./Bookmark";
 export function DetailCountBar() {
     return (
         <div className="clear-left mt-4">
-            <div className="w-full h-[0.1rem] bg-red-800"></div>
+            <div className="w-full h-[0.1rem] bg-red-800" />
             <div className="flex justify-between my-4">
                 <div className="flex justify-start gap-4">
                     <Upvote count={0} />

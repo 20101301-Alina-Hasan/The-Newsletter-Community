@@ -89,6 +89,7 @@ export function CreateNewsPage() {
             setThumbnailUrl(null);
             setSelectedTags([]);
             showToast('success', 'Congratulations! Your article has been published.');
+            navigate('/my-articles');
         } catch (error: any) {
             showToast('error', `${error.message}: An article with this title already exists. Please try another title.`);
         }
@@ -167,8 +168,8 @@ export function CreateNewsPage() {
                         </button>
                         <button
                             type="button"
-                            onClick={() => navigate('/')}
                             className="btn btn-secondary"
+                            onClick={() => navigate('/my-articles')}
                         >
                             Close
                         </button>

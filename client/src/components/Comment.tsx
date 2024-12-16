@@ -81,7 +81,7 @@ export function Comment({ news_id }: CommentsProps) {
             setComments([...comments]);
             setCommentCount(comments.length);
             setNewComment('');
-            showToast('success', 'Your comment has been added!');
+            showToast('success', 'Your comment was posted.');
         } catch (error: any) {
             showToast('error', `${error.message}: Failed to add your comment.`);
         }

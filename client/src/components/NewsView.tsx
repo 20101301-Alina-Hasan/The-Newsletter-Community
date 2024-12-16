@@ -22,9 +22,9 @@ export function NewsView({ isOpen, onClose, news }: NewsProps) {
                         <div className="w-full h-[1rem] bg-red-800"></div>
 
                         <div className="items-center my-4">
-                            <h2 className="text-5xl font-bold">THE NEWSLETTER</h2>
+                            <h2 className="text-5xl font-extrabold font-serif">THE NEWSLETTER</h2>
                             <div className="w-full h-[0.2rem] bg-red-800 mt-2"></div>
-                            <h2 className="text-3xl font-semibold my-4">{news.title}</h2>
+                            <h2 className="text-3xl font-semibold my-4 font-serif">{news.title}</h2>
                         </div>
 
                         <div className="text-sm my-4">
@@ -51,7 +51,7 @@ export function NewsView({ isOpen, onClose, news }: NewsProps) {
                                 />
                             )}
                             <div className="flex-1 min-w-[50%]">
-                                <p className="text-base text-justify leading-relaxed">{news.description}</p>
+                                <p className="text-base text-justify leading-relaxed font-serif">{news.description}</p>
                             </div>
                         </div>
                         <DetailCountBar />

@@ -2,9 +2,12 @@
 
 export function FilterDropdown() {
     return (
-        <>
+        <div className="flex justify-left gap-[6px] pb-8">
+            <div className="form-control">
+                <input type="text" placeholder="Search" className="input input-bordered h-12 w-96 border-1 border-gray-500 rounded-full" />
+            </div>
             <div className="dropdown">
-                <div tabIndex={0} role="button" className="btn btn-ghost m-1">
+                <div tabIndex={0} role="button" className="btn btn-ghost">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -30,14 +33,8 @@ export function FilterDropdown() {
                     <li><a>Item 2</a></li>
                 </ul>
             </div>
-        </>
+        </div>
     );
 }
 
 
-{/* <div className="flex justify-center gap-2 ">
-                    <FilterDropdown />
-                    <div className="form-control">
-                        <input type="text" placeholder="Search" className="input input-bordered h-12 w-96 border-1 border-gray-500 rounded-full" />
-                    </div>
-                </div> */}

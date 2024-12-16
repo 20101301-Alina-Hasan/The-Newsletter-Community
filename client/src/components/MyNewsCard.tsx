@@ -48,29 +48,23 @@ export function MyNewsCard({
         <>
             <div
                 onClick={() => setIsNewsOpen(true)}
-                className="card bg-base-100 border-[1px] border-gray-500 hover:border-primary transition-colors cursor-pointer relative"
+                className="card bg-base-200 border-[1px] border-gray-500 hover:border-primary hover:border-[2px] hover:bg-base-100 transition-color cursor-pointer"
             >
-                {thumbnail ? (
-                    <figure className="relative">
-                        <img
-                            src={thumbnail}
-                            alt={title}
-                            className="w-full h-64 object-cover object-center"
-                        />
-                    </figure>
-                ) : (
-                    <div className="w-full h-64 bg-gray-200 flex items-center justify-center text-gray-500">
-                        No Image Available
-                    </div>
-                )}
+                <figure className="relative">
+                    <img
+                        src={thumbnail ? thumbnail : "public/default-image.png"}
+                        alt={title}
+                        className="w-full h-64 object-cover object-center"
+                    />
+                </figure>
                 <div className="absolute top-2 right-2 dropdown dropdown-hover">
                     <div
                         tabIndex={0}
                         role="button"
-                        className="p-2 rounded-full bg-gray-100 hover:bg-gray-200"
+                        className="btn btn-circle btn-ghost opacity-0 group-hover:opacity-100 transition-opacity"
                         onClick={(e) => e.stopPropagation()}
                     >
-                        <MoreVertical className="w-6 h-6 text-gray-600" />
+                        <MoreVertical className="w-6 h-6 text-base-content hover:text-primary transition-colors" />
                     </div>
                     <ul
                         tabIndex={0}
@@ -108,7 +102,7 @@ export function MyNewsCard({
                 <div className="card-body p-4">
                     <div className="flex items-start justify-between gap-2">
                         <div className="space-y-2">
-                            <h2 className="card-title">{title}</h2>
+                            <h2 className="card-title font-serif">{title}</h2>
                             <div className="flex items-center gap-2 text-sm py-2">
                                 <span>{releaseDate}</span>
                                 <span className="ml-1 w-[0.1rem] h-[1.2rem] bg-amber-400" />
@@ -131,7 +125,7 @@ export function MyNewsCard({
                             </div>
                         </div>
                     </div>
-                    < DetailCountBar />
+                    <DetailCountBar />
 
                 </div>
             </div>

@@ -1,12 +1,17 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
+import { UserContext, UserContextType } from '../interfaces/userInterfaces';
 import { NewsCard } from "./NewsCard";
+import { FilterDropdown } from './FilterDropdown';
 import { NewsProps } from '../interfaces/newsInterface';
 import { fetchAllNews } from '../services/newsService';
+import { useNavigate } from 'react-router-dom';
 
 export const NewsPage = () => {
+    const { userState } = useContext(UserContext) as UserContextType;
     const [newsList, setNewsList] = useState<NewsProps['news'][]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const loadNews = async () => {
@@ -25,6 +30,14 @@ export const NewsPage = () => {
         loadNews();
     }, []);
 
+    const handleNavigation = () => {
+        if (userState.token) {
+            navigate('/create')
+        } else {
+            navigate('/signup')
+        };
+    }
+
     if (loading) {
         return <div className='min-h-screen bg-base-200 text-2xl text-base-content font-semibold'>Loading...</div>;
     }
@@ -34,8 +47,37 @@ export const NewsPage = () => {
     }
 
     return (
-        <div className="min-h-screen bg-base-300 px-32 py-24">
+        <div className="min-h-screen bg-base-200 px-32 py-24">
+            <div className="mb-8">
+                <h2 className="text-3xl font-extrabold text-base-content">Explore</h2>
+                <p className="text-lg font-semibold text-base-content my-4">
+                    Discover articles, share ideas, and connect with a community of like-minded individuals.
+                </p>
+            </div>
+
+            <div className="w-full h-[0.1rem] bg-red-800" />
+
+            <div className="flex justify-between items-center my-10">
+                <FilterDropdown />
+                <div className="flex gap-4">
+                    <button
+                        onClick={handleNavigation}
+                        className="btn btn-primary"
+                    >
+                        Publish Article
+                    </button>
+                    {userState.token ? <button
+                        onClick={() => navigate('/my-articles')}
+                        className="btn btn-secondary"
+                    >
+                        My Articles
+                    </button> : null}
+
+                </div>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
                 {newsList.length === 0 ? (
                     <p className='text-2xl text-base-content font-semibold'>There are no news currently available.</p>
                 ) : (
