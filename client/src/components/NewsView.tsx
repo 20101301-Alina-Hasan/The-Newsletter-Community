@@ -76,7 +76,7 @@ export function NewsView({ isOpen, onClose, news }: NewsProps) {
                         </div>
 
                         <div>
-                            <Comment count={news.commentCount} />
+                            <Comment news_id={news.news_id} count={news.commentCount} />
                         </div>
                     </div>
                 </div>

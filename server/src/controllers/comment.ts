@@ -1,6 +1,10 @@
 import { Request, Response } from "express";
 import { AuthRequest } from "../interfaces/auth";
+import { formatDate } from "../utils/formatDate";
+import { CommentProps } from "../interfaces/comment";
 import db from "../models";
+
+
 
 // Get Comments on a Specific News Artcile
 export const getComments = async (req: Request, res: Response) => {
@@ -12,13 +16,28 @@ export const getComments = async (req: Request, res: Response) => {
     }
 
     try {
-        const comments = await db.Comment.findAll({
+        let comments = await db.Comment.findAll({
             where: { news_id },
-            include: [{ model: db.User, attributes: ['username'] }], // Include user info (username)
-            order: [['created_at', 'ASC']], // Order by creation date
+            include: [
+                {
+                    model: db.User,
+                    attributes: ['username', 'name'],
+                },
+            ],
+            order: [['created_at', 'ASC']],
         });
 
+        comments = comments.map((comment: CommentProps) => ({
+            comment_id: comment.comment_id,
+            user_id: comment.user_id,
+            comment: comment.comment,
+            created_at: formatDate(comment.created_at),
+            username: comment.User.username,
+            name: comment.User.name,
+        }));
+
         res.status(200).json({ comments });
+
         return;
     } catch (error) {
         console.error('Error fetching comments:', error);
