@@ -1,3 +1,3 @@
-export interface CommentProps {
+export interface CommentCountProps {
     count: number
 }

@@ -6,7 +6,9 @@ import { ThemeProvider } from './contexts/themeContext';
 import { UserContext } from './interfaces/userInterfaces';
 import { userReducer } from './reducers/userReducer';
 import { ToastContainer } from 'react-toastify';
-import { AuthenticationCard } from './components/AuthenticationCard';
+import { LoginPage } from './components/LoginCard';
+import { SignupPage } from './components/SignupCard';
+import { NewsPage } from './components/NewsPage';
 import { CreateNewsPage } from './components/CreateNewsPage';
 import { EditNewsPage } from './components/EditNewsPage';
 import { MyNewsPage } from './components/MyNewsPage';
@@ -14,7 +16,7 @@ import { Navbar } from './components/Navbar';
 import { io } from 'socket.io-client';
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import { NewsPage } from './components/NewsPage';
+
 
 function App() {
   const [userState, userDispatch] = useReducer(userReducer, {
@@ -80,7 +82,8 @@ function App() {
           <Routes>
             <Route path="/" element={<Navbar />}>
               <Route path="/" element={<NewsPage />} />
-              <Route path="auth" element={<AuthenticationCard />} />
+              <Route path="signup" element={<SignupPage />} />
+              <Route path="login" element={<LoginPage />} />
               <Route element={<ProtectedRoutes />}>
                 <Route path="my-articles" element={<MyNewsPage />} />
                 <Route path="create" element={<CreateNewsPage />} />

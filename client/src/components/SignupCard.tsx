@@ -61,65 +61,85 @@ export const SignupPage = () => {
     };
 
     return (
-        <div>
-            <h1 className="text-2xl font-bold text-center mb-6 text-base-content">Sign Up</h1>
-            <form onSubmit={handleSignup} className="space-y-4">
-                <div className="form-control">
-                    <label className="label">
-                        <span className="label-text">Name</span>
-                    </label>
-                    <input
-                        type="text"
-                        placeholder="Enter your name"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        className={`input input-bordered w-full ${errors.name ? 'input-error' : ''}`}
-                    />
-                    {errors.name && <p className="text-error mt-2">{errors.name}</p>}
-                </div>
-                <div className="form-control">
-                    <label className="label">
-                        <span className="label-text">Username</span>
-                    </label>
-                    <input
-                        type="text"
-                        placeholder="Enter your username"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        className={`input input-bordered w-full ${errors.username ? 'input-error' : ''}`}
-                    />
-                    {errors.username && <p className="text-error mt-2">{errors.username}</p>}
-                </div>
-                <div className="form-control">
-                    <label className="label">
-                        <span className="label-text">Email</span>
-                    </label>
-                    <input
-                        type="email"
-                        placeholder="Enter your email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className={`input input-bordered w-full ${errors.email ? 'input-error' : ''}`}
-                    />
-                    {errors.email && <p className="text-error mt-2">{errors.email}</p>}
-                </div>
-                <div className="form-control">
-                    <label className="label">
-                        <span className="label-text">Password</span>
-                    </label>
-                    <input
-                        type="password"
-                        placeholder="Enter your password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className={`input input-bordered w-full ${errors.password ? 'input-error' : ''}`}
-                    />
-                    {errors.password && <p className="text-error mt-2">{errors.password}</p>}
-                </div>
-                <button type="submit" className="btn btn-primary w-full">
-                    Sign Up
-                </button>
-            </form>
+        <div className="flex items-center justify-center min-h-screen bg-base-200">
+            <div className="w-full max-w-md p-8 bg-base-100 rounded-lg shadow-md">
+                <h1 className="text-2xl font-bold text-center mb-6 text-base-content">Sign Up</h1>
+                <form onSubmit={handleSignup} className="space-y-4">
+                    <div className="form-control">
+                        <label className="label">
+                            <span className="label-text">Name</span>
+                        </label>
+                        <input
+                            type="text"
+                            placeholder="Enter your name"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            className={`input input-bordered w-full ${errors.name ? 'input-error' : ''}`}
+                        />
+                        {errors.name && <p className="text-error mt-2">{errors.name}</p>}
+                    </div>
+                    <div className="form-control">
+                        <label className="label">
+                            <span className="label-text">Username</span>
+                        </label>
+                        <input
+                            type="text"
+                            placeholder="Enter your username"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            className={`input input-bordered w-full ${errors.username ? 'input-error' : ''}`}
+                        />
+                        {errors.username && <p className="text-error mt-2">{errors.username}</p>}
+                    </div>
+                    <div className="form-control">
+                        <label className="label">
+                            <span className="label-text">Email</span>
+                        </label>
+                        <input
+                            type="email"
+                            placeholder="Enter your email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className={`input input-bordered w-full ${errors.email ? 'input-error' : ''}`}
+                        />
+                        {errors.email && <p className="text-error mt-2">{errors.email}</p>}
+                    </div>
+                    <div className="form-control">
+                        <label className="label">
+                            <span className="label-text">Password</span>
+                        </label>
+                        <input
+                            type="password"
+                            placeholder="Enter your password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className={`input input-bordered w-full ${errors.password ? 'input-error' : ''}`}
+                        />
+                        {errors.password && <p className="text-error mt-2">{errors.password}</p>}
+                    </div>
+                    <button type="submit" className="btn btn-primary w-full">
+                        Sign Up
+                    </button>
+                </form>
+                <p className="text-sm text-center mt-4 text-base-content">
+                    Don't have an account?
+                    <button
+                        onClick={() => navigate('/login')}
+                        className="text-primary ml-2"
+                    >
+                        Login
+                    </button>
+                </p>
+            </div>
         </div>
     );
 };
+
+
+
+{/* <p className="text-2xl text-center text-base-content">
+    <span className="text-accent font-semibold">Want to share your thoughts?</span> <br />
+    <strong>Join us now</strong> and start posting your own articles. <br />
+    Become a member of our community <br />
+    in just a few minutes!
+</p> */}

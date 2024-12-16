@@ -1,14 +1,52 @@
-import { CommentProps } from "../interfaces/commentInterface";
+import { CommentCountProps } from "../interfaces/commentInterface"
 
-export function Comment({ count }: CommentProps) {
+export function Comment({ count }: CommentCountProps) {
     return (
-        <div className="flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 9.75a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 0 1 .778-.332 48.294 48.294 0 0 0 5.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
-            </svg>
-
-            <span className="text-sm font-medium">{count}</span>
-        </div>
+        <section className="bg-base-100 py-8 antialiased">
+            <div className="max-w-2xl mx-auto px-4">
+                <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-lg lg:text-2xl font-bold text-base-content">Discussion ({count})</h2>
+                </div>
+                <form className="mb-6">
+                    <div className="py-2 px-4 mb-4 bg-base-200 rounded-lg border border-base-300">
+                        <label htmlFor="comment" className="sr-only">Your comment</label>
+                        <textarea
+                            id="comment"
+                            rows={6}
+                            className="px-0 w-full text-sm bg-base-200 border-0 focus:ring-0 focus:outline-none text-base-content placeholder:text-base-content/50"
+                            placeholder="Write a comment..."
+                            required
+                        />
+                    </div>
+                    <button
+                        type="submit"
+                        className="btn btn-primary"
+                    >
+                        Post comment
+                    </button>
+                </form>
+                <article className="p-6 text-base bg-base-200 rounded-lg">
+                    <footer className="flex justify-between items-center mb-2">
+                        <div className="flex items-center gap-2">
+                            <div className="flex flex-col space-y-[2px]">
+                                <p className="text-md font-bold text-base-content">
+                                    Michael Gough
+                                </p>
+                                <p className="text-xs text-base-content/70 font-semibold">
+                                    @michael.gogh
+                                </p>
+                            </div>
+                        </div>
+                    </footer>
+                    <p className="text-base-content/80">
+                        Very straight-to-point article. Really worth time reading. Thank you! But tools are just the
+                        instruments for the UX designers. The knowledge of the design tools are as important as the
+                        creation of the design strategy.
+                    </p>
+                    <p className="text-sm text-base/70 text-right">Feb. 8, 2022</p>
+                </article>
+            </div>
+        </section>
     )
 }
 

@@ -53,7 +53,7 @@ export function Navbar() {
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
                                     </svg>
                                 </div>
-                                <ul tabIndex={0} className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-4 w-52 p-4 shadow-lg">
+                                <ul tabIndex={0} className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-4 w-52 p-4 shadow-lg space-y-2">
                                     {userState.token ? (
                                         <>
                                             <div className="text-md text-center font-semibold">Hi, {userState.user?.name}!</div>
@@ -66,10 +66,13 @@ export function Navbar() {
                                         <>
                                             <div className="text-md text-center font-semibold">Welcome!</div>
                                             <div className="divider divider-primary my-[2px]" />
+                                            <li className="text-md font-semibold">
+                                                <a onClick={() => navigate('/login')}>Login</a>
+                                            </li>
                                         </>
                                     )}
                                     <div className='btn btn-md btn-base-100 mt-[2px] border-base-300 hover:btn-base-300'>
-                                        <a onClick={() => navigate('/auth')}>Create an account?</a>
+                                        <a onClick={() => navigate('/signup')}>Create an account?</a>
                                     </div>
                                 </ul>
                             </div>

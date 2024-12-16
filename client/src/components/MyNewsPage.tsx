@@ -36,7 +36,7 @@ export const MyNewsPage = () => {
     }
 
     return (
-        <div className="min-h-screen bg-base-300 px-32 py-14">
+        <div className="min-h-screen bg-base-300 px-32 py-24">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {newsList.length === 0 ? (
                     <div className='space-y-2'>
