@@ -137,7 +137,7 @@ export function CreateNewsPage() {
                                         : 'bg-base-200 text-base-content hover:bg-base-300'
                                         }`}
                                 >
-                                    {tag}
+                                    #{tag}
                                 </button>
                             ))}
                         </div>

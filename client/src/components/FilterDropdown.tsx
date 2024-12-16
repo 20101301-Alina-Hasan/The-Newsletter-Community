@@ -1,4 +1,4 @@
-// import { tags } from "../mock/sampleTags";
+import { tags } from "../mock/sampleTags";
 
 export function FilterDropdown() {
     return (
