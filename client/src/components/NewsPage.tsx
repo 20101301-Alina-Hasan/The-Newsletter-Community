@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useState, useContext } from 'react';
 import { UserContext, UserContextType } from '../interfaces/userInterfaces';
 import { NewsCard } from "./NewsCard";
@@ -7,7 +8,7 @@ import { fetchAllNews } from '../services/newsService';
 import { useNavigate } from 'react-router-dom';
 
 export const NewsPage = () => {
-    const { userState } = useContext(UserContext) as UserContextType;
+    const { userState, userDispatch } = useContext(UserContext) as UserContextType;
     const [newsList, setNewsList] = useState<NewsProps['news'][]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -16,7 +17,10 @@ export const NewsPage = () => {
     useEffect(() => {
         const loadNews = async () => {
             try {
-                const news = await fetchAllNews();
+                console.log('try newspage:', userState.user);
+                const user_id = userState.user?.user_id;
+                const news = await fetchAllNews(user_id);
+                console.log("newspage:", news);
                 setNewsList(news);
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
             } catch (error: any) {
@@ -32,7 +36,8 @@ export const NewsPage = () => {
 
     const handleNavigation = () => {
         if (userState.token) {
-            navigate('/create')
+            // console.log('nav', userState.token);
+            navigate('/my-articles')
         } else {
             navigate('/signup')
         };
@@ -64,15 +69,8 @@ export const NewsPage = () => {
                         onClick={handleNavigation}
                         className="btn btn-primary"
                     >
-                        Publish Article
-                    </button>
-                    {userState.token ? <button
-                        onClick={() => navigate('/my-articles')}
-                        className="btn btn-secondary"
-                    >
                         My Articles
-                    </button> : null}
-
+                    </button>
                 </div>
             </div>
 

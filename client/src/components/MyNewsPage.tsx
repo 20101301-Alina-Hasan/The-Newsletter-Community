@@ -7,6 +7,9 @@ import { MyNewsCard } from './MyNewsCard';
 import { NewsProps } from '../interfaces/newsInterface';
 import { fetchUserNews } from '../services/newsService';
 import { FilterDropdown } from './FilterDropdown';
+import { showToast } from '../utils/toast';
+import Cookies from 'js-cookie';
+import axios from 'axios';
 
 export const MyNewsPage = () => {
     const { userState } = useContext(UserContext) as UserContextType;
@@ -18,8 +21,10 @@ export const MyNewsPage = () => {
     useEffect(() => {
         const loadNews = async () => {
             try {
-                const news = await fetchUserNews();
+                const user_id = userState.user?.user_id;
+                const news = await fetchUserNews(user_id);
                 setNewsList(news);
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
             } catch (error: any) {
                 console.error("Error loading news:", error);
                 setError(error.message || "An unexpected error occurred.");
@@ -30,6 +35,24 @@ export const MyNewsPage = () => {
 
         loadNews();
     }, []);
+
+
+    const handleDelete = async (news_id: number) => {
+        try {
+            const token = Cookies.get("access_token");
+            await axios.delete(`http://localhost:3000/api/news/${news_id}`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                withCredentials: true,
+            });
+            showToast("success", "News deleted successfully.");
+            setNewsList((prev) => prev.filter((news) => news.news_id !== news_id));
+        } catch (error: any) {
+            showToast("error", `${error.message}: Error deleting news.`);
+        }
+    };
 
     if (loading) {
         return <div className='min-h-screen bg-base-200 text-2xl text-base-content font-semibold'>Loading...</div>;
@@ -69,10 +92,10 @@ export const MyNewsPage = () => {
                     <FilterDropdown />
                     <div className="flex gap-4">
                         <button
-                            onClick={() => navigate('/')}
+                            onClick={() => navigate('/create')}
                             className="btn btn-primary"
                         >
-                            Publish Article
+                            Create Article
                         </button>
                         {userState.token ? <button
                             onClick={() => navigate('/')}
@@ -101,7 +124,7 @@ export const MyNewsPage = () => {
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {newsList.map((news) => (
-                            <MyNewsCard key={news.news_id} {...news} />
+                            <MyNewsCard key={news.news_id} {...news} onDelete={handleDelete} />
                         ))}
                     </div>
                 )}

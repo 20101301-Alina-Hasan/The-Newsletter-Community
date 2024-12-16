@@ -3,11 +3,13 @@ import { useEffect, useReducer, useState } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import ProtectedRoutes from './utils/react/ProtectedRoutes';
 import { ThemeProvider } from './contexts/themeContext';
+import { UpvoteProvider } from './contexts/upvoteContext';
 import { UserContext } from './interfaces/userInterfaces';
 import { userReducer } from './reducers/userReducer';
 import { ToastContainer } from 'react-toastify';
 import { LoginPage } from './components/LoginCard';
 import { SignupPage } from './components/SignupCard';
+import { NewsView } from './components/NewsView';
 import { NewsPage } from './components/NewsPage';
 import { CreateNewsPage } from './components/CreateNewsPage';
 import { EditNewsPage } from './components/EditNewsPage';
@@ -16,6 +18,8 @@ import { Navbar } from './components/Navbar';
 import { io } from 'socket.io-client';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+
+
 
 
 function App() {
@@ -36,15 +40,11 @@ function App() {
             Authorization: `Bearer ${token}`,
           },
         });
+
         if (response.status === 200) {
           userDispatch({ type: 'login', payload: { token, user: response.data.user } });
-        } else {
-          userDispatch({ type: 'logout' });
         }
-      } else {
-        userDispatch({ type: 'logout' });
       }
-      console.log(userState);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.error("Error during user initialization:", err);
@@ -77,23 +77,26 @@ function App() {
 
   return (
     <UserContext.Provider value={{ userState, userDispatch }}>
-      <ThemeProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Navbar />}>
-              <Route path="/" element={<NewsPage />} />
-              <Route path="signup" element={<SignupPage />} />
-              <Route path="login" element={<LoginPage />} />
-              <Route element={<ProtectedRoutes />}>
-                <Route path="my-articles" element={<MyNewsPage />} />
-                <Route path="create" element={<CreateNewsPage />} />
-                <Route path="edit" element={<EditNewsPage />} />
+      <UpvoteProvider>
+        <ThemeProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Navbar />}>
+                <Route path="/" element={<NewsPage />} />
+                <Route path="signup" element={<SignupPage />} />
+                <Route path="login" element={<LoginPage />} />
+                <Route element={<ProtectedRoutes />}>
+                  <Route path="my-articles" element={<MyNewsPage />} />
+                  <Route path="create" element={<CreateNewsPage />} />
+                  <Route path="edit" element={<EditNewsPage />} />
+                  <Route path="news-view" element={<NewsView />} />
+                </Route>
               </Route>
-            </Route>
-          </Routes>
-          <ToastContainer />
-        </BrowserRouter>
-      </ThemeProvider>
+            </Routes>
+            <ToastContainer />
+          </BrowserRouter>
+        </ThemeProvider>
+      </UpvoteProvider>
     </UserContext.Provider>
   );
 }

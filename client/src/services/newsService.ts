@@ -3,9 +3,11 @@ import axios, { AxiosRequestConfig } from 'axios';
 import Cookies from 'js-cookie';
 import { NewsProps } from '../interfaces/newsInterface';
 
-const fetchNews = async (endpoint: string, config?: AxiosRequestConfig): Promise<NewsProps['news'][]> => {
+const fetchNews = async (endpoint: string, user_id?: number, config?: AxiosRequestConfig): Promise<NewsProps['news'][]> => {
     try {
-        const response = await axios.get(`http://localhost:3000/api/news${endpoint}`, config);
+        const baseUrl = `http://localhost:3000/api/news${endpoint}`;
+        const url = user_id ? `${baseUrl}?user_id=${user_id}` : baseUrl;
+        const response = await axios.get(url, config);
         return response.data.news || [];
     } catch (error: any) {
         console.error(`Error fetching from ${endpoint}:`, error);
@@ -13,12 +15,12 @@ const fetchNews = async (endpoint: string, config?: AxiosRequestConfig): Promise
     }
 };
 
-export const fetchAllNews = async (): Promise<NewsProps['news'][]> => {
+export const fetchAllNews = async (user_id?: number): Promise<NewsProps['news'][]> => {
     const endpoint = '';
-    return await fetchNews(endpoint);
+    return await fetchNews(endpoint, user_id);
 };
 
-export const fetchUserNews = async (): Promise<NewsProps['news'][]> => {
+export const fetchUserNews = async (user_id: number | undefined): Promise<NewsProps['news'][]> => {
     const token = Cookies.get('access_token');
     if (!token) {
         throw new Error('User is not authenticated.');
@@ -29,8 +31,13 @@ export const fetchUserNews = async (): Promise<NewsProps['news'][]> => {
             Authorization: `Bearer ${token}`,
         },
     };
-    return await fetchNews(endpoint, config);
+    return await fetchNews(endpoint, user_id, config);
 };
+
+export const fetchNewsById = async (news_id: number, user_id: number | undefined) => {
+    const endpoint = `/${news_id}`;
+    return await fetchNews(endpoint, user_id);
+}
 
 export const createNews = async (formData: FormData) => {
     try {

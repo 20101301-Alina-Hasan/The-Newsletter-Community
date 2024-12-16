@@ -1,6 +1,7 @@
 export interface NewsProps {
     isOpen?: boolean;
     onClose?: () => void;
+    // onDelete?: (news_id: number) => void;
     news: {
         news_id: number;
         user_id?: number;
@@ -12,6 +13,8 @@ export interface NewsProps {
         commentCount: number;
         tags: string[];
         username: string;
+        hasUpvoted: boolean;
+        hasBookmarked: boolean;
         createdAt?: string;
         updatedAt?: string;
     };

@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-refresh/only-export-components */
-
 import { useState, createContext, useContext, useEffect, ReactNode } from "react";
 import { ThemeContextType } from "../interfaces/themeInterface";
 

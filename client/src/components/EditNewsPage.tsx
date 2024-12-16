@@ -2,23 +2,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import axios from 'axios';
 import { showToast } from '../utils/toast';
 import { updateNews } from '../services/newsService';
-import { tags as mockTags } from '../mock/mockTags';
+import { tags } from '../mock/mockTags';
+import { useCloudinaryUpload } from '../utils/cloudinary/upload';
 
 export function EditNewsPage() {
     const location = useLocation();
-    const navigate = useNavigate();
-
     const { news_id, title: initialTitle, description: initialDescription, thumbnail: initialThumbnail, tags: initialTags } = location.state || {};
-
     const [title, setTitle] = useState<string>(initialTitle);
     const [content, setContent] = useState<string>(initialDescription);
     const [thumbnail, setThumbnail] = useState<File | null>(null);
     const [thumbnailUrl, setThumbnailUrl] = useState<string>(initialThumbnail);
     const [selectedTags, setSelectedTags] = useState<string[]>(initialTags);
-    const [isUploading, setIsUploading] = useState(false);
+    const { uploadToCloudinary, isUploading } = useCloudinaryUpload();
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (location.state) {
@@ -37,22 +35,6 @@ export function EditNewsPage() {
 
             return updatedTags.length > 0 ? updatedTags : [];
         });
-    };
-
-    const uploadToCloudinary = async (file: File): Promise<string> => {
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('upload_preset', 'news_thumbnail_preset');
-        try {
-            setIsUploading(true);
-            const response = await axios.post('https://api.cloudinary.com/v1_1/dganhxhid/image/upload', formData);
-            setIsUploading(false);
-            return response.data.secure_url;
-        } catch (error) {
-            console.error('Image upload failed:', error);
-            setIsUploading(false);
-            throw new Error('Image upload failed');
-        }
     };
 
     const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -78,12 +60,12 @@ export function EditNewsPage() {
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!title || !content) {
-            showToast('error', 'Please fill in all required fields.');
-            return;
-        }
         try {
+            e.preventDefault();
+            if (!title || !content) {
+                showToast('error', 'Please fill in all required fields.');
+                return;
+            }
             const formData = new FormData();
             formData.append('title', title);
             formData.append('description', content);
@@ -95,7 +77,7 @@ export function EditNewsPage() {
             showToast('success', 'Your article has been successfully updated.');
             navigate('/my-articles');
         } catch (error: any) {
-            showToast('error', `${error.message}: An article with this title already exists. Please try another title.`);
+            showToast('error', `${error.message}: Failed to upload form.`);
         }
     };
 
@@ -151,7 +133,7 @@ export function EditNewsPage() {
                     <div>
                         <p className="text-sm font-medium text-base-content mb-2">Tags</p>
                         <div className="flex flex-wrap gap-2">
-                            {mockTags.map((tag: string) => (
+                            {tags.map((tag: string) => (
                                 <button
                                     key={tag}
                                     type="button"

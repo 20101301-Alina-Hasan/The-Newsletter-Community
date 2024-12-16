@@ -5,17 +5,17 @@ import { UserContext, UserContextType } from '../interfaces/userInterfaces';
 import { useNavigate } from 'react-router-dom';
 import { createNews } from '../services/newsService';
 import { showToast } from '../utils/toast';
+import { useCloudinaryUpload } from '../utils/cloudinary/upload';
 import { tags } from '../mock/mockTags';
-import axios from 'axios';
 
 export function CreateNewsPage() {
-    const { userState } = useContext(UserContext) as UserContextType;
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [thumbnail, setThumbnail] = useState<File | null>(null);
-    const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
+    const [thumbnailUrl, setThumbnailUrl] = useState<string>('');
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
-    const [isUploading, setIsUploading] = useState(false);
+    const { userState } = useContext(UserContext) as UserContextType;
+    const { uploadToCloudinary, isUploading } = useCloudinaryUpload();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -25,26 +25,10 @@ export function CreateNewsPage() {
     }, [userState.token, navigate]);
 
     const handleTagToggle = (tag: string) => {
-        setSelectedTags((prev) =>
-            prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+        setSelectedTags((prev) => prev.includes(tag)
+            ? prev.filter((t) => t !== tag)
+            : [...prev, tag]
         );
-    };
-
-    const uploadToCloudinary = async (file: File): Promise<string> => {
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('upload_preset', 'news_thumbnail_preset');
-
-        try {
-            setIsUploading(true);
-            const response = await axios.post('https://api.cloudinary.com/v1_1/dganhxhid/image/upload', formData);
-            setIsUploading(false);
-            return response.data.secure_url;
-        } catch (error) {
-            console.error('Image upload failed:', error);
-            setIsUploading(false);
-            throw new Error('Image upload failed');
-        }
     };
 
     const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -62,31 +46,31 @@ export function CreateNewsPage() {
 
     const handleThumbnailRemove = () => {
         setThumbnail(null);
-        setThumbnailUrl(null);
+        setThumbnailUrl('');
+        const fileInput = document.getElementById('thumbnail-input') as HTMLInputElement;
+        if (fileInput) {
+            fileInput.value = '';
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        if (!title || !content) {
-            showToast('error', 'Please fill in all required fields.');
-            return;
-        }
-
         try {
+            e.preventDefault();
+            if (!title || !content) {
+                showToast('error', 'Please fill in all required fields.');
+                return;
+            }
             const formData = new FormData();
             formData.append('title', title);
             formData.append('releaseDate', new Date().toISOString());
             formData.append('description', content);
-            if (thumbnailUrl) formData.append('thumbnail', thumbnailUrl);
+            formData.append('thumbnail', thumbnailUrl);
             selectedTags.forEach((tag) => formData.append('tags[]', tag));
-
             await createNews(formData);
-
             setTitle('');
             setContent('');
             setThumbnail(null);
-            setThumbnailUrl(null);
+            setThumbnailUrl('');
             setSelectedTags([]);
             showToast('success', 'Congratulations! Your article has been published.');
             navigate('/my-articles');
@@ -161,8 +145,8 @@ export function CreateNewsPage() {
                     <div className="flex justify-end space-x-2">
                         <button
                             type="submit"
-                            onClick={() => navigate('/my-articles')}
                             className="btn btn-primary"
+                            disabled={isUploading}
                         >
                             Publish Article
                         </button>

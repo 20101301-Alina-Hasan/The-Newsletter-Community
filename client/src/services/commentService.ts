@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from 'axios';
 import Cookies from 'js-cookie';
-// import { CommentsProps } from '../interfaces/commentsInterface';
 
 export const fetchComments = async (news_id: number) => {
     try {
