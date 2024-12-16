@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
-import { Upvote } from "./Upvote";
-import { Bookmark } from "./Bookmark";
 import { NewsView } from "./NewsView";
 import { NewsProps } from "../interfaces/newsInterface";
 import { useNavigate } from "react-router-dom";
 import { showToast } from "../utils/toast";
 import Cookies from 'js-cookie';
 import axios from "axios";
+import { MoreVertical, Edit, Trash } from 'lucide-react';
+import { DetailCountBar } from "./DetailCountBar";
 
 export function MyNewsCard({
     news_id,
@@ -70,20 +70,7 @@ export function MyNewsCard({
                         className="p-2 rounded-full bg-gray-100 hover:bg-gray-200"
                         onClick={(e) => e.stopPropagation()}
                     >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth="1.5"
-                            stroke="currentColor"
-                            className="w-6 h-6 text-gray-600"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M12 6.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 12.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 18.75a.75.75.75 0 0 1 0 1.5Z"
-                            />
-                        </svg>
+                        <MoreVertical className="w-6 h-6 text-gray-600" />
                     </div>
                     <ul
                         tabIndex={0}
@@ -92,7 +79,7 @@ export function MyNewsCard({
                     >
                         <li>
                             <button
-                                className="block w-full text-left"
+                                className="flex items-center w-full text-left"
                                 onClick={() => navigate('/edit', {
                                     state: {
                                         news_id,
@@ -104,16 +91,16 @@ export function MyNewsCard({
                                     }
                                 })}
                             >
-                                Edit
+                                <Edit className="h-4 w-4 mr-2" /> Edit
                             </button>
                         </li>
                         <li>
                             <button
-                                className="block w-full text-left text-red-600"
+                                className="flex items-center w-full text-left text-red-600"
                                 onClick={handleDelete}
                                 disabled={isDeleting}
                             >
-                                {isDeleting ? "Deleting..." : "Delete"}
+                                <Trash className="h-4 w-4 mr-2" /> {isDeleting ? "Deleting..." : "Delete"}
                             </button>
                         </li>
                     </ul>
@@ -144,25 +131,8 @@ export function MyNewsCard({
                             </div>
                         </div>
                     </div>
-                    <div className="w-full h-[0.1rem] bg-red-800 mt-4 mb-2"></div>
-                    <div className="flex items-center justify-between">
-                        <div
-                            className="flex items-center gap-4"
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            <Upvote count={upvotes} />
-                            <div className="flex items-center gap-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 9.75a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 0 1 .778-.332 48.294 48.294 0 0 0 5.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
-                                </svg>
+                    < DetailCountBar />
 
-                                <span className="text-sm font-medium">{commentCount}</span>
-                            </div>
-                        </div>
-                        <div onClick={(e) => e.stopPropagation()}>
-                            <Bookmark />
-                        </div>
-                    </div>
                 </div>
             </div>
 
@@ -184,3 +154,4 @@ export function MyNewsCard({
         </>
     );
 }
+

@@ -2,7 +2,6 @@
 import { useContext } from 'react';
 import { UserContext, UserContextType } from '../interfaces/userInterfaces';
 import { ThemeButton } from './ThemeButton';
-import { FilterDropdown } from './FilterDropdown';
 import { useNavigate } from 'react-router-dom';
 import { Outlet } from 'react-router-dom';
 import { showToast } from '../utils/toast';
@@ -20,8 +19,8 @@ export function Navbar() {
     };
 
     return (
-        <div>
-            <div className="navbar bg-base-100 px-4 py-4 h-18 shadow-md">
+        <>
+            <div className="navbar bg-base-100 px-4 py-4 h-18 border-b-gray-500 border-b-[0.05rem]">
                 <div className="flex-1">
                     <a className="btn btn-ghost text-xl" onClick={() => navigate('/')}>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
@@ -29,12 +28,6 @@ export function Navbar() {
                         </svg>
                         The Newsletter Community
                     </a>
-                </div>
-                <div className="flex justify-center gap-2 ">
-                    <FilterDropdown />
-                    <div className="form-control">
-                        <input type="text" placeholder="Search" className="input input-bordered h-12 w-96 border-1 border-gray-500 rounded-full" />
-                    </div>
                 </div>
                 <div className="flex-1 justify-end">
                     <div className="flex items-center gap-2">
@@ -81,6 +74,6 @@ export function Navbar() {
                 </div>
             </div>
             <Outlet />
-        </div>
+        </>
     );
 }

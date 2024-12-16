@@ -3,7 +3,7 @@ import { createContext, Dispatch } from "react";
 export interface userState {
     token: string;
     user: {
-        id: number;
+        user_id: number;
         name: string;
         username: string;
         email: string;

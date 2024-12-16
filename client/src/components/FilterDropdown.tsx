@@ -33,3 +33,11 @@ export function FilterDropdown() {
         </>
     );
 }
+
+
+{/* <div className="flex justify-center gap-2 ">
+                    <FilterDropdown />
+                    <div className="form-control">
+                        <input type="text" placeholder="Search" className="input input-bordered h-12 w-96 border-1 border-gray-500 rounded-full" />
+                    </div>
+                </div> */}

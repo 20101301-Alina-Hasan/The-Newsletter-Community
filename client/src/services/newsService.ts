@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios, { AxiosRequestConfig } from 'axios';
 import Cookies from 'js-cookie';
 import { NewsProps } from '../interfaces/newsInterface';
@@ -6,7 +7,6 @@ const fetchNews = async (endpoint: string, config?: AxiosRequestConfig): Promise
     try {
         const response = await axios.get(`http://localhost:3000/api/news${endpoint}`, config);
         return response.data.news || [];
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
         console.error(`Error fetching from ${endpoint}:`, error);
         throw new Error(error.response?.data?.message || 'Failed to fetch news.');

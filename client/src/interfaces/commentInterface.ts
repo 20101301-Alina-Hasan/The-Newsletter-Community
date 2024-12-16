@@ -4,8 +4,7 @@ export interface CommentCountProps {
 
 export interface CommentsProps {
     news_id: number;
-    count: number;
-    news: {
+    news?: {
         comment_id: number;
         user_id: number;
         comment: string;

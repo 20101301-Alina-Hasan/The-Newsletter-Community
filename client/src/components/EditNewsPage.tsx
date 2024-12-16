@@ -13,26 +13,30 @@ export function EditNewsPage() {
 
     const { news_id, title: initialTitle, description: initialDescription, thumbnail: initialThumbnail, tags: initialTags } = location.state || {};
 
-    const [title, setTitle] = useState<string>(initialTitle || '');
-    const [content, setContent] = useState<string>(initialDescription || '');
+    const [title, setTitle] = useState<string>(initialTitle);
+    const [content, setContent] = useState<string>(initialDescription);
     const [thumbnail, setThumbnail] = useState<File | null>(null);
-    const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(initialThumbnail || null);
-    const [selectedTags, setSelectedTags] = useState<string[]>(initialTags || []);
+    const [thumbnailUrl, setThumbnailUrl] = useState<string>(initialThumbnail);
+    const [selectedTags, setSelectedTags] = useState<string[]>(initialTags);
     const [isUploading, setIsUploading] = useState(false);
 
     useEffect(() => {
         if (location.state) {
-            setTitle(initialTitle || '');
-            setContent(initialDescription || '');
-            setThumbnailUrl(initialThumbnail || null);
-            setSelectedTags(initialTags || []);
+            setTitle(initialTitle);
+            setContent(initialDescription);
+            setThumbnailUrl(initialThumbnail);
+            setSelectedTags(initialTags);
         }
     }, [location.state, initialTitle, initialDescription, initialThumbnail, initialTags]);
 
     const handleTagToggle = (tag: string) => {
-        setSelectedTags((prev) =>
-            prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
-        );
+        setSelectedTags((prev) => {
+            const updatedTags = prev.includes(tag)
+                ? prev.filter((t) => t !== tag)
+                : [...prev, tag];
+
+            return updatedTags.length > 0 ? updatedTags : [];
+        });
     };
 
     const uploadToCloudinary = async (file: File): Promise<string> => {
@@ -66,7 +70,11 @@ export function EditNewsPage() {
 
     const handleThumbnailRemove = () => {
         setThumbnail(null);
-        setThumbnailUrl(null);
+        setThumbnailUrl('');
+        const fileInput = document.getElementById('thumbnail-input') as HTMLInputElement;
+        if (fileInput) {
+            fileInput.value = '';
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -75,19 +83,20 @@ export function EditNewsPage() {
             showToast('error', 'Please fill in all required fields.');
             return;
         }
+
         try {
             const formData = new FormData();
             formData.append('title', title);
-            formData.append('releaseDate', new Date().toISOString());
             formData.append('description', content);
-            if (thumbnailUrl) formData.append('thumbnail', thumbnailUrl);
-            selectedTags.forEach((tag) => formData.append('tags[]', tag));
+            formData.append('thumbnail', thumbnailUrl);
+            if (selectedTags.length > 0) {
+                selectedTags.forEach((tag) => formData.append('tags[]', tag));
+            }
             await updateNews(formData, news_id);
             showToast('success', 'Your article has been successfully updated.');
             navigate('/');
-        } catch (err) {
-            console.error(err);
-            showToast('error', 'An article with this title already exists. Please try another title.');
+        } catch (error: any) {
+            showToast('error', `${error.message}: An article with this title already exists. Please try another title.`);
         }
     };
 
@@ -120,6 +129,7 @@ export function EditNewsPage() {
                     </div>
                     <div>
                         <input
+                            id="thumbnail-input"
                             type="file"
                             onChange={handleThumbnailUpload}
                             accept="image/*"
@@ -158,7 +168,11 @@ export function EditNewsPage() {
                         </div>
                     </div>
                     <div className="flex justify-end space-x-2">
-                        <button type="submit" className="btn btn-primary" onClick={() => navigate('/my-articles')}>
+                        <button
+                            type="submit"
+                            className="btn btn-primary"
+                            disabled={isUploading} // Disable the save button until upload is done
+                        >
                             Save
                         </button>
                         <button type="button" className="btn btn-secondary" onClick={() => navigate('/')}>
@@ -170,3 +184,4 @@ export function EditNewsPage() {
         </div>
     );
 }
+
