@@ -9,4 +9,5 @@ export interface DB {
     Comment?: any;
     Upvote?: any;
     Bookmark?: any;
+    NewsToTags?: any;
 }

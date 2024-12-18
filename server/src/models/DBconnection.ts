@@ -5,6 +5,7 @@ export const sequelize = new Sequelize('newsportal', 'postgres', 'alina', {
     host: 'localhost',
     dialect: 'postgres',
     port: 5432,
+    logging: false
 });
 
 export const connectDB = async () => {

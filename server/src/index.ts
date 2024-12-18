@@ -7,11 +7,12 @@ import { connectDB } from './models/DBconnection';
 import db from './models';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
-import userRoutes from './routes/user';
-import newsRoutes from './routes/news';
-import commentRoutes from './routes/comment';
-import upvoteRoutes from './routes/upvote';
-import bookmarkRoutes from './routes/bookmark';
+import tagRoutes from './routes/tagRoute';
+import userRoutes from './routes/userRoute';
+import newsRoutes from './routes/newsRoute';
+import commentRoutes from './routes/commentRoute';
+import upvoteRoutes from './routes/upvoteRoute';
+import bookmarkRoutes from './routes/bookmarkRoute';
 
 dotenv.config();
 
@@ -29,11 +30,14 @@ app.use(bodyParser.json({ limit: '25mb' }));
 app.use(bodyParser.urlencoded({ limit: '25mb', extended: true }));
 
 app.get('/', (req, res) => { res.send('Server is running...'); });
+app.use('/api/tags', tagRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/news', newsRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/upvotes', upvoteRoutes);
 app.use('/api/bookmarks', bookmarkRoutes);
+
+
 app.get('*', (req, res) => { res.status(404).send('Sorry, not found 😞'); })
 
 

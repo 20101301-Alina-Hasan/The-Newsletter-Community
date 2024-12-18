@@ -1,6 +1,6 @@
 import { Response, NextFunction } from 'express';
 import { getSession } from '../utils/session';
-import { AuthRequest } from '../interfaces/auth';
+import { AuthRequest } from '../interfaces/authInterface';
 
 export const authenticateUser = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
     const header = req.headers.authorization;

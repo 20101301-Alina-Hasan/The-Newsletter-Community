@@ -1,7 +1,9 @@
 export const tags = [
-    'Technology', 'Science', 'Politics', 'Economy', 'Health',
+    'Science', 'Politics', 'Economy', 'Health',
     'Environment', 'Education', 'Sports', 'Entertainment', 'Travel',
-    'Food', 'Fashion', 'Art', 'Music', 'Literature',
-    'History', 'Philosophy', 'Religion', 'Social Issues', 'Innovation',
-    'Medicine', 'Geography', 'Baking', 'Games', 'Crime'
+    'AI', 'Blockchain', 'Robotics',
+    'Mental Health', 'Business', 'Marketing', 'Fitness',
+    'Crime', 'Nature', 'World News', 'Local News', 'Wildlife',
+    'Social Issues', 'History',
+    'Adventure', 'Heritage', 'Science Fiction'
 ];

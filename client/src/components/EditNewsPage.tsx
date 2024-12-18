@@ -5,7 +5,9 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { showToast } from '../utils/toast';
 import { updateNews } from '../services/newsService';
 import { tags } from '../mock/mockTags';
-import { useCloudinaryUpload } from '../utils/cloudinary/upload';
+import { useCloudinaryUpload } from '../utils/upload';
+
+//dynamically set the tags in edit and createPage
 
 export function EditNewsPage() {
     const location = useLocation();

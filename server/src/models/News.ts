@@ -1,5 +1,5 @@
 import { DataTypes, Model, Sequelize } from 'sequelize';
-import { NewsAttributes, NewsCreationAttributes } from '../interfaces/models/News';
+import { NewsAttributes, NewsCreationAttributes } from '../interfaces/models/NewsInterface';
 
 class News extends Model<NewsAttributes, NewsCreationAttributes> implements NewsAttributes {
     public news_id!: number;

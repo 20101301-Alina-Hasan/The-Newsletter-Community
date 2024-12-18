@@ -63,8 +63,8 @@ export const SignupPage = () => {
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-base-200 p-16">
             <p className="text-2xl text-center text-base-content mb-14">
-                <span className="text-accent font-semibold">Want to share your thoughts?</span> <br />
-                <strong>Join us now</strong> and start posting your own articles. <br />
+                <span className="text-3xl font-semibold">Want to share your thoughts?</span> <br />
+                <span className="text-3xl text-accent font-extrabold">Join us now</span> and start posting your own articles. <br />
                 Become a member of our community <br />
                 in just a few minutes!
             </p>

@@ -1,5 +1,5 @@
 import { DataTypes, Model, Sequelize } from 'sequelize';
-import { UpvoteAttributes, UpvoteCreationAttributes } from '../interfaces/models/Upvote';
+import { UpvoteAttributes, UpvoteCreationAttributes } from '../interfaces/models/UpvoteInterface';
 
 class Upvote extends Model<UpvoteAttributes, UpvoteCreationAttributes> implements UpvoteAttributes {
     public upvote_id!: number;

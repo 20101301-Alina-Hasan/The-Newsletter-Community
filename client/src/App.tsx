@@ -19,9 +19,6 @@ import { io } from 'socket.io-client';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
-
-
-
 function App() {
   const [userState, userDispatch] = useReducer(userReducer, {
     token: '',
@@ -85,11 +82,11 @@ function App() {
                 <Route path="/" element={<NewsPage />} />
                 <Route path="signup" element={<SignupPage />} />
                 <Route path="login" element={<LoginPage />} />
+                <Route path="news-view" element={<NewsView />} />
                 <Route element={<ProtectedRoutes />}>
                   <Route path="my-articles" element={<MyNewsPage />} />
                   <Route path="create" element={<CreateNewsPage />} />
                   <Route path="edit" element={<EditNewsPage />} />
-                  <Route path="news-view" element={<NewsView />} />
                 </Route>
               </Route>
             </Routes>

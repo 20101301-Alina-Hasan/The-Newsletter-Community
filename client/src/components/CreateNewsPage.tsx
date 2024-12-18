@@ -5,8 +5,10 @@ import { UserContext, UserContextType } from '../interfaces/userInterfaces';
 import { useNavigate } from 'react-router-dom';
 import { createNews } from '../services/newsService';
 import { showToast } from '../utils/toast';
-import { useCloudinaryUpload } from '../utils/cloudinary/upload';
+import { useCloudinaryUpload } from '../utils/upload';
 import { tags } from '../mock/mockTags';
+
+//dynamically set the tags in edit and createPage
 
 export function CreateNewsPage() {
     const [title, setTitle] = useState('');
@@ -73,7 +75,7 @@ export function CreateNewsPage() {
             setThumbnailUrl('');
             setSelectedTags([]);
             showToast('success', 'Congratulations! Your article has been published.');
-            navigate('/my-articles');
+            navigate(-1);
         } catch (error: any) {
             showToast('error', `${error.message}: An article with this title already exists. Please try another title.`);
         }

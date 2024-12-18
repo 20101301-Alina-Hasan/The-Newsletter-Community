@@ -1,40 +1,294 @@
-import { tags } from "../mock/sampleTags";
+// import { useState, useEffect } from 'react';
+// import { Tag, FilterState, FilterDropdownProps } from '../interfaces/tagInterface';
+// import { fetchTags } from '../services/tagService';
+// import { FilterIcon } from './Icons/FilterIcon';
 
-export function FilterDropdown() {
+// export function FilterDropdown({ onSearch }: FilterDropdownProps) {
+//     const [filterState, setFilterState] = useState<FilterState>({
+//         selectedTags: [],
+//         searchQuery: '',
+//     });
+
+//     const [tags, setTags] = useState<Tag[]>([]);
+//     const [loading, setLoading] = useState<boolean>(false);
+//     const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
+
+//     const generateTags = async () => {
+//         try {
+//             setLoading(true);
+//             const response = await fetchTags();
+//             console.log("response", response);
+//             const tags = response.map((tag: { tag_id: number; tag: string }) => ({
+//                 tag_id: tag.tag_id,
+//                 tag: tag.tag
+//             }))
+
+//             console.log(tags);
+//             setTags(tags);
+//         } catch (error) {
+//             console.error('Error fetching tags:', error);
+//         } finally {
+//             setLoading(false);
+//         }
+//     };
+
+
+//     useEffect(() => {
+//         if (isDropdownOpen) {
+//             generateTags();
+//         }
+//     }, [isDropdownOpen]);
+
+//     const toggleTag = (tag: string) => {
+//         setFilterState(prev => ({
+//             ...prev,
+//             selectedTags: prev.selectedTags.includes(tag)
+//                 ? prev.selectedTags.filter(t => t !== tag)
+//                 : [...prev.selectedTags, tag]
+//         }));
+//     };
+
+//     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+//         const query = event.target.value;
+//         setFilterState(prev => ({ ...prev, searchQuery: query }));
+//     };
+
+//     const handleSearchSubmit = () => {
+//         onSearch(filterState.searchQuery, filterState.selectedTags);
+//     };
+
+//     return (
+//         <div className="flex items-center gap-2">
+//             <div className="relative flex items-center w-full">
+//                 <input
+//                     type="text"
+//                     placeholder="Search"
+//                     value={filterState.searchQuery}
+//                     onChange={handleSearchChange}
+//                     className="input input-bordered h-12 w-full border-1 border-gray-500 rounded-full pl-4 pr-12"
+//                 />
+//                 <div className="dropdown dropdown-bottom dropdown-right absolute right-3">
+//                     <div
+//                         tabIndex={0}
+//                         role="button"
+//                         className="cursor-pointer"
+//                         onClick={() => setIsDropdownOpen(prev => !prev)}
+//                     >
+//                         <FilterIcon />
+//                     </div>
+//                     <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] mt-4 sm:w-[100px] md:w-300px lg:w-[500px] p-4 shadow">
+//                         <div className="divider">Tags</div>
+//                         <div className="p-2">
+//                             {loading ? (
+//                                 <div className="font-serif">Loading...</div>
+//                             ) : (
+//                                 <div className="flex flex-wrap gap-2">
+//                                     {tags.map(tag => (
+//                                         <button
+//                                             key={tag.tag_id}
+//                                             onClick={() => toggleTag(tag.tag)}
+//                                             className={`px-3 py-1 rounded-lg text-sm transition-colors ${filterState.selectedTags.includes(tag.tag)
+//                                                 ? 'bg-primary text-primary-content'
+//                                                 : 'bg-base-200 hover:bg-base-300 text-base-content'
+//                                                 }`}
+//                                         >
+//                                             {tag.tag}
+//                                         </button>
+//                                     ))}
+//                                 </div>
+//                             )}
+//                         </div>
+//                     </ul>
+//                 </div>
+//             </div>
+
+//             <button
+//                 onClick={handleSearchSubmit}
+//                 className="btn btn-primary h-12"
+//             >
+//                 Search
+//             </button>
+//         </div>
+//     );
+// }
+
+import { useState, useEffect, useMemo } from 'react';
+import { Tag, FilterState, FilterDropdownProps } from '../interfaces/tagInterface';
+import { fetchTags } from '../services/tagService';
+import { FilterIcon } from './Icons/FilterIcon';
+import { Search } from 'lucide-react';
+
+
+export function FilterDropdown({ onSearch }: FilterDropdownProps) {
+    const [filterState, setFilterState] = useState<FilterState>({
+        selectedTags: [],
+        searchQuery: '',
+    });
+
+    const [tags, setTags] = useState<Tag[]>([]);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
+    const [tagSearchQuery, setTagSearchQuery] = useState('');
+    const showAllTags = false;
+
+    const generateTags = async () => {
+        try {
+            setLoading(true);
+            const response = await fetchTags();
+            const tags = response.map((tag: { tag_id: number; tag: string }) => ({
+                tag_id: tag.tag_id,
+                tag: tag.tag,
+            }));
+            setTags(tags);
+        } catch (error) {
+            console.error('Error fetching tags:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (isDropdownOpen) {
+            generateTags();
+        }
+    }, [isDropdownOpen]);
+
+    const filteredTags = useMemo(() => {
+        return tags
+            .filter(tag => tag.tag.toLowerCase().includes(tagSearchQuery.toLowerCase()))
+            .sort((a, b) => a.tag.localeCompare(b.tag));
+    }, [tags, tagSearchQuery]);
+
+    const visibleTags = showAllTags ? filteredTags : filteredTags.slice(0, 18);
+
+    const toggleTag = (tag: { tag_id: number; tag: string }) => {
+        setFilterState(prev => {
+            const exists = prev.selectedTags.some(t => t.tag_id === tag.tag_id);
+            return {
+                ...prev,
+                selectedTags: exists
+                    ? prev.selectedTags.filter(t => t.tag_id !== tag.tag_id)
+                    : [...prev.selectedTags, tag],
+            };
+        });
+    };
+
+    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const query = event.target.value;
+        setFilterState(prev => ({ ...prev, searchQuery: query }));
+    };
+
+    const handleSearchSubmit = () => {
+        const TagIds = filterState.selectedTags.map(tag => tag.tag_id);
+        onSearch(filterState.searchQuery, TagIds);
+    };
+
     return (
-        <div className="flex justify-left gap-[6px] pb-8">
-            <div className="form-control">
-                <input type="text" placeholder="Search" className="input input-bordered h-12 w-96 border-1 border-gray-500 rounded-full" />
-            </div>
-            <div className="dropdown">
-                <div tabIndex={0} role="button" className="btn btn-ghost">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth="0.8"
-                        stroke="gray"
-                        className="size-8"
+        <div className="flex items-center gap-2">
+            <div className="relative flex items-center w-full mr-4">
+
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+
+                <input
+                    type="text"
+                    placeholder="Search"
+                    value={filterState.searchQuery}
+                    onChange={handleSearchChange}
+                    className="input input-bordered h-12 w-full border-1 border-gray-500 rounded-full pl-10 pr-12"
+                />
+
+                <div className="dropdown dropdown-right dropdown-bottom absolute right-3">
+                    <div
+                        tabIndex={0}
+                        role="button"
+                        className="cursor-pointer"
+                        onClick={() => setIsDropdownOpen(prev => !prev)}
                     >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"
-                        />
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-                        />
-                    </svg>
+                        <FilterIcon />
+                    </div>
+
+                    <div className="dropdown-content menu bg-base-100 rounded-box z-[1] mt-4 sm:w-[100px] md:w-300px lg:w-[500px] p-6 shadow">
+
+                        <div className="relative ml-2">
+                            <div className="relative flex items-center">
+                                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+                                <input
+                                    placeholder="Search tags..."
+                                    value={tagSearchQuery}
+                                    onChange={(e) => setTagSearchQuery(e.target.value)}
+                                    className="input input-bordered border-gray-500 border-1 w-sm pl-8 h-8 bg-base-200/50 rounded-full text-sm"
+                                />
+                            </div>
+                        </div>
+
+                        {filterState.selectedTags.length > 0 && (
+                            <div>
+                                <div className="divider">Selected Tags</div>
+                                <div className="flex flex-wrap gap-2 mb-4">
+                                    {filterState.selectedTags.map(tag => (
+                                        <button
+                                            key={tag.tag_id}
+                                            onClick={() => toggleTag(tag)}
+                                            className="px-3 py-1 rounded-lg text-sm bg-primary text-primary-content"
+                                        >
+                                            {tag.tag}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="divider">Tags</div>
+
+                        {loading ? (
+                            <div className="px-3 py-1 rounded-lg text-sm text-base-content opacity-60 italic">Loading...</div>
+                        ) : (
+                            <div>
+                                {visibleTags.length === 0 ? (
+                                    <div className="px-3 py-1 rounded-lg text-sm text-base-content opacity-60 italic">
+                                        No matching tags available
+                                    </div>
+                                ) : (
+                                    <div className="flex flex-wrap gap-2">
+                                        {visibleTags.map(tag => (
+                                            <button
+                                                key={tag.tag_id}
+                                                onClick={() => toggleTag(tag)}
+                                                className={`px-3 py-1 rounded-lg text-sm transition-colors ${filterState.selectedTags.some(t => t.tag_id === tag.tag_id)
+                                                    ? 'bg-primary text-primary-content'
+                                                    : 'bg-base-200 hover:bg-base-300 text-base-content'
+                                                    }`}
+                                            >
+                                                {tag.tag}
+                                            </button>
+                                        ))}
+
+                                        {!showAllTags && filteredTags.length > 18 && (
+                                            <span className="px-3 py-1 rounded-lg text-sm text-base-content opacity-60 italic">
+                                                more...
+                                            </span>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
                 </div>
-                <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
-                    <li><a>Item 1</a></li>
-                    <li><a>Item 2</a></li>
-                </ul>
             </div>
+
+            <button
+                onClick={handleSearchSubmit}
+                className="btn btn-sm btn-primary h-12"
+            >
+                Search
+            </button>
         </div>
     );
 }
+
+
+
+
+
 
 

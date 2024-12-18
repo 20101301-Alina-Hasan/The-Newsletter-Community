@@ -1,5 +1,5 @@
 import { Model, DataTypes, Sequelize } from 'sequelize';
-import { UserAttributes, UserCreationAttributes } from '../interfaces/models/User';
+import { UserAttributes, UserCreationAttributes } from '../interfaces/models/UserInterface';
 
 class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
     public user_id!: number;

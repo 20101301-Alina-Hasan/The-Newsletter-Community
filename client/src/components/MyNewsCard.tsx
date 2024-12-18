@@ -249,7 +249,7 @@ export function MyNewsCard({
             >
                 <figure className="relative">
                     <img
-                        src={thumbnail ? thumbnail : "public/default-image.png"}
+                        src={thumbnail ? thumbnail : "upload/default-image.png"}
                         alt={title}
                         className="w-full h-64 object-cover object-center"
                     />

@@ -1,47 +1,45 @@
-import { Request, Response } from "express";
-import { AuthRequest } from "../interfaces/auth";
+import { Response } from "express";
+import { AuthRequest } from "../interfaces/authInterface";
 import db from "../models";
 
 // Get User Bookmark on a Specific News Article
-export const getBookmark = async (req: AuthRequest, res: Response) => {
-    const { news_id } = req.params;
-    const user_id = req.user.userId;
+// export const getBookmark = async (req: AuthRequest, res: Response) => {
+//     const { news_id } = req.params;
+//     const user_id = req.user.userId;
 
-    if (!news_id) {
-        res.status(400).json({ message: "News ID is required." });
-        return;
-    }
+//     if (!news_id) {
+//         res.status(400).json({ message: "News ID is required." });
+//         return;
+//     }
 
-    try {
-        const bookmark = await db.Bookmark.findOne({
-            where: { news_id, user_id },
-        });
+//     try {
+//         const bookmark = await db.Bookmark.findOne({
+//             where: { news_id, user_id },
+//         });
 
-        res.status(200).json({ isBookmarked: !!bookmark });
-    } catch (error) {
-        console.error("Error fetching bookmark:", error);
-        res.status(500).json({ message: "Internal server error." });
-    }
-};
+//         res.status(200).json({ isBookmarked: !!bookmark });
+//     } catch (error) {
+//         console.error("Error fetching bookmark:", error);
+//         res.status(500).json({ message: "Internal server error." });
+//     }
+// };
 
-// Get User Bookmarks
-export const getUserBookmarks = async (req: AuthRequest, res: Response) => {
-    const user_id = req.user.userId;
+// export const getUserBookmarks = async (req: AuthRequest, res: Response) => {
+//     const user_id = req.user.userId;
 
-    try {
-        const bookmarks = await db.Bookmark.findAll({
-            where: { user_id },
-            include: [{ model: db.News, attributes: ["title", "description"] }],
-        });
+//     try {
+//         const bookmarks = await db.Bookmark.findAll({
+//             where: { user_id },
+//             include: [{ model: db.News, attributes: ["title", "description"] }],
+//         });
 
-        res.status(200).json({ bookmarks });
-    } catch (error) {
-        console.error("Error fetching user bookmarks:", error);
-        res.status(500).json({ message: "Internal server error." });
-    }
-};
+//         res.status(200).json({ bookmarks });
+//     } catch (error) {
+//         console.error("Error fetching user bookmarks:", error);
+//         res.status(500).json({ message: "Internal server error." });
+//     }
+// };
 
-// Add User Bookmark
 export const addBookmark = async (req: AuthRequest, res: Response) => {
     const { news_id } = req.params;
     const user_id = req.user.userId;
@@ -69,7 +67,6 @@ export const addBookmark = async (req: AuthRequest, res: Response) => {
     }
 };
 
-// Delete User Bookmark
 export const removeBookmark = async (req: AuthRequest, res: Response) => {
     const { news_id } = req.params;
     const user_id = req.user.userId;

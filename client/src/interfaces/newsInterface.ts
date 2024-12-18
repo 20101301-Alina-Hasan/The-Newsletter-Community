@@ -1,7 +1,5 @@
 export interface NewsProps {
     isOpen?: boolean;
-    onClose?: () => void;
-    // onDelete?: (news_id: number) => void;
     news: {
         news_id: number;
         user_id?: number;

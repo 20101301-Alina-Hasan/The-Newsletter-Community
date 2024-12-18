@@ -5,7 +5,8 @@ import { TagModel } from './Tag';
 import { CommentModel } from './Comment';
 import { UpvoteModel } from './Upvote';
 import { BookmarkModel } from './Bookmark';
-import { DB } from '../interfaces/models/DB';
+import { NewsToTagsModel } from './News_To_Tags';
+import { DB } from '../interfaces/models/DBInterface';
 import { sequelize } from './DBconnection';
 
 const db: DB = {
@@ -21,6 +22,7 @@ db.Tag = TagModel(sequelize);
 db.Comment = CommentModel(sequelize);
 db.Upvote = UpvoteModel(sequelize);
 db.Bookmark = BookmarkModel(sequelize);
+db.NewsToTags = NewsToTagsModel(sequelize);
 
 // Define Relationships ---
 
@@ -29,8 +31,18 @@ db.User.hasMany(db.News, { foreignKey: 'user_id' });
 db.News.belongsTo(db.User, { foreignKey: 'user_id', onDelete: 'CASCADE' });
 
 // Tags Relationships
-db.News.belongsToMany(db.Tag, { through: 'News_To_Tags', foreignKey: 'news_id' });
-db.Tag.belongsToMany(db.News, { through: 'News_To_Tags', foreignKey: 'tag_id' });
+db.News.belongsToMany(db.Tag, {
+    through: db.NewsToTags,
+    foreignKey: 'news_id',
+    timestamps: false,
+});
+
+db.Tag.belongsToMany(db.News, {
+    through: db.NewsToTags,
+    foreignKey: 'tag_id',
+    timestamps: false,
+});
+
 
 // Comments Relationships
 db.News.hasMany(db.Comment, { foreignKey: 'news_id' });

@@ -1,5 +1,5 @@
 import { DataTypes, Model, Sequelize } from 'sequelize';
-import { CommentAttributes, CommentCreationAttributes } from '../interfaces/models/Comment';
+import { CommentAttributes, CommentCreationAttributes } from '../interfaces/models/CommentInterface';
 
 class Comment extends Model<CommentAttributes, CommentCreationAttributes> implements CommentAttributes {
     public comment_id!: number;

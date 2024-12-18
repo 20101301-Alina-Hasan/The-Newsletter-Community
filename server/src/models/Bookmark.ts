@@ -1,5 +1,5 @@
 import { DataTypes, Model, Sequelize } from 'sequelize';
-import { BookmarkAttributes, BookmarkCreationAttributes } from '../interfaces/models/Bookmark';
+import { BookmarkAttributes, BookmarkCreationAttributes } from '../interfaces/models/BookmarkInterface';
 
 class Bookmark extends Model<BookmarkAttributes, BookmarkCreationAttributes> implements BookmarkAttributes {
     public bookmark_id!: number;

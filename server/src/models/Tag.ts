@@ -1,5 +1,5 @@
 import { DataTypes, Model, Sequelize } from 'sequelize';
-import { TagAttributes, TagCreationAttributes } from '../interfaces/models/Tag';
+import { TagAttributes, TagCreationAttributes } from '../interfaces/models/TagInterface';
 
 export class Tag extends Model<TagAttributes, TagCreationAttributes> implements TagAttributes {
     public tag_id!: number;
@@ -24,7 +24,7 @@ export const TagModel = (sequelize: Sequelize) => {
             sequelize,
             modelName: 'Tags',
             tableName: 'Tags',
-            timestamps: true,
+            timestamps: false,
         }
     );
     return Tag;
