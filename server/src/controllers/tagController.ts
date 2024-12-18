@@ -4,7 +4,6 @@ import db from "../models";
 export const getTags = async (req: Request, res: Response) => {
     try {
         const tags = await db.Tag.findAll();
-        console.log(tags)
         res.status(200).json({ tags });
         return;
     } catch (error) {

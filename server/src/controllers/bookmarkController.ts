@@ -24,7 +24,7 @@ import db from "../models";
 //     }
 // };
 
-// export const getUserBookmarks = async (req: AuthRequest, res: Response) => {
+// export const getBookmarks = async (req: AuthRequest, res: Response) => {
 //     const user_id = req.user.userId;
 
 //     try {
@@ -43,12 +43,6 @@ import db from "../models";
 export const addBookmark = async (req: AuthRequest, res: Response) => {
     const { news_id } = req.params;
     const user_id = req.user.userId;
-
-    if (!news_id) {
-        res.status(400).json({ message: "News ID is required." });
-        return;
-    }
-
     try {
         const existingBookmark = await db.Bookmark.findOne({
             where: { news_id, user_id },
@@ -70,12 +64,6 @@ export const addBookmark = async (req: AuthRequest, res: Response) => {
 export const removeBookmark = async (req: AuthRequest, res: Response) => {
     const { news_id } = req.params;
     const user_id = req.user.userId;
-
-    if (!news_id) {
-        res.status(400).json({ message: "News ID is required." });
-        return;
-    }
-
     try {
         const bookmark = await db.Bookmark.findOne({
             where: { news_id, user_id },

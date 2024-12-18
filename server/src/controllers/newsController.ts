@@ -1,43 +1,9 @@
 import { Request, Response } from "express";
 import { AuthRequest } from "../interfaces/authInterface";
 import { fetchUserInteractions, buildNewsObject } from "../helper/newsHelper";
-import { UserInteraction } from "../interfaces/news";
+import { UserInteraction } from "../interfaces/newsInterface";
 import db from "../models";
 import { Op } from "sequelize";
-
-// const getNews = async (query: any, res: Response) => {
-//     try {
-//         const user_id = query?.user_id;
-//         const defaultQuery = {
-//             ...query,
-//             order: [['releaseDate', 'DESC']],
-//             include: [
-//                 { model: db.User, attributes: ['username'] },
-//                 { model: db.Tag, attributes: ['tag'], through: { attributes: [] } },
-//             ],
-//         };
-
-//         const newsList = await db.News.findAll(defaultQuery);
-//         if (!newsList || newsList.length === 0) {
-//             return res.status(200).json({ message: "No news found." });
-//         }
-
-//         const news_ids = newsList.map((news: any) => news.news_id);
-//         let userInteractions: UserInteraction | undefined;
-//         if (user_id) {
-//             userInteractions = await fetchUserInteractions(user_id, news_ids);
-//         }
-
-//         const formattedNews = await Promise.all(
-//             newsList.map((news: any) => buildNewsObject(news, userInteractions))
-//         );
-
-//         res.status(200).json({ news: formattedNews });
-//     } catch (error) {
-//         console.error("Error fetching news:", error);
-//         res.status(500).json({ message: "Internal server error." });
-//     }
-// };
 
 const getNews = async (query: any, res: Response) => {
     try {
@@ -46,6 +12,9 @@ const getNews = async (query: any, res: Response) => {
 
         const defaultQuery = {
             ...restQuery,
+            where: {
+                ...restQuery.where
+            },
             order: [['releaseDate', 'DESC']],
             include: [
                 {
@@ -86,73 +55,64 @@ const getNews = async (query: any, res: Response) => {
     }
 };
 
-export const getAllNews = async (req: Request, res: Response): Promise<void> => {
-    const query = req.query || {};
-    await getNews(query, res);
+export const getNewsByBookmark = async (req: AuthRequest, res: Response): Promise<void> => {
+    const user_id = req.user.userId;
+
+    try {
+        // Fetch the user's bookmarks, including related news IDs
+        const bookmarks = await db.Bookmark.findAll({
+            where: { user_id },
+            include: [{ model: db.News, attributes: ["news_id"] }],
+        });
+
+        // If no bookmarks found, return a message
+        if (!bookmarks || bookmarks.length === 0) {
+            res.status(200).json({ message: "No bookmarks found." });
+            return;
+        }
+
+        // Extract the news IDs from the bookmarks
+        const news_ids = bookmarks.map((bookmark: any) => bookmark.News.news_id);
+
+        // Construct the query with the user's news_ids from the bookmarks
+        const query = {
+            where: { news_id: { [Op.in]: news_ids } },
+            user_id, // include user_id for fetching user interactions
+        };
+
+        // Pass the query to the getNews function
+        await getNews(query, res);
+
+    } catch (error) {
+        console.error("Error fetching bookmarked news:", error);
+        res.status(500).json({ message: "Internal server error." });
+        return;
+    }
 };
 
 export const getUserNews = async (req: AuthRequest, res: Response): Promise<void> => {
-    const user_id = req.user?.userId;
-    const query = { where: { user_id }, user_id: req.query?.user_id };
+    const user_id = req.user.userId;
+    const query = { where: { user_id }, user_id };
     await getNews(query, res);
 };
 
-// export const searchNews = async (req: Request, res: Response) => {
-//     const { query, tag_ids } = req.query;
-//     const searchClause: any = {};
-
-//     if (typeof query === 'string' && query.trim()) {
-//         searchClause[Op.or] = [
-//             { title: { [Op.iLike]: `%${query.trim()}%` } },
-//             { description: { [Op.iLike]: `%${query.trim()}%` } },
-//         ];
-//     }
-
-//     const filterTags = typeof tag_ids === 'string' && tag_ids
-//         ? { tag_id: tag_ids.split(',').map(tag_id => parseInt(tag_id.trim(), 10)) }
-//         : null;
-
-//     const searchQuery = {
-//         ...req.query,
-//         where: searchClause,
-//         filterTags,
-//     };
-
-//     await getNews(searchQuery, res);
-// };
-
-export const searchNews = async (req: AuthRequest, res: Response): Promise<void> => {
-    const user_id = req.user?.userId;
-    console.log(req.user, user_id);
-    const { query, tag_ids } = req.query;
-    const searchClause: any = {};
-
-    if (typeof query === 'string' && query.trim()) {
-        searchClause[Op.or] = [
-            { title: { [Op.iLike]: `%${query.trim()}%` } },
-            { description: { [Op.iLike]: `%${query.trim()}%` } },
-        ];
-    }
-
-    const filterTags = typeof tag_ids === 'string' && tag_ids
-        ? { tag_id: tag_ids.split(',').map(tag_id => parseInt(tag_id.trim(), 10)) }
-        : null;
-
-    const searchQuery = {
-        where: {
-            ...(user_id ? { user_id } : {}),
-            ...searchClause,
-        },
-        filterTags,
-    };
-
-    await getNews(searchQuery, res);
+//refactor --- (combine controller below)
+export const getAllNews = async (req: Request, res: Response): Promise<void> => {
+    const query = {};
+    await getNews(query, res);
 };
 
+//refactor --- 
+export const getUserAllNews = async (req: AuthRequest, res: Response): Promise<void> => {
+    const user_id = req.user.userId;
+    const query = { user_id };
+    await getNews(query, res);
+};
 
-export const getNewsById = async (req: Request, res: Response): Promise<void> => {
+//refactor --- (combine controller below)
+export const getUserNewsById = async (req: AuthRequest, res: Response): Promise<void> => {
     const { news_id } = req.params;
-    const user_id = req.query?.user_id;
+    const user_id = req.user.userId;
 
     if (!news_id) {
         res.status(400).json({ message: "News ID is required." });
@@ -188,17 +148,70 @@ export const getNewsById = async (req: Request, res: Response): Promise<void> =>
     }
 };
 
+//refactor ---
+export const getNewsById = async (req: Request, res: Response): Promise<void> => {
+    const { news_id } = req.params;
 
-export const createNews = async (req: AuthRequest, res: Response) => {
+    if (!news_id) {
+        res.status(400).json({ message: "News ID is required." });
+        return;
+    }
+
     try {
-        const { title, releaseDate, description, thumbnail, tags } = req.body;
-        const user_id = req.user?.userId;
+        const news = await db.News.findOne({
+            where: { news_id },
+            include: [
+                { model: db.User, attributes: ['username'] },
+                { model: db.Tag, attributes: ['tag'], through: { attributes: [] } },
+            ],
+        });
 
-        if (!user_id) {
-            res.status(403).json({ message: "Unauthorized: User ID not found." });
+        if (!news) {
+            res.status(404).json({ message: "News not found." });
             return;
         }
 
+        const newsObject = await buildNewsObject(news);
+
+        res.status(200).json({ news: newsObject });
+    } catch (error) {
+        console.error("Error fetching news by ID:", error);
+        res.status(500).json({ message: "Internal server error." });
+    }
+};
+
+export const searchNews = async (req: AuthRequest, res: Response): Promise<void> => {
+    const user_id = req.user?.userId;
+    const { query, tag_ids } = req.query;
+    const searchClause: any = {};
+
+    if (typeof query === 'string' && query.trim()) {
+        searchClause[Op.or] = [
+            { title: { [Op.iLike]: `%${query.trim()}%` } },
+            { description: { [Op.iLike]: `%${query.trim()}%` } },
+        ];
+    }
+
+    const filterTags = typeof tag_ids === 'string' && tag_ids
+        ? { tag_id: tag_ids.split(',').map(tag_id => parseInt(tag_id.trim(), 10)) }
+        : null;
+
+    const searchQuery = {
+        where: {
+            ...(user_id ? { user_id } : {}),
+            ...searchClause,
+        },
+        filterTags,
+    };
+
+    await getNews(searchQuery, res);
+};
+
+export const createNews = async (req: AuthRequest, res: Response) => {
+    try {
+        const { title, releaseDate, description, thumbnail, tag_ids } = req.body;
+        const user_id = req.user.userId;
+        console.log("Tag_ids", tag_ids)
         if (!title || !releaseDate || !description) {
             res.status(400).json({ message: "All fields are required." });
             return;
@@ -218,20 +231,12 @@ export const createNews = async (req: AuthRequest, res: Response) => {
             thumbnail
         });
 
-        if (tags && Array.isArray(tags) && tags.length > 0) {
-            const validatedTags = tags.map(tag => tag.trim()).filter(tag => tag.length > 0);
-
-            const tagRecords = await Promise.all(
-                validatedTags.map(async (tag: string) => {
-                    const [newTag] = await db.Tag.findOrCreate({
-                        where: { tag }
-                    });
-                    return newTag;
-                })
-            );
-
-            await news.addTags(tagRecords);
+        if (tag_ids && Array.isArray(tag_ids) && tag_ids.length > 0) {
+            const validTagIds = tag_ids.map((tag_id) => parseInt(tag_id, 10)).filter((tag_id) => !isNaN(tag_id));
+            await news.addTags(validTagIds);
         }
+
+        console.log("done");
 
         res.status(201).json({ message: "News created successfully!", news });
         return;
@@ -245,39 +250,35 @@ export const createNews = async (req: AuthRequest, res: Response) => {
 export const updateNews = async (req: AuthRequest, res: Response) => {
     try {
         const { news_id } = req.params;
-        console.log(news_id)
-        const { title, description, thumbnail, tags } = req.body;
-        console.log({ title, description, thumbnail, tags });
-        const user_id = req.user?.userId;
+        const { title, description, thumbnail, tag_ids } = req.body;
+        const user_id = req.user.userId;
+
         if (!title || !description) {
             res.status(400).json({ message: "All fields are required." });
             return;
         }
-        const news = await db.News.findOne({ where: { news_id, user_id } });
+
+        const news = await db.News.findOne({ where: { news_id } });
+
         if (!news) {
             res.status(404).json({ message: "News not found or unauthorized." });
             return;
         }
+
         await news.update({
             title,
             description,
             thumbnail
         });
 
-        if (!tags) {
-            await news.setTags([]);
+        if (tag_ids && Array.isArray(tag_ids) && tag_ids.length > 0) {
+            const validTagIds = tag_ids.map((tag_id) => parseInt(tag_id, 10)).filter((tag_id) => !isNaN(tag_id));
+            await news.setTags([]); // Remove old tags
+            await news.addTags(validTagIds) //Add new tags
         } else {
-            const validatedTags = tags.map((tag: string) => tag.trim()).filter((tag: string) => tag.length > 0);
-            const tagRecords = await Promise.all(
-                validatedTags.map(async (tag: string) => {
-                    const [newTag] = await db.Tag.findOrCreate({
-                        where: { tag }
-                    });
-                    return newTag;
-                })
-            );
-            await news.setTags(tagRecords);
+            await news.setTags([]);
         }
+
         res.status(200).json({ message: "News updated successfully!", news });
         return;
     } catch (error) {
@@ -315,72 +316,25 @@ export const deleteNews = async (req: AuthRequest, res: Response) => {
 };
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// Common news fetching logic
 // const getNews = async (query: any, res: Response) => {
-//     const { user_id, query: searchQuery, tag_ids } = query || {};
-
-//     let whereClause: any = {};
-
-//     if (searchQuery) {
-//         whereClause = {
-//             [Op.or]: [
-//                 { title: { [Op.iLike]: `%${searchQuery}%` } },
-//                 { description: { [Op.iLike]: `%${searchQuery}%` } },
-//             ],
-//         };
-//     }
-
-//     const formattedTagIds: number[] = tag_ids ?
-//         tag_ids.split(',').map((tag_id: string) => parseInt(tag_id.trim(), 10))
-//         : [];
-//     const tagFilter = formattedTagIds.length > 0 ? { tag_id: formattedTagIds } : null;
-
 //     try {
+//         const user_id = query?.user_id;
 //         const defaultQuery = {
-//             where: whereClause,
+//             ...query,
 //             order: [['releaseDate', 'DESC']],
 //             include: [
 //                 { model: db.User, attributes: ['username'] },
-//                 { model: db.Tag, attributes: ['tag'], through: { attributes: [] }, where: tagFilter },
+//                 { model: db.Tag, attributes: ['tag'], through: { attributes: [] } },
 //             ],
 //         };
 
-//         // Apply user filter if user_id is provided (e.g., in getUserNews)
-//         if (user_id) {
-//             defaultQuery.where = { ...defaultQuery.where, user_id };
-//         }
-
 //         const newsList = await db.News.findAll(defaultQuery);
-
 //         if (!newsList || newsList.length === 0) {
 //             return res.status(200).json({ message: "No news found." });
 //         }
 
 //         const news_ids = newsList.map((news: any) => news.news_id);
-//         let userInteractions: { upvotedNewsIds: number[]; bookmarkedNewsIds: number[] } | undefined;
-
+//         let userInteractions: UserInteraction | undefined;
 //         if (user_id) {
 //             userInteractions = await fetchUserInteractions(user_id, news_ids);
 //         }
@@ -394,23 +348,6 @@ export const deleteNews = async (req: AuthRequest, res: Response) => {
 //         console.error("Error fetching news:", error);
 //         res.status(500).json({ message: "Internal server error." });
 //     }
-// };
-
-// // Controller functions
-// export const getAllNews = async (req: Request, res: Response): Promise<void> => {
-//     const query = req.query || {};
-//     await getNews(query, res);
-// };
-
-// export const getUserNews = async (req: AuthRequest, res: Response): Promise<void> => {
-//     const user_id = req.user?.userId;
-//     const query = { user_id };
-//     await getNews(query, res);
-// };
-
-// export const searchNews = async (req: Request, res: Response): Promise<void> => {
-//     const query = req.query || {};
-//     await getNews(query, res);
 // };
 
 

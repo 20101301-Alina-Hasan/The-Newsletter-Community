@@ -1,6 +1,6 @@
-import { UserCount, UserInteraction } from "../interfaces/news";
-import db from "../models";
+import { UserCount, UserInteraction } from "../interfaces/newsInterface";
 import { formatDate } from "../utils/time";
+import db from "../models";
 
 export const fetchCounts = async (news_id: number): Promise<UserCount> => {
     const [upvotes, commentCount] = await Promise.all([
@@ -32,7 +32,7 @@ export const buildNewsObject = async (news: any, userInteractions?: UserInteract
         description: news.description,
         thumbnail: news.thumbnail,
         username: news.User.username,
-        tags: news.Tags.map((tag: any) => tag.tag),
+        tags: news.Tags,
         upvotes,
         commentCount,
     };

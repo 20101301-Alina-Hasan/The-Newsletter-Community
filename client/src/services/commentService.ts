@@ -16,18 +16,13 @@ export const fetchComments = async (news_id: number) => {
     }
 };
 
-export const addComment = async (news_id: number, user_id: number | undefined, comment: string) => {
+export const addComment = async (news_id: number, comment: string) => {
     try {
-        if (!news_id || !user_id || !comment) {
+        if (!news_id || !comment) {
             throw new Error('All fields (news_id, user_id and comment) are required.');
         }
         const token = Cookies.get('access_token');
-        const commentData = {
-            user_id,
-            comment,
-        }
-        console.log(commentData)
-        const response = await axios.post(`http://localhost:3000/api/comments/${news_id}`, commentData, {
+        const response = await axios.post(`http://localhost:3000/api/comments/${news_id}`, { comment }, {
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`,

@@ -1,26 +1,26 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
 // @ts-nocheck
-
-import { Comment } from "./Comment";
-import { useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Upvote } from "./Upvote";
 import { Bookmark } from "./Bookmark";
-import { useNavigate } from "react-router-dom";
-import { useState, useEffect, useContext } from "react";
-import { fetchNewsById } from "../services/newsService";
-import { UserContextType, UserContext } from "../interfaces/userInterfaces";
+import { Comment } from "./Comment";
+import { MessageSquareText } from "lucide-react";
+import { LoaderIcon } from "./Icons/LoaderIcon";
+import { fetchNews } from '../services/newsService';
 import { NewsProps } from "../interfaces/newsInterface";
+import Cookies from "js-cookie";
+
 
 export function NewsView() {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [news, setNews] = useState<NewsProps["news"][] | null>(null);
-    const { userState } = useContext(UserContext) as UserContextType;
     const navigate = useNavigate();
     const { state } = useLocation();
     const { news_id } = state?.news || {};
+    const token = Cookies.get('access_token');
 
     useEffect(() => {
         const loadNews = async () => {
@@ -28,9 +28,8 @@ export function NewsView() {
                 if (!news_id) {
                     throw new Error("News ID is missing");
                 }
-                const user_id = userState.user?.user_id;
-                console.log("user_id sent", user_id)
-                const fetchedNews = await fetchNewsById(news_id, user_id);
+                console.log("token sent", token, "news_id sent", news_id)
+                const fetchedNews = await fetchNews(news_id, token);
                 console.log(fetchedNews);
                 setNews(fetchedNews);
 
@@ -42,14 +41,14 @@ export function NewsView() {
         };
 
         loadNews();
-    }, [news_id, userState.user?.user_id]);
+    }, [news_id, token]);
 
     if (loading) {
-        return <div className="p-4 font-serif">Loading...</div>;
+        return <LoaderIcon />
     }
 
     if (error) {
-        return <div>Error: {error}</div>;
+        return <div className="min-h-screen bg-base-200 text-red-500 font-semibold">Error: {error}</div>;
     }
 
     if (!news) {
@@ -87,9 +86,9 @@ export function NewsView() {
                         </div>
 
                         <div className="flex my-4 gap-2 flex-wrap">
-                            {news.tags.map((tag: string, index: number) => (
+                            {news.tags.map((tag, index) => (
                                 <div key={index} className='badge badge-outline font-medium'>
-                                    #{tag}
+                                    #{tag.tag}
                                 </div>
                             ))}
                         </div>
@@ -112,20 +111,7 @@ export function NewsView() {
                                 <div className="flex justify-start gap-4">
                                     <Upvote news_id={news.news_id} upvotes={news.upvotes} hasUpvoted={news.hasUpvoted} />
                                     <div className="flex items-center gap-2">
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            strokeWidth="1.5"
-                                            stroke="currentColor"
-                                            className="size-6"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                d="M8.625 9.75a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 0 1 .778-.332 48.294 48.294 0 0 0 5.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z"
-                                            />
-                                        </svg>
+                                        <MessageSquareText />
                                         <span className="text-sm font-medium">{news.commentCount}</span>
                                     </div>
                                 </div>

@@ -1,23 +1,26 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState, useContext } from 'react';
 import { UserContext, UserContextType } from '../interfaces/userInterfaces';
-import { NewsCard } from "./NewsCard";
-import { FilterDropdown } from './FilterDropdown';
 import { NewsProps } from '../interfaces/newsInterface';
-import { fetchAllNews, searchNews } from '../services/newsService';
+import { fetchNews, searchNews } from '../services/newsService';
 import { useNavigate } from 'react-router-dom';
+import { FilterDropdown } from './FilterDropdown';
+import { LoaderIcon } from './Icons/LoaderIcon';
+import { NewsCard } from "./NewsCard";
+import Cookies from 'js-cookie';
 
 export const NewsPage = () => {
     const { userState } = useContext(UserContext) as UserContextType;
+    const [noResults, setNoResults] = useState<boolean>(false);
     const [newsList, setNewsList] = useState<NewsProps['news'][]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const token = Cookies.get('access_token');
     const navigate = useNavigate();
 
     const loadNews = async () => {
         try {
-            const user_id = userState.user?.user_id;
-            const news = await fetchAllNews(user_id);
+            const news = await fetchNews(undefined, token, true);
             setNewsList(news);
         } catch (error: any) {
             console.error("Error loading news:", error);
@@ -34,8 +37,8 @@ export const NewsPage = () => {
             const news = await searchNews(query, TagIds);
             console.log("Search results:", news);
             setNewsList(news);
+            setNoResults(false);
         } catch (error: any) {
-            console.error("Error searching news:", error);
             setError(error.message || "An unexpected error occurred during search.");
         } finally {
             setLoading(false);
@@ -55,7 +58,7 @@ export const NewsPage = () => {
     };
 
     if (loading) {
-        return <div className="p-4 font-serif">Loading...</div>;
+        return <LoaderIcon />
     }
 
     if (error) {
@@ -87,9 +90,17 @@ export const NewsPage = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {!newsList || newsList.length === 0 ? (
-                    <p className="text-2xl text-base-content font-semibold">
-                        There are no news currently available.
-                    </p>
+                    <div className="bg-base-200 rounded-lg p-16 text-center">
+                        {noResults ? (
+                            <p className="text-2xl text-base-content font-bold mb-4">
+                                No articles found matching your search.
+                            </p>
+                        ) : (
+                            <p className="text-2xl text-base-content font-semibold">
+                                There are no news currently available.
+                            </p>
+                        )}
+                    </div>
                 ) : (
                     newsList.map((news) => <NewsCard key={news.news_id} {...news} />)
                 )}

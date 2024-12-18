@@ -1,7 +1,10 @@
 import express from 'express';
 import { authenticateUser } from '../middlewares/auth';
 import {
+    getNewsByBookmark,
     getNewsById,
+    getUserNewsById,
+    getUserAllNews,
     getAllNews,
     getUserNews,
     createNews,
@@ -13,15 +16,18 @@ import {
 const router = express.Router();
 
 // Public Routes
-router.get('/', getAllNews);
+router.get('/all', getAllNews);
+router.get('/user/all', authenticateUser, getUserAllNews);
 router.get('/search', searchNews);
 
 // User-specific Routes
 router.get('/user', authenticateUser, getUserNews);
-router.get('/search/user', authenticateUser, searchNews);
+router.get('/user/search', authenticateUser, searchNews);
+router.get('/user/bookmark', authenticateUser, getNewsByBookmark)
 
 // News by ID Routes
 router.get('/:news_id', getNewsById);
+router.get('/user/:news_id', authenticateUser, getUserNewsById);
 
 // Protected Routes (Require authentication)
 router.post('/', authenticateUser, createNews);

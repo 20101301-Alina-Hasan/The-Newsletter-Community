@@ -3,8 +3,10 @@ import { useContext, useEffect, useState } from "react";
 import { fetchComments, addComment, editComment, deleteComment } from "../services/commentService";
 import { CommentsProps } from "../interfaces/commentInterface";
 import { UserContext, UserContextType } from '../interfaces/userInterfaces';
+import { LoaderIcon } from "./Icons/LoaderIcon";
 import { MoreVertical, Edit, Trash } from 'lucide-react';
 import { showToast } from "../utils/toast";
+import { useNavigate } from "react-router-dom";
 
 export function Comment({ news_id }: CommentsProps) {
     const { userState } = useContext(UserContext) as UserContextType;
@@ -15,6 +17,8 @@ export function Comment({ news_id }: CommentsProps) {
     const [editedComment, setEditedComment] = useState<string>("");
     const [newComment, setNewComment] = useState<string>("");
     const [commentCount, setCommentCount] = useState<number>(0);
+    const navigate = useNavigate();
+    const token = userState.token
 
     useEffect(() => {
         const loadComments = async () => {
@@ -75,8 +79,13 @@ export function Comment({ news_id }: CommentsProps) {
     const handleAddComment = async (event: React.FormEvent) => {
         try {
             event.preventDefault();
+            if (!token) {
+                navigate("/signup");
+                return;
+            }
             if (!newComment.trim()) return;
-            await addComment(news_id, userState.user?.user_id, newComment);
+            console.log(news_id, newComment);
+            await addComment(news_id, newComment);
             const comments = await fetchComments(news_id);
             setComments([...comments]);
             setCommentCount(comments.length);
@@ -86,6 +95,14 @@ export function Comment({ news_id }: CommentsProps) {
             showToast('error', `${error.message}: Failed to add your comment.`);
         }
     };
+
+    if (loading) {
+        return <LoaderIcon />
+    }
+
+    if (error) {
+        return <div className="min-h-screen bg-base-200 text-red-500 font-semibold">Error: {error}</div>;
+    }
 
     return (
         <section className="bg-base-100 py-8 antialiased">

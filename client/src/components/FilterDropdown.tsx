@@ -1,123 +1,8 @@
-// import { useState, useEffect } from 'react';
-// import { Tag, FilterState, FilterDropdownProps } from '../interfaces/tagInterface';
-// import { fetchTags } from '../services/tagService';
-// import { FilterIcon } from './Icons/FilterIcon';
-
-// export function FilterDropdown({ onSearch }: FilterDropdownProps) {
-//     const [filterState, setFilterState] = useState<FilterState>({
-//         selectedTags: [],
-//         searchQuery: '',
-//     });
-
-//     const [tags, setTags] = useState<Tag[]>([]);
-//     const [loading, setLoading] = useState<boolean>(false);
-//     const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
-
-//     const generateTags = async () => {
-//         try {
-//             setLoading(true);
-//             const response = await fetchTags();
-//             console.log("response", response);
-//             const tags = response.map((tag: { tag_id: number; tag: string }) => ({
-//                 tag_id: tag.tag_id,
-//                 tag: tag.tag
-//             }))
-
-//             console.log(tags);
-//             setTags(tags);
-//         } catch (error) {
-//             console.error('Error fetching tags:', error);
-//         } finally {
-//             setLoading(false);
-//         }
-//     };
-
-
-//     useEffect(() => {
-//         if (isDropdownOpen) {
-//             generateTags();
-//         }
-//     }, [isDropdownOpen]);
-
-//     const toggleTag = (tag: string) => {
-//         setFilterState(prev => ({
-//             ...prev,
-//             selectedTags: prev.selectedTags.includes(tag)
-//                 ? prev.selectedTags.filter(t => t !== tag)
-//                 : [...prev.selectedTags, tag]
-//         }));
-//     };
-
-//     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-//         const query = event.target.value;
-//         setFilterState(prev => ({ ...prev, searchQuery: query }));
-//     };
-
-//     const handleSearchSubmit = () => {
-//         onSearch(filterState.searchQuery, filterState.selectedTags);
-//     };
-
-//     return (
-//         <div className="flex items-center gap-2">
-//             <div className="relative flex items-center w-full">
-//                 <input
-//                     type="text"
-//                     placeholder="Search"
-//                     value={filterState.searchQuery}
-//                     onChange={handleSearchChange}
-//                     className="input input-bordered h-12 w-full border-1 border-gray-500 rounded-full pl-4 pr-12"
-//                 />
-//                 <div className="dropdown dropdown-bottom dropdown-right absolute right-3">
-//                     <div
-//                         tabIndex={0}
-//                         role="button"
-//                         className="cursor-pointer"
-//                         onClick={() => setIsDropdownOpen(prev => !prev)}
-//                     >
-//                         <FilterIcon />
-//                     </div>
-//                     <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] mt-4 sm:w-[100px] md:w-300px lg:w-[500px] p-4 shadow">
-//                         <div className="divider">Tags</div>
-//                         <div className="p-2">
-//                             {loading ? (
-//                                 <div className="font-serif">Loading...</div>
-//                             ) : (
-//                                 <div className="flex flex-wrap gap-2">
-//                                     {tags.map(tag => (
-//                                         <button
-//                                             key={tag.tag_id}
-//                                             onClick={() => toggleTag(tag.tag)}
-//                                             className={`px-3 py-1 rounded-lg text-sm transition-colors ${filterState.selectedTags.includes(tag.tag)
-//                                                 ? 'bg-primary text-primary-content'
-//                                                 : 'bg-base-200 hover:bg-base-300 text-base-content'
-//                                                 }`}
-//                                         >
-//                                             {tag.tag}
-//                                         </button>
-//                                     ))}
-//                                 </div>
-//                             )}
-//                         </div>
-//                     </ul>
-//                 </div>
-//             </div>
-
-//             <button
-//                 onClick={handleSearchSubmit}
-//                 className="btn btn-primary h-12"
-//             >
-//                 Search
-//             </button>
-//         </div>
-//     );
-// }
-
 import { useState, useEffect, useMemo } from 'react';
 import { Tag, FilterState, FilterDropdownProps } from '../interfaces/tagInterface';
 import { fetchTags } from '../services/tagService';
 import { FilterIcon } from './Icons/FilterIcon';
 import { Search } from 'lucide-react';
-
 
 export function FilterDropdown({ onSearch }: FilterDropdownProps) {
     const [filterState, setFilterState] = useState<FilterState>({
@@ -146,12 +31,6 @@ export function FilterDropdown({ onSearch }: FilterDropdownProps) {
             setLoading(false);
         }
     };
-
-    useEffect(() => {
-        if (isDropdownOpen) {
-            generateTags();
-        }
-    }, [isDropdownOpen]);
 
     const filteredTags = useMemo(() => {
         return tags
@@ -182,6 +61,12 @@ export function FilterDropdown({ onSearch }: FilterDropdownProps) {
         const TagIds = filterState.selectedTags.map(tag => tag.tag_id);
         onSearch(filterState.searchQuery, TagIds);
     };
+
+    useEffect(() => {
+        if (isDropdownOpen) {
+            generateTags();
+        }
+    }, [isDropdownOpen]);
 
     return (
         <div className="flex items-center gap-2">

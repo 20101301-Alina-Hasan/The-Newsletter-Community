@@ -4,30 +4,34 @@ import { UserContext } from '../interfaces/userInterfaces';
 import { UserContextType } from '../interfaces/userInterfaces';
 import { useNavigate } from 'react-router-dom';
 import { MyNewsCard } from './MyNewsCard';
-import { NewsProps } from '../interfaces/newsInterface';
-import { fetchUserNews } from '../services/newsService';
 import { FilterDropdown } from './FilterDropdown';
-import { searchNews } from '../services/newsService';
+import { MyBookmarkPage } from './MyBookmarkPage';
+import { NewsProps } from '../interfaces/newsInterface';
+import { fetchNews, searchNews } from '../services/newsService';
+
 import { showToast } from '../utils/toast';
 import Cookies from 'js-cookie';
 import axios from 'axios';
+import { LoaderIcon } from './Icons/LoaderIcon';
+
 
 export const MyNewsPage = () => {
     const { userState } = useContext(UserContext) as UserContextType;
     const [newsList, setNewsList] = useState<NewsProps['news'][]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-    const [noResults, setNoResults] = useState<boolean>(false);  // State to handle no search results
+    const [noResults, setNoResults] = useState<boolean>(false);
+    const token = Cookies.get('access_token');
     const navigate = useNavigate();
-    const user_id = userState.user?.user_id;
+
 
     const loadNews = async () => {
         try {
-            const news = await fetchUserNews(user_id);
+            const news = await fetchNews(undefined, token, false);
+            console.log(news);
             setNewsList(news);
-            setNoResults(false); // Reset no results on initial load
+            setNoResults(false);
         } catch (error: any) {
-            console.error("Error loading news:", error);
             setError(error.message || "An unexpected error occurred.");
         } finally {
             setLoading(false);
@@ -38,13 +42,13 @@ export const MyNewsPage = () => {
         try {
             setLoading(true);
             console.log("Performing search with query:", query, "tags_ids:", TagIds);
-            const news = await searchNews(query, TagIds, user_id);
+            const news = await searchNews(query, TagIds, token);
             console.log("Search results:", news);
 
             if (news.length === 0) {
-                setNoResults(true); // Set noResults state if no articles are found
+                setNoResults(true);
             } else {
-                setNoResults(false); // Reset if articles are found
+                setNoResults(false);
             }
 
             setNewsList(news);
@@ -79,7 +83,7 @@ export const MyNewsPage = () => {
     };
 
     if (loading) {
-        return <div className="p-4 font-serif">Loading...</div>;
+        return <LoaderIcon />
     }
 
     if (error) {
@@ -126,13 +130,13 @@ export const MyNewsPage = () => {
                     </div>
 
                     {noResults ? (
-                        <div className="bg-base-100 rounded-lg p-16 text-center">
-                            <p className="text-2xl text-base-content font-bold mb-4">
-                                No articles found matching your search.
+                        <div className="bg-base-200 rounded-lg p-16 text-center">
+                            <p className="text-2xl text-base-content font-bold">
+                                You did not publish any articles matching your search criteria.
                             </p>
                         </div>
                     ) : newsList.length === 0 ? (
-                        <div className="bg-base-100 rounded-lg p-16 text-center">
+                        <div className="bg-base-200 rounded-lg p-16 text-center">
                             <p className="text-2xl text-base-content font-bold mb-4">
                                 You have yet to publish an article.
                                 <br />
@@ -152,21 +156,10 @@ export const MyNewsPage = () => {
                             ))}
                         </div>
                     )}
+
                 </div>
             </div>
-
-            <div className="bg-base-300">
-                <div className="container mx-auto px-32 py-8">
-                    <div className="mb-8">
-                        <h2 className="text-3xl font-extrabold text-base-content">My Bookmarks</h2>
-                        <p className="text-lg font-semibold text-base-content my-4">
-                            View and manage your saved articles. Keep track of content you find interesting and revisit them anytime.
-                        </p>
-                    </div>
-
-                    <div className="w-full h-[0.1rem] bg-red-800" />
-                </div>
-            </div>
+            <MyBookmarkPage />
         </div>
     );
 };
