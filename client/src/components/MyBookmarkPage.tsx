@@ -4,8 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import { MyNewsCard } from './MyNewsCard';
 import { NewsProps } from '../interfaces/newsInterface';
 import { fetchNews } from '../services/newsService';
-import Cookies from 'js-cookie';
 import { LoaderIcon } from './Icons/LoaderIcon';
+import Cookies from 'js-cookie';
+
 
 
 export const MyBookmarkPage = () => {
@@ -51,9 +52,12 @@ export const MyBookmarkPage = () => {
                 <div className="w-full h-[0.1rem] bg-red-800" />
 
                 {bookmarkedNews.length === 0 ? (
-                    <div className="bg-base-200 rounded-lg p-16 text-center pb-6 my-10">
+                    <div className="bg-base-200 rounded-lg p-16 text-center my-10">
                         <p className="text-2xl text-base-content font-bold mb-4">
-                            No articles have been bookmarked yet.
+                            Nothing booked yet.
+                            <br />
+                            <span className="text-3xl text-secondary font-extrabold">Let's start exploring</span>
+
                         </p>
                         <button
                             className="btn btn-primary font-bold"

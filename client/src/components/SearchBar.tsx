@@ -1,10 +1,10 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Tag, FilterState, FilterDropdownProps } from '../interfaces/tagInterface';
 import { fetchTags } from '../services/tagService';
-import { FilterIcon } from './Icons/FilterIcon';
+import { SlidersHorizontal } from 'lucide-react';
 import { Search } from 'lucide-react';
 
-export function FilterDropdown({ onSearch }: FilterDropdownProps) {
+export function SearchBar({ onSearch }: FilterDropdownProps) {
     const [filterState, setFilterState] = useState<FilterState>({
         selectedTags: [],
         searchQuery: '',
@@ -82,14 +82,16 @@ export function FilterDropdown({ onSearch }: FilterDropdownProps) {
                     className="input input-bordered h-12 w-full border-1 border-gray-500 rounded-full pl-10 pr-12"
                 />
 
-                <div className="dropdown dropdown-right dropdown-bottom absolute right-3">
+                <div className="dropdown dropdown-right dropdown-bottom absolute right-4">
                     <div
                         tabIndex={0}
                         role="button"
                         className="cursor-pointer"
                         onClick={() => setIsDropdownOpen(prev => !prev)}
                     >
-                        <FilterIcon />
+                        <div className="text-gray-500">
+                            <SlidersHorizontal />
+                        </div>
                     </div>
 
                     <div className="dropdown-content menu bg-base-100 rounded-box z-[1] mt-4 sm:w-[100px] md:w-300px lg:w-[500px] p-6 shadow">

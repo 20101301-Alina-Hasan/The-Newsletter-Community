@@ -1,9 +1,13 @@
+import { UserContext, UserContextType } from "../../interfaces/userInterfaces";
 import { Outlet, Navigate } from "react-router-dom";
-import Cookies from "js-cookie";
+import { useContext } from "react";
+// import Cookies from "js-cookie";
 
-const ProtectedRoutes = () => {
-    const token = Cookies.get("access_token");
-    return token ? <Outlet /> : <Navigate to='/signup' />
+
+
+export const ProtectedRoutes = () => {
+    const { userState } = useContext(UserContext) as UserContextType;
+    // const token = Cookies.get("access_token");
+
+    return userState.token ? <Outlet /> : <Navigate to='/signup' />
 }
-
-export default ProtectedRoutes;

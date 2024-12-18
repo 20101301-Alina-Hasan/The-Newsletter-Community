@@ -39,7 +39,7 @@ export function Navbar() {
                                     <FilePlus />
                                 </a>
                                 <HashLink to="/my-articles#bookmarks" scroll={(el) => el.scrollIntoView({ behavior: 'smooth', block: 'start' })}>
-                                    <a className="btn bg-red-800 text-white h-8 font-bold" >
+                                    <a className="btn bg-red-700 text-white h-8 font-bold" >
                                         <BookMarked />
                                     </a>
                                 </HashLink>

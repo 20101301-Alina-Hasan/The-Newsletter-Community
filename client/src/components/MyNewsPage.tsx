@@ -4,7 +4,7 @@ import { UserContext } from '../interfaces/userInterfaces';
 import { UserContextType } from '../interfaces/userInterfaces';
 import { useNavigate } from 'react-router-dom';
 import { MyNewsCard } from './MyNewsCard';
-import { FilterDropdown } from './FilterDropdown';
+import { SearchBar } from './SearchBar';
 import { MyBookmarkPage } from './MyBookmarkPage';
 import { NewsProps } from '../interfaces/newsInterface';
 import { fetchNews, searchNews } from '../services/newsService';
@@ -106,7 +106,7 @@ export const MyNewsPage = () => {
                 </div>
             </div>
 
-            <div className="bg-base-200">
+            <div className="min-h-screen  bg-base-200">
                 <div className="container mx-auto px-32 py-8">
                     <div className="mb-8">
                         <h2 className="text-3xl font-extrabold text-base-content">My Articles</h2>
@@ -118,7 +118,7 @@ export const MyNewsPage = () => {
                     <div className="w-full h-[0.1rem] bg-red-800" />
 
                     <div className="flex justify-between items-center pb-6 my-10">
-                        <FilterDropdown onSearch={handleSearch} />
+                        <SearchBar onSearch={handleSearch} />
                         <div className="flex gap-4">
                             <button onClick={() => navigate('/create')} className="btn btn-primary">
                                 Create Article
@@ -130,13 +130,13 @@ export const MyNewsPage = () => {
                     </div>
 
                     {noResults ? (
-                        <div className="bg-base-200 rounded-lg p-16 text-center">
+                        <div className="bg-base-100 rounded-lg p-16 text-center">
                             <p className="text-2xl text-base-content font-bold">
                                 You did not publish any articles matching your search criteria.
                             </p>
                         </div>
                     ) : newsList.length === 0 ? (
-                        <div className="bg-base-200 rounded-lg p-16 text-center">
+                        <div className="bg-base-100 rounded-lg p-16 text-center">
                             <p className="text-2xl text-base-content font-bold mb-4">
                                 You have yet to publish an article.
                                 <br />

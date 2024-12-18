@@ -4,7 +4,7 @@ import { UserContext, UserContextType } from '../interfaces/userInterfaces';
 import { NewsProps } from '../interfaces/newsInterface';
 import { fetchNews, searchNews } from '../services/newsService';
 import { useNavigate } from 'react-router-dom';
-import { FilterDropdown } from './FilterDropdown';
+import { SearchBar } from './SearchBar';
 import { LoaderIcon } from './Icons/LoaderIcon';
 import { NewsCard } from "./NewsCard";
 import Cookies from 'js-cookie';
@@ -77,7 +77,7 @@ export const NewsPage = () => {
             <div className="w-full h-[0.1rem] bg-red-800" />
 
             <div className="flex justify-between items-center my-10">
-                <FilterDropdown onSearch={handleSearch} />
+                <SearchBar onSearch={handleSearch} />
                 <div className="flex gap-4">
                     <button
                         onClick={handleNavigation}
@@ -90,7 +90,7 @@ export const NewsPage = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {!newsList || newsList.length === 0 ? (
-                    <div className="bg-base-200 rounded-lg p-16 text-center">
+                    <div className="bg-base-100 rounded-lg p-16 text-center">
                         {noResults ? (
                             <p className="text-2xl text-base-content font-bold mb-4">
                                 No articles found matching your search.

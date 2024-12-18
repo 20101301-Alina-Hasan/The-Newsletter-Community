@@ -120,7 +120,7 @@ export function Comment({ news_id }: CommentsProps) {
                             id="comment"
                             rows={6}
                             className="px-0 w-full text-sm bg-base-200 border-0 focus:ring-0 focus:outline-none text-base-content placeholder:text-base-content/50"
-                            placeholder="Write a comment..."
+                            placeholder="Share your thoughts..."
                             value={newComment}
                             onChange={(e) => setNewComment(e.target.value)}
                             required
