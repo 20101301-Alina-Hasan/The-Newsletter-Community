@@ -23,7 +23,7 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     useEffect(() => {
         document.documentElement.setAttribute(
             "data-theme",
-            darkMode ? "halloween" : "retro"
+            darkMode ? "halloween" : "cupcake"
         );
     }, [darkMode]);
 

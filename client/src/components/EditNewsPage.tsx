@@ -85,7 +85,7 @@ export function EditNewsPage() {
             selectedTags.forEach(tag_id => formData.append('tag_ids[]', String(tag_id)));
             await updateNews(formData, news_id);
             showToast('success', 'Your article has been successfully updated.');
-            navigate('/my-articles');
+            navigate(-1);
         } catch (error: any) {
             showToast('error', `${error.message}: Failed to update article.`);
         }
@@ -195,7 +195,7 @@ export function EditNewsPage() {
                         <button
                             type="button"
                             className="btn btn-secondary"
-                            onClick={() => navigate('/my-articles')}
+                            onClick={() => navigate(-1)}
                         >
                             Cancel
                         </button>

@@ -1,27 +1,33 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState, useContext } from 'react';
-import { UserContext, UserContextType } from '../interfaces/userInterfaces';
-import { NewsProps } from '../interfaces/newsInterface';
+import { useEffect, useState, useCallback } from 'react';
 import { fetchNews, searchNews } from '../services/newsService';
+import { useUserContext } from '../contexts/userContext';
+import { NewsProps } from '../interfaces/newsInterface';
 import { useNavigate } from 'react-router-dom';
 import { SearchBar } from './SearchBar';
 import { LoaderIcon } from './Icons/LoaderIcon';
 import { NewsCard } from "./NewsCard";
-import Cookies from 'js-cookie';
 
 export const NewsPage = () => {
-    const { userState } = useContext(UserContext) as UserContextType;
-    const [noResults, setNoResults] = useState<boolean>(false);
     const [newsList, setNewsList] = useState<NewsProps['news'][]>([]);
+    const [noResults, setNoResults] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-    const token = Cookies.get('access_token');
+    const [page, setPage] = useState<number>(1);
+    const [hasMore, setHasMore] = useState<boolean>(true);
     const navigate = useNavigate();
+    const { userState } = useUserContext();
+    const token = userState.token;
 
     const loadNews = async () => {
         try {
-            const news = await fetchNews(undefined, token, true);
-            setNewsList(news);
+            const news = await fetchNews(undefined, token, true, false, page);
+            console.log(page, news);
+            if (news.length === 0) {
+                setHasMore(false);
+            } else {
+                setNewsList((prevNews) => [...prevNews, ...news]);
+            }
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
             console.error("Error loading news:", error);
             setError(error.message || "An unexpected error occurred.");
@@ -30,14 +36,14 @@ export const NewsPage = () => {
         }
     };
 
-    const handleSearch = async (query: string, TagIds: number[]) => {
+    const handleSearch = async (searchQuery: string, selectedTags: number[]) => {
         try {
             setLoading(true);
-            console.log("Performing search with query:", query, "tags_ids:", TagIds);
-            const news = await searchNews(query, TagIds);
-            console.log("Search results:", news);
-            setNewsList(news);
-            setNoResults(false);
+            const news = await searchNews(searchQuery, selectedTags);
+            setNewsList(news); // Separate states to avoid unnecessary re-renders
+            setNoResults(news.length === 0);
+            setHasMore(false);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
             setError(error.message || "An unexpected error occurred during search.");
         } finally {
@@ -45,20 +51,39 @@ export const NewsPage = () => {
         }
     };
 
-    useEffect(() => {
-        loadNews();
-    }, []);
-
     const handleNavigation = () => {
         if (userState.token) {
-            navigate('/my-articles');
+            navigate('/dashboard');
         } else {
             navigate('/signup');
         }
     };
 
-    if (loading) {
-        return <LoaderIcon />
+    const handleScroll = useCallback(() => {
+        if (loading || !hasMore) return;
+
+        const scrollTop = document.documentElement.scrollTop;
+        const scrollHeight = document.documentElement.scrollHeight;
+        const clientHeight = document.documentElement.clientHeight;
+
+        if (scrollTop + clientHeight >= scrollHeight) {
+            setPage((prevPage) => prevPage + 1);
+        }
+    }, [loading, hasMore]);
+
+    useEffect(() => {
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, [handleScroll]);
+
+    useEffect(() => {
+        if (hasMore) {
+            loadNews();
+        }
+    }, [page]);
+
+    if (loading && page === 1) {
+        return <LoaderIcon />;
     }
 
     if (error) {
@@ -66,9 +91,9 @@ export const NewsPage = () => {
     }
 
     return (
-        <div className="min-h-screen bg-base-200 px-32 py-24">
+        <div id="explore" className="min-h-screen bg-base-200 px-32 py-16">
             <div className="mb-8">
-                <h2 className="text-3xl font-extrabold text-base-content">Explore</h2>
+                <h2 className="text-4xl font-extrabold text-base-content">Explore</h2>
                 <p className="text-lg font-semibold text-base-content my-4">
                     Discover articles, share ideas, and connect with a community of like-minded individuals.
                 </p>
@@ -77,7 +102,10 @@ export const NewsPage = () => {
             <div className="w-full h-[0.1rem] bg-red-800" />
 
             <div className="flex justify-between items-center my-10">
-                <SearchBar onSearch={handleSearch} />
+                {/* Pass the query and selectedTags to SearchBar */}
+                <SearchBar
+                    onSearch={handleSearch}
+                />
                 <div className="flex gap-4">
                     <button
                         onClick={handleNavigation}
@@ -97,7 +125,7 @@ export const NewsPage = () => {
                             </p>
                         ) : (
                             <p className="text-2xl text-base-content font-semibold">
-                                There are no news currently available.
+                                There are currently no news available.
                             </p>
                         )}
                     </div>
@@ -105,6 +133,16 @@ export const NewsPage = () => {
                     newsList.map((news) => <NewsCard key={news.news_id} {...news} />)
                 )}
             </div>
+
+            {loading ? (
+                <div className="flex justify-center py-8">
+                    <LoaderIcon />
+                </div>
+            ) : !hasMore && (
+                <div className="text-center py-16 text-gray-500 font-semibold">
+                    You have reached the end.
+                </div>
+            )}
         </div>
     );
 };

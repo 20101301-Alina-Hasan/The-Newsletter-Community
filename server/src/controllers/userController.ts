@@ -58,7 +58,9 @@ export const signup = async (req: Request, res: Response) => {
             return;
         }
         const hashedPassword = await bcrypt.hash(password, 10);
+        console.log(name, username, email, hashedPassword)
         const user = await db.User.create({ name, username, email, password: hashedPassword });
+
         if (user) {
             const token = createSession(user.user_id);
             res.cookie('access_token', token, {

@@ -15,19 +15,23 @@ const fetchFactory = async (endpoint: string, config?: AxiosRequestConfig): Prom
         throw new Error(error.response?.data?.message || 'Failed to fetch news.');
     }
 };
-export const fetchNews = async (news_id?: number, token?: string, all?: boolean, bookmarked?: boolean) => {
-    let endpoint = '/';
+export const fetchNews = async (news_id?: number, token?: string, all?: boolean, bookmarked?: boolean, page?: number) => {
+    let endpoint = '';
 
     if (token) {
         endpoint = '/user';
         if (news_id) endpoint += `/${news_id}`;
         if (bookmarked) endpoint += '/bookmark';
     } else if (news_id) {
-        endpoint += news_id;
+        endpoint += `/${news_id}`;
     }
 
     if (all) {
         endpoint += '/all';
+    }
+
+    if (page) {
+        endpoint += `/?page=${page}`;
     }
 
     const config: AxiosRequestConfig = token
@@ -97,28 +101,18 @@ export const updateNews = async (formData: FormData, news_id: number) => {
     }
 }
 
-// export const searchNews = async (query?: string, tagIds?: number[], user_id?: string): Promise<NewsProps['news'][]> => {
-//     const params: string[] = [];
-//     const token = Cookies.get('access_token');
-//     const config: AxiosRequestConfig = {};
-//     let endpoint = '/';
-
-//     if (user_id) {
-//         if (!token) {
-//             throw new Error('User is not authenticated.');
-//         }
-//         endpoint += '/user'
-//         config.headers = {
-//             Authorization: `Bearer ${token}`,
-//         };
-//     }
-
-//     endpoint += '/search';
-
-//     if (query) params.push(`query=${query}`);
-//     if (tagIds && tagIds.length > 0) params.push(`tag_ids=${tagIds.join(',')}`);
-
-//     endpoint += `/${params.length > 0 ? `?${params.join('&')}` : ''}`;
-//     console.log("endpoint", endpoint)
-//     return await fetchFactory(endpoint, config);
-// };
+export const deleteNews = async (news_id: number) => {
+    try {
+        const token = Cookies.get('access_token');
+        const response = await axios.delete(`http://localhost:3000/api/news/${news_id}`, {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error deleting article:', error);
+        throw error;
+    }
+}

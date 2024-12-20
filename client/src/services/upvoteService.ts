@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from 'axios';
-import Cookies from 'js-cookie';
+// import Cookies from 'js-cookie';
 
 export const fetchUpvotes = async (news_id: number) => {
     try {
@@ -16,10 +16,9 @@ export const fetchUpvotes = async (news_id: number) => {
     }
 };
 
-export const addUpvote = async (news_id: number) => {
+export const addUpvote = async (news_id: number, token: string) => {
     try {
-        const token = Cookies.get('access_token');
-        console.log(token);
+        // const token = Cookies.get('access_token');
         if (!token) {
             throw new Error('Unauthorized. Token is missing.');
         }
@@ -40,9 +39,9 @@ export const addUpvote = async (news_id: number) => {
     }
 }
 
-export const removeUpvote = async (news_id: number) => {
+export const removeUpvote = async (news_id: number, token: string) => {
     try {
-        const token = Cookies.get('access_token');
+        // const token = Cookies.get('access_token');
         if (!news_id) {
             throw new Error('News ID is required to fetch upvotes.');
         }

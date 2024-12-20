@@ -30,9 +30,9 @@ export function Upvote({ news_id, hasUpvoted, upvotes }: UpvoteProps) {
 
         try {
             if (newUpvoteState) {
-                await addUpvote(news_id);
+                await addUpvote(news_id, token);
             } else {
-                await removeUpvote(news_id);
+                await removeUpvote(news_id, token);
             }
         } catch (error) {
             console.error("Failed to update upvote status:", error);

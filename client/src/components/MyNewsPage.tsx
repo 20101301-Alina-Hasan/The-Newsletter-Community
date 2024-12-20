@@ -1,29 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState, useContext } from 'react';
-import { UserContext } from '../interfaces/userInterfaces';
-import { UserContextType } from '../interfaces/userInterfaces';
+import { useEffect, useState } from 'react';
+import { useUserContext } from '../contexts/userContext';
 import { useNavigate } from 'react-router-dom';
 import { MyNewsCard } from './MyNewsCard';
 import { SearchBar } from './SearchBar';
 import { MyBookmarkPage } from './MyBookmarkPage';
 import { NewsProps } from '../interfaces/newsInterface';
-import { fetchNews, searchNews } from '../services/newsService';
-
-import { showToast } from '../utils/toast';
-import Cookies from 'js-cookie';
-import axios from 'axios';
+import { deleteNews, fetchNews, searchNews } from '../services/newsService';
+import { HashLink } from 'react-router-hash-link';
 import { LoaderIcon } from './Icons/LoaderIcon';
-
+import { showToast } from '../utils/toast';
 
 export const MyNewsPage = () => {
-    const { userState } = useContext(UserContext) as UserContextType;
     const [newsList, setNewsList] = useState<NewsProps['news'][]>([]);
+    const [noResults, setNoResults] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-    const [noResults, setNoResults] = useState<boolean>(false);
-    const token = Cookies.get('access_token');
     const navigate = useNavigate();
-
+    const { userState } = useUserContext();
+    const token = userState.token;
 
     const loadNews = async () => {
         try {
@@ -41,16 +36,8 @@ export const MyNewsPage = () => {
     const handleSearch = async (query: string, TagIds: number[]) => {
         try {
             setLoading(true);
-            console.log("Performing search with query:", query, "tags_ids:", TagIds);
             const news = await searchNews(query, TagIds, token);
-            console.log("Search results:", news);
-
-            if (news.length === 0) {
-                setNoResults(true);
-            } else {
-                setNoResults(false);
-            }
-
+            setNoResults(news.length === 0);
             setNewsList(news);
         } catch (error: any) {
             console.error("Error searching news:", error);
@@ -60,27 +47,19 @@ export const MyNewsPage = () => {
         }
     };
 
-    useEffect(() => {
-        loadNews();
-    }, []);
-
-
     const handleDelete = async (news_id: number) => {
         try {
-            const token = Cookies.get("access_token");
-            await axios.delete(`http://localhost:3000/api/news/${news_id}`, {
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                withCredentials: true,
-            });
+            await deleteNews(news_id);
             showToast("success", "News deleted successfully.");
             setNewsList((prev) => prev.filter((news) => news.news_id !== news_id));
         } catch (error: any) {
             showToast("error", `${error.message}: Error deleting news.`);
         }
     };
+
+    useEffect(() => {
+        loadNews();
+    }, []);
 
     if (loading) {
         return <LoaderIcon />
@@ -91,27 +70,26 @@ export const MyNewsPage = () => {
     }
 
     return (
-        <div className="min-h-screen bg-base-300">
-            <div className="bg-base-300 border-b border-base-200 py-8">
+        <div id="my-articles" className="min-h-screen bg-base-300">
+            <div className="bg-base-300 border-b border-base-200 py-16">
                 <div className="container mx-auto px-32">
-                    <div className="flex items-center gap-4">
-                        <div className="space-y-2">
-                            <h1 className="pt-4 text-4xl font-semibold font-serif text-base-content">
-                                Welcome
-                                <span className="font-extrabold"> {userState.user?.name}</span>
-                            </h1>
-                            <p className="text-md text-base-content/70">@{userState.user?.username}</p>
-                        </div>
+                    <div className="flex flex-col items-center gap-4 text-center">
+                        <h1 className="pt-4 text-5xl font-serif text-base-content">
+                            Welcome, <span className="font-extrabold">{userState.user?.name}</span>
+                        </h1>
+                        <p className="text-lg text-base-content/70 mt-4">
+                            We're excited to have you here! Explore and create new articles, connect with others, and contribute to the community.
+                        </p>
                     </div>
                 </div>
             </div>
 
-            <div className="min-h-screen  bg-base-200">
-                <div className="container mx-auto px-32 py-8">
+            <div className="min-h-screen bg-base-200">
+                <div className="container mx-auto px-32 py-16">
                     <div className="mb-8">
-                        <h2 className="text-3xl font-extrabold text-base-content">My Articles</h2>
+                        <h2 className="text-4xl font-extrabold text-base-content">My Articles</h2>
                         <p className="text-lg font-semibold text-base-content my-4">
-                            Publish your articles, polish older ones, and connect with a community of like-minded individuals.
+                            Publish your articles, polish older ones, and encounter like-minded individuals.
                         </p>
                     </div>
 
@@ -123,6 +101,11 @@ export const MyNewsPage = () => {
                             <button onClick={() => navigate('/create')} className="btn btn-primary">
                                 Create Article
                             </button>
+                            <HashLink to="/dashboard#bookmarks" scroll={(el) => el.scrollIntoView({ behavior: 'smooth', block: 'start' })}>
+                                <a className="btn bg-red-700 hover:bg-red-800 text-white h-12" >
+                                    Bookmarks
+                                </a>
+                            </HashLink>
                             <button onClick={() => navigate('/')} className="btn btn-secondary">
                                 Explore
                             </button>
@@ -162,5 +145,6 @@ export const MyNewsPage = () => {
             <MyBookmarkPage />
         </div>
     );
+
 };
 

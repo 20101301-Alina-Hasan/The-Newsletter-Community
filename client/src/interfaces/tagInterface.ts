@@ -9,7 +9,7 @@ export interface FilterState {
 }
 
 export interface FilterDropdownProps {
-    onSearch: (query: string, TagIds: number[]) => void;
+    onSearch: (query: string, selectedTags: number[]) => void;
 }
 
 export interface Tag {

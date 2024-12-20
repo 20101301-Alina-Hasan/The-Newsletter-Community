@@ -17,7 +17,7 @@ export const BookmarkModel = (sequelize: Sequelize) => {
             },
             user_id: {
                 type: DataTypes.INTEGER,
-                unique: true,
+                unique: false,
                 allowNull: false,
             },
             news_id: {
@@ -30,6 +30,12 @@ export const BookmarkModel = (sequelize: Sequelize) => {
             modelName: 'Bookmark',
             tableName: 'Bookmark',
             timestamps: false,
+            indexes: [
+                {
+                    unique: true,
+                    fields: ['user_id', 'news_id'],
+                },
+            ],
         }
     );
     return Bookmark;

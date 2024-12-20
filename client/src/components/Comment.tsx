@@ -1,15 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { fetchComments, addComment, editComment, deleteComment } from "../services/commentService";
 import { CommentsProps } from "../interfaces/commentInterface";
-import { UserContext, UserContextType } from '../interfaces/userInterfaces';
 import { LoaderIcon } from "./Icons/LoaderIcon";
 import { MoreVertical, Edit, Trash } from 'lucide-react';
 import { showToast } from "../utils/toast";
+import { useUserContext } from "../contexts/userContext";
 import { useNavigate } from "react-router-dom";
 
 export function Comment({ news_id }: CommentsProps) {
-    const { userState } = useContext(UserContext) as UserContextType;
     const [comments, setComments] = useState<CommentsProps["news"][]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -18,7 +17,8 @@ export function Comment({ news_id }: CommentsProps) {
     const [newComment, setNewComment] = useState<string>("");
     const [commentCount, setCommentCount] = useState<number>(0);
     const navigate = useNavigate();
-    const token = userState.token
+    const { userState } = useUserContext();
+    const token = userState.token;
 
     useEffect(() => {
         const loadComments = async () => {

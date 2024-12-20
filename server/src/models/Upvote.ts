@@ -17,7 +17,7 @@ export const UpvoteModel = (sequelize: Sequelize) => {
             },
             user_id: {
                 type: DataTypes.INTEGER,
-                unique: true,
+                unique: false,
                 allowNull: false,
             },
             news_id: {
@@ -30,6 +30,12 @@ export const UpvoteModel = (sequelize: Sequelize) => {
             modelName: 'Upvote',
             tableName: 'Upvote',
             timestamps: false,
+            indexes: [
+                {
+                    unique: true,
+                    fields: ['user_id', 'news_id'],
+                },
+            ],
         }
     );
     return Upvote;

@@ -1,7 +1,14 @@
 import { Sequelize } from 'sequelize';
 import db from './index';
 
-export const sequelize = new Sequelize('newsportal', 'postgres', 'alina', {
+// export const sequelize = new Sequelize('newsportal', 'postgres', 'alina', {
+//     host: 'localhost',
+//     dialect: 'postgres',
+//     port: 5432,
+//     logging: false
+// });
+
+export const sequelize = new Sequelize('dummy-newsportal', 'postgres', 'alina', {
     host: 'localhost',
     dialect: 'postgres',
     port: 5432,

@@ -8,14 +8,15 @@ import { Op } from "sequelize";
 const getNews = async (query: any, res: Response) => {
     try {
         const user_id = query?.user_id;
-        const { filterTags, ...restQuery } = query;
-
+        const { page = 1, limit = 50, filterTags, ...restQuery } = query;
         const defaultQuery = {
             ...restQuery,
             where: {
                 ...restQuery.where
             },
             order: [['releaseDate', 'DESC']],
+            limit: parseInt(limit, 10),
+            offset: (parseInt(page, 10) - 1) * parseInt(limit, 10),
             include: [
                 {
                     model: db.User,
@@ -55,57 +56,34 @@ const getNews = async (query: any, res: Response) => {
     }
 };
 
-export const getNewsByBookmark = async (req: AuthRequest, res: Response): Promise<void> => {
-    const user_id = req.user.userId;
-
-    try {
-        // Fetch the user's bookmarks, including related news IDs
-        const bookmarks = await db.Bookmark.findAll({
-            where: { user_id },
-            include: [{ model: db.News, attributes: ["news_id"] }],
-        });
-
-        // If no bookmarks found, return a message
-        if (!bookmarks || bookmarks.length === 0) {
-            res.status(200).json({ message: "No bookmarks found." });
-            return;
-        }
-
-        // Extract the news IDs from the bookmarks
-        const news_ids = bookmarks.map((bookmark: any) => bookmark.News.news_id);
-
-        // Construct the query with the user's news_ids from the bookmarks
-        const query = {
-            where: { news_id: { [Op.in]: news_ids } },
-            user_id, // include user_id for fetching user interactions
-        };
-
-        // Pass the query to the getNews function
-        await getNews(query, res);
-
-    } catch (error) {
-        console.error("Error fetching bookmarked news:", error);
-        res.status(500).json({ message: "Internal server error." });
-        return;
-    }
-};
-
-export const getUserNews = async (req: AuthRequest, res: Response): Promise<void> => {
-    const user_id = req.user.userId;
-    const query = { where: { user_id }, user_id };
-    await getNews(query, res);
-};
-
 //refactor --- (combine controller below)
 export const getAllNews = async (req: Request, res: Response): Promise<void> => {
-    const query = {};
+    const { page = 1 } = req.query;
+    const pageNumber = parseInt(page as string, 10);
+    const query = {
+        page: pageNumber
+    };
     await getNews(query, res);
 };
 
 //refactor --- 
 export const getUserAllNews = async (req: AuthRequest, res: Response): Promise<void> => {
     const user_id = req.user.userId;
-    const query = { user_id };
+    const { page = 1 } = req.query;
+    const pageNumber = parseInt(page as string, 10);
+    const query = {
+        page: pageNumber,
+        user_id
+    };
+    await getNews(query, res);
+};
+
+export const getUserNews = async (req: AuthRequest, res: Response): Promise<void> => {
+    const user_id = req.user.userId;
+    const query = {
+        where: { user_id },
+        user_id
+    };
     await getNews(query, res);
 };
 
@@ -180,6 +158,35 @@ export const getNewsById = async (req: Request, res: Response): Promise<void> =>
     }
 };
 
+export const getNewsByBookmark = async (req: AuthRequest, res: Response): Promise<void> => {
+    const user_id = req.user.userId;
+
+    try {
+        const bookmarks = await db.Bookmark.findAll({
+            where: { user_id },
+            include: [{ model: db.News, attributes: ["news_id"] }],
+        });
+
+        if (!bookmarks || bookmarks.length === 0) {
+            res.status(200).json({ message: "No bookmarks found." });
+            return;
+        }
+        const news_ids = bookmarks.map((bookmark: any) => bookmark.News.news_id);
+
+        const query = {
+            where: { news_id: { [Op.in]: news_ids } },
+            user_id,
+        };
+
+        await getNews(query, res);
+
+    } catch (error) {
+        console.error("Error fetching bookmarked news:", error);
+        res.status(500).json({ message: "Internal server error." });
+        return;
+    }
+};
+
 export const searchNews = async (req: AuthRequest, res: Response): Promise<void> => {
     const user_id = req.user?.userId;
     const { query, tag_ids } = req.query;
@@ -223,13 +230,28 @@ export const createNews = async (req: AuthRequest, res: Response) => {
             return;
         }
 
-        const news = await db.News.create({
-            user_id,
-            title,
-            releaseDate,
-            description,
-            thumbnail
-        });
+        let news; //--dummy news insert
+        for (let i = 0; i <= 60; i++) {
+
+            let t = `${title}+${i}`;
+            news = await db.News.create({
+                user_id,
+                title: t,
+                releaseDate,
+                description,
+                thumbnail
+            });
+
+
+        }
+
+        // const news = await db.News.create({
+        //     user_id,
+        //     title,
+        //     releaseDate,
+        //     description,
+        //     thumbnail
+        // });
 
         if (tag_ids && Array.isArray(tag_ids) && tag_ids.length > 0) {
             const validTagIds = tag_ids.map((tag_id) => parseInt(tag_id, 10)).filter((tag_id) => !isNaN(tag_id));
