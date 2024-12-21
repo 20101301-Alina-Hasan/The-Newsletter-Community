@@ -13,6 +13,8 @@ import newsRoutes from './routes/newsRoute';
 import commentRoutes from './routes/commentRoute';
 import upvoteRoutes from './routes/upvoteRoute';
 import bookmarkRoutes from './routes/bookmarkRoute';
+import { createArticleIndex } from './elasticSearchSetup';
+import { getArticlesFromElastic } from './controllers/elasticController';
 
 dotenv.config();
 
@@ -36,6 +38,7 @@ app.use('/api/news', newsRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/upvotes', upvoteRoutes);
 app.use('/api/bookmarks', bookmarkRoutes);
+app.get("/api/articles", getArticlesFromElastic);
 
 
 app.get('*', (req, res) => { res.status(404).send('Sorry, not found 😞'); })
@@ -66,6 +69,9 @@ const startServer = async () => {
 
         await db.sequelize.sync({ alter: true });
         console.log('🔄 All models were synchronized successfully.');
+
+        await createArticleIndex();
+        console.log('🔍 ElasticSearch index created successfully.');
 
         httpServer.listen(SERVER_PORT, () => {
             console.log(`🚀 Server is running on port http://localhost:${SERVER_PORT}`);

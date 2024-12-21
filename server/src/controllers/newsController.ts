@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { AuthRequest } from "../interfaces/authInterface";
 import { fetchUserInteractions, buildNewsObject } from "../helper/newsHelper";
 import { UserInteraction } from "../interfaces/newsInterface";
+import { client } from "../config/elasticSearch";
 import db from "../models";
 import { Op } from "sequelize";
 
@@ -230,27 +231,26 @@ export const createNews = async (req: AuthRequest, res: Response) => {
             return;
         }
 
-        // let news; //--dummy news insert
-        // for (let i = 0; i <= 60; i++) {
-
-        //     let t = `${title}+${i}`;
-        //     news = await db.News.create({
-        //         user_id,
-        //         title: t,
-        //         releaseDate,
-        //         description,
-        //         thumbnail
-        //     });
-
-
-        // }
-
         const news = await db.News.create({
             user_id,
             title,
             releaseDate,
             description,
             thumbnail
+        });
+
+        // Indexing games in elastic
+        await client.index({
+            index: "articles",
+            id: `${news.news_id}`,
+            body: {
+                title: news.title,
+                releaseDate: news.releaseDate,
+                description: news.description,
+                thumbnail: news.thumbnail,
+                user_id: news.user_id,
+                tag_ids: tag_ids,
+            },
         });
 
         if (tag_ids && Array.isArray(tag_ids) && tag_ids.length > 0) {
