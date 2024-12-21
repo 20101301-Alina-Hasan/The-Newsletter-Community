@@ -11,10 +11,10 @@ import {
 import { fetchTags } from '../services/tagService';
 import { SlidersHorizontal, Search } from 'lucide-react';
 
-export function SearchBar({ onSearch }: FilterDropdownProps) {
+export function SearchBar({ onSearch, searchQuery, selectedTags }: FilterDropdownProps) {
     const [filterState, setFilterState] = useState<FilterState>({
-        selectedTags: [],
-        searchQuery: '',
+        selectedTags: selectedTags || [],
+        searchQuery: searchQuery || '',
     });
     const [tags, setTags] = useState<Tag[]>([]);
     const [loading, setLoading] = useState(false);
@@ -43,7 +43,7 @@ export function SearchBar({ onSearch }: FilterDropdownProps) {
             .sort((a, b) => a.tag.localeCompare(b.tag));
     }, [tags, tagSearchQuery]);
 
-    const visibleTags = showAllTags ? filteredTags : filteredTags.slice(0, 18);
+    const visibleTags = showAllTags ? filteredTags : filteredTags.slice(0, 16);
 
     const toggleTag = (tag: Tag) => {
         setFilterState((prev: FilterState) => {
@@ -59,12 +59,13 @@ export function SearchBar({ onSearch }: FilterDropdownProps) {
 
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const query = event.target.value;
+        console.log('Search query changed to:', query);
         setFilterState(prev => ({ ...prev, searchQuery: query }));
     };
 
     const handleSearchSubmit = () => {
-        const TagIds = filterState.selectedTags.map(tag => tag.tag_id);
-        onSearch(filterState.searchQuery, TagIds);
+        console.log("Search query to be sent:", filterState.searchQuery);
+        onSearch(filterState.searchQuery, filterState.selectedTags);
     };
 
     useEffect(() => {
@@ -73,9 +74,16 @@ export function SearchBar({ onSearch }: FilterDropdownProps) {
         }
     }, [isDropdownOpen]);
 
+    useEffect(() => {
+        setFilterState(prevState => ({
+            ...prevState,
+            searchQuery: searchQuery,
+        }));
+    }, [searchQuery]);
+
 
     return (
-        <div className="flex items-center gap-2">
+        <>
             <div className="relative flex items-center w-full mr-4">
                 <SearchIcon />
                 <SearchInput
@@ -92,13 +100,13 @@ export function SearchBar({ onSearch }: FilterDropdownProps) {
                     loading={loading}
                     visibleTags={visibleTags}
                     showAllTags={showAllTags}
+                    filteredTags={filteredTags}
                 />
             </div>
             <button onClick={handleSearchSubmit} className="btn btn-sm btn-primary h-12 rounded-lg">
                 Search
             </button>
-
-        </div>
+        </>
     );
 }
 
@@ -125,6 +133,7 @@ const Dropdown = ({
     loading,
     visibleTags,
     showAllTags,
+    filteredTags
 }: DropdownProps) => (
     <div className="dropdown dropdown-right dropdown-bottom absolute right-4">
         <div
@@ -153,6 +162,7 @@ const Dropdown = ({
                     toggleTag={toggleTag}
                     selectedTags={selectedTags}
                     showAllTags={showAllTags}
+                    filteredTags={filteredTags}
                 />
             )}
         </div>
@@ -198,7 +208,7 @@ const TagLoader = () => (
     </div>
 );
 
-const TagList = ({ visibleTags, toggleTag, selectedTags, showAllTags }: TagListProps) => (
+const TagList = ({ visibleTags, toggleTag, selectedTags, showAllTags, filteredTags }: TagListProps) => (
     <div>
         {visibleTags.length === 0 ? (
             <div className="px-3 py-1 rounded-lg text-sm text-base-content opacity-60 italic">
@@ -218,7 +228,7 @@ const TagList = ({ visibleTags, toggleTag, selectedTags, showAllTags }: TagListP
                         {tag.tag}
                     </button>
                 ))}
-                {!showAllTags && visibleTags.length > 18 && (
+                {!showAllTags && filteredTags.length > 16 && (
                     <span className="px-3 py-1 rounded-lg text-sm text-base-content opacity-60 italic">
                         more...
                     </span>
@@ -227,3 +237,5 @@ const TagList = ({ visibleTags, toggleTag, selectedTags, showAllTags }: TagListP
         )}
     </div>
 );
+
+

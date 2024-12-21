@@ -1,5 +1,3 @@
-import { Tag } from './tagInterface';
-
 export interface NewsProps {
     isOpen?: boolean;
     news: {
@@ -46,25 +44,3 @@ export interface EditNewsPageProps {
     currentThumbnail?: string;
     currentTags: string[];
 }
-
-export interface PromptDeleteProps {
-    onDelete: () => void;
-    onCancel: () => void;
-}
-
-
-export interface NewsDisplayProps {
-    newsList: NewsProps['news'][];
-    noResults: boolean;
-    hasSearched: boolean;
-    loading: boolean;
-    hasMore: boolean;
-    onConfirmDelete: (news_id: number) => void;
-    onNavigate: () => void;
-    handleBack: () => void;
-    onSearch: (query: string, tags: Tag[]) => void;
-    selectedTags: Tag[];
-    searchQuery: string;
-}
-
-

@@ -16,7 +16,7 @@ export default {
         cupcake: {
           ...require("daisyui/src/theming/themes")["cupcake"],
           primary: "#ffce67",
-          secondary: "#b8e3c8",
+          secondary: "#CB9DF0",
           neutral: "#ef798a",
           accent: "#68cd3f",
           "secondary-content": "#000000",

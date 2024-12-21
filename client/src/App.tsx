@@ -10,12 +10,10 @@ import { ToastContainer } from 'react-toastify';
 import { fetchUser } from './services/authService';
 import { LoginPage } from './components/LoginCard';
 import { SignupPage } from './components/SignupCard';
-import { NewsView } from './components/NewsView';
-// import { NewsPage } from './components/NewsPage';
+import { View } from './components/View';
 import { MyArticles } from './components/MyArticles';
 import { CreateNewsPage } from './components/CreateNewsPage';
 import { EditNewsPage } from './components/EditNewsPage';
-// import { MyNewsPage } from './components/MyNewsPage';
 import { Navbar } from './components/Navbar';
 import { io } from 'socket.io-client';
 import { Explore } from './components/Explore';
@@ -67,7 +65,7 @@ function App() {
               <Route path="/" element={<Explore />} />
               <Route path="signup" element={<SignupPage />} />
               <Route path="login" element={<LoginPage />} />
-              <Route path="news-view" element={<NewsView />} />
+              <Route path="news-view" element={<View />} />
               <Route element={<ProtectedRoutes />}>
                 {/* <Route path="dashboard" element={<MyNewsPage />} /> */}
                 <Route path="dashboard" element={<MyArticles />} />

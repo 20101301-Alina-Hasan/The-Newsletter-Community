@@ -1,31 +1,16 @@
-import { useEffect, useState, useCallback } from 'react';
+import { FC, useEffect, useState, useCallback } from 'react';
+import { PromptDeleteProps, NewsDisplayProps, NewsProps } from '../interfaces/newsInterface';
+import { FilterDropdownProps } from '../interfaces/tagInterface';
 import { fetchNews, searchNews } from '../services/newsService';
 import { useUserContext } from '../contexts/userContext';
-import { NewsProps } from '../interfaces/newsInterface';
 import { useNavigate } from 'react-router-dom';
 import { LoaderIcon } from './Icons/LoaderIcon';
-// import { NewsDisplay } from './NewsDisplay';
 import { SearchBar } from './SearchBar';
 import { ArticleCard } from './ArticleCard';
 import { deleteNews } from '../services/newsService';
 import { showToast } from '../utils/toast';
+import { Tag } from '../interfaces/tagInterface';
 
-interface PromptDeleteProps {
-    onDelete: () => void;
-    onCancel: () => void;
-}
-
-
-interface NewsDisplayProps {
-    newsList: NewsProps['news'][];
-    noResults: boolean;
-    loading: boolean;
-    loadNews: () => void;
-    hasMore: boolean;
-    onConfirmDelete: (news_id: number) => void;
-    handleSearch: (query: string, tags: number[]) => void;
-    handleNavigation: () => void;
-}
 
 export const Explore = () => {
     const [newsList, setNewsList] = useState<NewsProps['news'][]>([]);
@@ -34,8 +19,11 @@ export const Explore = () => {
     const [error, setError] = useState<string | null>(null);
     const [page, setPage] = useState<number>(1);
     const [hasMore, setHasMore] = useState<boolean>(true);
+    const [hasSearched, setHasSearched] = useState<boolean>(false);
     const [newsToDelete, setNewsToDelete] = useState<number | null>(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
+    const [searchQuery, setSearchQuery] = useState<string>('');
     const navigate = useNavigate();
     const { userState } = useUserContext();
     const token = userState.token;
@@ -59,13 +47,18 @@ export const Explore = () => {
         }
     }, [token, page]);
 
-    const handleSearch = async (searchQuery: string, selectedTags: number[]) => {
+    const handleSearch = async (query: string, tags: Tag[]) => {
         try {
+            console.log("sentover", query, tags);
+            setSearchQuery(query);
+            setSelectedTags(tags);
             setLoading(true);
-            const news = await searchNews(searchQuery, selectedTags);
+            const TagIds = tags.map((tag) => tag.tag_id);
+            const news = await searchNews(query, TagIds);
             setNewsList(news);
             setNoResults(news.length === 0);
             setHasMore(false);
+            setHasSearched(true);
         } catch (error: unknown) {
             if (error instanceof Error) {
                 setError(error.message || "An unexpected error occurred.");
@@ -113,6 +106,14 @@ export const Explore = () => {
         }
     }, [loading, hasMore]);
 
+    const handleBack = () => {
+        setHasSearched(false);
+        setPage(1);
+        setNewsList([]);
+        setHasMore(true);
+        loadNews();
+    };
+
     useEffect(() => {
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
@@ -144,11 +145,14 @@ export const Explore = () => {
                 newsList={newsList}
                 noResults={noResults}
                 loading={loading}
-                loadNews={loadNews}
                 hasMore={hasMore}
+                hasSearched={hasSearched}
                 onConfirmDelete={confirmDelete}
-                handleSearch={handleSearch}
-                handleNavigation={() => navigate(userState.token ? '/dashboard' : '/signup')}
+                onSearch={handleSearch}
+                searchQuery={searchQuery}
+                selectedTags={selectedTags}
+                onNavigate={() => navigate(userState.token ? '/dashboard' : '/signup')}
+                handleBack={handleBack}
             />
         </div>
     );
@@ -172,26 +176,18 @@ const MainSection = ({
     noResults,
     loading,
     hasMore,
+    hasSearched,
     onConfirmDelete,
-    handleSearch,
-    handleNavigation
+    onSearch,
+    searchQuery,
+    selectedTags,
+    onNavigate,
+    handleBack
 }: NewsDisplayProps) => {
     return (
         <div id="explore" className="min-h-screen bg-base-200 px-32 py-16">
             <HeaderSection />
-
-            <div className="flex justify-between items-center my-10">
-                <SearchBar onSearch={handleSearch} />
-                <div className="flex gap-4">
-                    <button
-                        onClick={handleNavigation}
-                        className="btn btn-primary rounded-lg font-semibold"
-                    >
-                        My Articles
-                    </button>
-                </div>
-            </div>
-
+            <SearchSection onSearch={onSearch} onNavigate={onNavigate} hasSearched={hasSearched} handleBack={handleBack} searchQuery={searchQuery} selectedTags={selectedTags} />
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {newsList.length === 0 ? (
                     <div className="bg-base-100 rounded-lg p-16 text-center">
@@ -241,3 +237,30 @@ const HeaderSection = () => (
     </div>
 )
 
+const SearchSection: FC<FilterDropdownProps> = ({ onSearch, onNavigate, hasSearched, handleBack, searchQuery, selectedTags }) => {
+    return (
+        <div className="flex justify-between items-center my-10">
+            <div className="flex items-center gap-2">
+                <SearchBar onSearch={onSearch} searchQuery={searchQuery} selectedTags={selectedTags} />
+                {hasSearched && (
+                    <div className='justify-end gap-4 flex'>
+                        <button
+                            className="btn btn-secondary rounded-lg"
+                            onClick={handleBack}
+                        >
+                            Back
+                        </button>
+                    </div>
+                )}
+            </div>
+            <div className="flex gap-4">
+                <button
+                    onClick={onNavigate}
+                    className="btn btn-primary rounded-lg font-semibold"
+                >
+                    My Articles
+                </button>
+            </div>
+        </div>
+    );
+};

@@ -10,6 +10,7 @@ import { HashLink } from 'react-router-hash-link';
 import { LoaderIcon } from './Icons/LoaderIcon';
 import { showToast } from '../utils/toast';
 import { ArticleCard } from './ArticleCard';
+import { Tag } from '../interfaces/tagInterface';
 
 export const MyArticles = () => {
     const [newsList, setNewsList] = useState<NewsProps['news'][]>([]);
@@ -18,7 +19,10 @@ export const MyArticles = () => {
     const [error, setError] = useState<string | null>(null);
     const [hasSearched, setHasSearched] = useState<boolean>(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
+    const [searchQuery, setSearchQuery] = useState<string>('');
     const [newsToDelete, setNewsToDelete] = useState<number | null>(null);
+
     const { userState } = useUserContext();
     const token = userState.token;
 
@@ -38,9 +42,12 @@ export const MyArticles = () => {
         if (token) loadNews();
     }, [token, loadNews]);
 
-    const handleSearch = async (query: string, TagIds: number[]) => {
+    const handleSearch = async (query: string, tags: Tag[]) => {
         try {
+            setSearchQuery(query);
+            setSelectedTags(tags);
             setLoading(true);
+            const TagIds = tags.map((tag) => tag.tag_id);
             const news = await searchNews(query, TagIds, token);
             setNoResults(news.length === 0);
             setNewsList(news);
@@ -101,6 +108,8 @@ export const MyArticles = () => {
                 setHasSearched={setHasSearched}
                 onConfirmDelete={confirmDelete}
                 loadNews={loadNews}
+                searchQuery={searchQuery}
+                selectedTags={selectedTags}
             />
             <MyBookmarks />
         </div>
@@ -146,26 +155,27 @@ const HeaderSection = () => (
 );
 
 
-const SearchSection = ({ onSearch, loadNews, hasSearched, setHasSearched }: any) => {
+const SearchSection = ({ onSearch, loadNews, hasSearched, setHasSearched, searchQuery, selectedTags }: any) => {
     const navigate = useNavigate();
     const handleBack = () => {
         setHasSearched(false);
         loadNews();
     };
-    console.log('Has Searched in searchsection:', hasSearched);
     return (
         <div className="flex justify-between items-center my-10">
-            <SearchBar onSearch={onSearch} />
-            {hasSearched && (
-                <div className='justify-end gap-4 flex'>
-                    <button
-                        className="btn btn-secondary rounded-lg"
-                        onClick={handleBack}
-                    >
-                        Back
-                    </button>
-                </div>
-            )}
+            <div className="flex items-center gap-2">
+                <SearchBar onSearch={onSearch} searchQuery={searchQuery} selectedTags={selectedTags} />
+                {hasSearched && (
+                    <div className='justify-end gap-4 flex'>
+                        <button
+                            className="btn btn-secondary rounded-lg"
+                            onClick={handleBack}
+                        >
+                            Back
+                        </button>
+                    </div>
+                )}
+            </div>
             <div className="flex gap-4">
                 <button onClick={() => navigate('/create')} className="btn btn-primary rounded-lg">
                     Create Article
@@ -248,6 +258,8 @@ const MainSection = ({
     noResults,
     hasSearched,
     setHasSearched,
+    selectedTags,
+    searchQuery,
     loadNews,
     onConfirmDelete,
 }: any) => {
@@ -259,7 +271,9 @@ const MainSection = ({
                     onSearch={onSearch}
                     loadNews={loadNews}
                     hasSearched={hasSearched}
-                    setHasSearched={setHasSearched} />
+                    setHasSearched={setHasSearched}
+                    selectedTags={selectedTags}
+                    searchQuery={searchQuery} />
                 <ContentGrid
                     newsList={newsList}
                     noResults={noResults}

@@ -9,7 +9,12 @@ export interface FilterState {
 }
 
 export interface FilterDropdownProps {
-    onSearch: (query: string, selectedTags: number[]) => void;
+    onSearch: (query: string, selectedTags: Tag[]) => void;
+    onNavigate?: () => void;
+    hasSearched?: boolean;
+    handleBack?: () => void;
+    searchQuery: string;
+    selectedTags: Tag[];
 }
 
 export interface DropdownProps {
@@ -22,6 +27,7 @@ export interface DropdownProps {
     loading: boolean;
     visibleTags: Tag[];
     showAllTags: boolean;
+    filteredTags: Tag[];
 }
 
 export interface TagListProps {
@@ -29,6 +35,7 @@ export interface TagListProps {
     toggleTag: (tag: Tag) => void;
     selectedTags: Tag[];
     showAllTags: boolean;
+    filteredTags: Tag[];
 }
 
 export interface TagSearchInputProps {

@@ -12,7 +12,7 @@ import { fetchNews } from '../services/newsService';
 import { NewsProps } from "../interfaces/newsInterface";
 import { useUserContext } from "../contexts/userContext";
 
-export function NewsView() {
+export function View() {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [news, setNews] = useState<NewsProps["news"][]>([]);
