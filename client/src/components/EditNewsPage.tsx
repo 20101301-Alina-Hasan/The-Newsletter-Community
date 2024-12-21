@@ -80,7 +80,6 @@ export function EditNewsPage() {
                 showToast('error', 'Please fill in all required fields.');
                 return;
             }
-
             const formData = new FormData();
             formData.append('title', title);
             formData.append('description', content);
@@ -192,7 +191,7 @@ export function EditNewsPage() {
                         </div>
                     )}
                     <div className="flex justify-end space-x-2">
-                        <button type="submit" className="btn btn-primary font-bold">
+                        <button type="submit" className="btn btn-primary font-bold" disabled={isUploading}>
                             Save
                         </button>
                         <button

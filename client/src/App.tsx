@@ -11,14 +11,14 @@ import { fetchUser } from './services/authService';
 import { LoginPage } from './components/LoginCard';
 import { SignupPage } from './components/SignupCard';
 import { NewsView } from './components/NewsView';
-import { NewsPage } from './components/NewsPage';
+// import { NewsPage } from './components/NewsPage';
+import { MyArticles } from './components/MyArticles';
 import { CreateNewsPage } from './components/CreateNewsPage';
 import { EditNewsPage } from './components/EditNewsPage';
-import { MyNewsPage } from './components/MyNewsPage';
+// import { MyNewsPage } from './components/MyNewsPage';
 import { Navbar } from './components/Navbar';
 import { io } from 'socket.io-client';
-// import Cookies from 'js-cookie';
-
+import { Explore } from './components/Explore';
 
 function App() {
   const [userState, userDispatch] = useReducer(userReducer, {
@@ -63,12 +63,14 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Navbar />}>
-              <Route path="/" element={<NewsPage />} />
+              {/* <Route path="/" element={<NewsPage />} /> */}
+              <Route path="/" element={<Explore />} />
               <Route path="signup" element={<SignupPage />} />
               <Route path="login" element={<LoginPage />} />
               <Route path="news-view" element={<NewsView />} />
               <Route element={<ProtectedRoutes />}>
-                <Route path="dashboard" element={<MyNewsPage />} />
+                {/* <Route path="dashboard" element={<MyNewsPage />} /> */}
+                <Route path="dashboard" element={<MyArticles />} />
                 <Route path="create" element={<CreateNewsPage />} />
                 <Route path="edit" element={<EditNewsPage />} />
               </Route>

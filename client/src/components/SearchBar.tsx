@@ -1,18 +1,24 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Tag, FilterState, FilterDropdownProps } from '../interfaces/tagInterface';
+import {
+    Tag,
+    FilterState,
+    FilterDropdownProps,
+    DropdownProps,
+    TagListProps,
+    TagSearchInputProps,
+    SelectedTagsProps
+} from '../interfaces/tagInterface';
 import { fetchTags } from '../services/tagService';
-import { SlidersHorizontal } from 'lucide-react';
-import { Search } from 'lucide-react';
+import { SlidersHorizontal, Search } from 'lucide-react';
 
 export function SearchBar({ onSearch }: FilterDropdownProps) {
     const [filterState, setFilterState] = useState<FilterState>({
         selectedTags: [],
         searchQuery: '',
     });
-
     const [tags, setTags] = useState<Tag[]>([]);
-    const [loading, setLoading] = useState<boolean>(false);
-    const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
+    const [loading, setLoading] = useState(false);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [tagSearchQuery, setTagSearchQuery] = useState('');
     const showAllTags = false;
 
@@ -20,11 +26,10 @@ export function SearchBar({ onSearch }: FilterDropdownProps) {
         try {
             setLoading(true);
             const response = await fetchTags();
-            const tags = response.map((tag: { tag_id: number; tag: string }) => ({
+            setTags(response.map((tag: Tag) => ({
                 tag_id: tag.tag_id,
                 tag: tag.tag,
-            }));
-            setTags(tags);
+            })));
         } catch (error) {
             console.error('Error fetching tags:', error);
         } finally {
@@ -40,8 +45,8 @@ export function SearchBar({ onSearch }: FilterDropdownProps) {
 
     const visibleTags = showAllTags ? filteredTags : filteredTags.slice(0, 18);
 
-    const toggleTag = (tag: { tag_id: number; tag: string }) => {
-        setFilterState(prev => {
+    const toggleTag = (tag: Tag) => {
+        setFilterState((prev: FilterState) => {
             const exists = prev.selectedTags.some(t => t.tag_id === tag.tag_id);
             return {
                 ...prev,
@@ -68,114 +73,157 @@ export function SearchBar({ onSearch }: FilterDropdownProps) {
         }
     }, [isDropdownOpen]);
 
+
     return (
         <div className="flex items-center gap-2">
             <div className="relative flex items-center w-full mr-4">
-
-                <Search className="text-gray-500 absolute left-3 top-1/2 size-[1.25rem] -translate-y-1/2 text-muted-foreground pointer-events-none" />
-
-                <input
-                    type="text"
-                    placeholder="Search"
+                <SearchIcon />
+                <SearchInput
                     value={filterState.searchQuery}
                     onChange={handleSearchChange}
-                    className="input input-bordered h-12 w-full border-1 border-gray-500 rounded-full pl-10 pr-12"
                 />
-
-                <div className="dropdown dropdown-right dropdown-bottom absolute right-4">
-                    <div
-                        tabIndex={0}
-                        role="button"
-                        className="cursor-pointer"
-                        onClick={() => setIsDropdownOpen(prev => !prev)}
-                    >
-                        <div className="text-gray-400">
-                            <SlidersHorizontal />
-                        </div>
-                    </div>
-
-                    <div className="dropdown-content menu bg-base-100 rounded-box z-[1] mt-4 sm:w-[100px] md:w-300px lg:w-[500px] p-6 shadow">
-
-                        <div className="relative ml-2">
-                            <div className="relative flex items-center">
-                                <Search className="text-gray-500 absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
-                                <input
-                                    placeholder="Search tags..."
-                                    value={tagSearchQuery}
-                                    onChange={(e) => setTagSearchQuery(e.target.value)}
-                                    className="input input-bordered border-gray-500 border-1 w-sm pl-8 h-8 bg-base-200/50 rounded-full text-sm"
-                                />
-                            </div>
-                        </div>
-
-                        {filterState.selectedTags.length > 0 && (
-                            <div>
-                                <div className="divider">Selected Tags</div>
-                                <div className="flex flex-wrap gap-2 mb-4">
-                                    {filterState.selectedTags.map(tag => (
-                                        <button
-                                            key={tag.tag_id}
-                                            onClick={() => toggleTag(tag)}
-                                            className="px-3 py-1 rounded-lg text-sm bg-primary text-primary-content"
-                                        >
-                                            {tag.tag}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
-                        <div className="divider">Tags</div>
-
-                        {loading ? (
-                            <div className="px-3 py-1 rounded-lg text-sm text-base-content opacity-60 italic">Loading...</div>
-                        ) : (
-                            <div>
-                                {visibleTags.length === 0 ? (
-                                    <div className="px-3 py-1 rounded-lg text-sm text-base-content opacity-60 italic">
-                                        No matching tags available
-                                    </div>
-                                ) : (
-                                    <div className="flex flex-wrap gap-2">
-                                        {visibleTags.map(tag => (
-                                            <button
-                                                key={tag.tag_id}
-                                                onClick={() => toggleTag(tag)}
-                                                className={`px-3 py-1 rounded-lg text-sm transition-colors ${filterState.selectedTags.some(t => t.tag_id === tag.tag_id)
-                                                    ? 'bg-primary text-primary-content'
-                                                    : 'bg-base-200 hover:bg-base-300 text-base-content'
-                                                    }`}
-                                            >
-                                                {tag.tag}
-                                            </button>
-                                        ))}
-
-                                        {!showAllTags && filteredTags.length > 18 && (
-                                            <span className="px-3 py-1 rounded-lg text-sm text-base-content opacity-60 italic">
-                                                more...
-                                            </span>
-                                        )}
-                                    </div>
-                                )}
-                            </div>
-                        )}
-                    </div>
-                </div>
+                <Dropdown
+                    isOpen={isDropdownOpen}
+                    toggleDropdown={() => setIsDropdownOpen(prev => !prev)}
+                    tagSearchQuery={tagSearchQuery}
+                    setTagSearchQuery={setTagSearchQuery}
+                    selectedTags={filterState.selectedTags}
+                    toggleTag={toggleTag}
+                    loading={loading}
+                    visibleTags={visibleTags}
+                    showAllTags={showAllTags}
+                />
             </div>
-
-            <button
-                onClick={handleSearchSubmit}
-                className="btn btn-sm btn-primary h-12 rounded-lg"
-            >
+            <button onClick={handleSearchSubmit} className="btn btn-sm btn-primary h-12 rounded-lg">
                 Search
             </button>
+
         </div>
     );
 }
 
+const SearchIcon = () => (
+    <Search className="text-gray-500 absolute left-3 top-1/2 size-[1.25rem] -translate-y-1/2 text-muted-foreground pointer-events-none" />
+);
 
+const SearchInput = ({ value, onChange }: { value: string; onChange: (event: React.ChangeEvent<HTMLInputElement>) => void }) => (
+    <input
+        type="text"
+        placeholder="Search"
+        value={value}
+        onChange={onChange}
+        className="input input-bordered h-12 w-full border-1 border-gray-500 rounded-full pl-10 pr-12"
+    />
+);
 
+const Dropdown = ({
+    toggleDropdown,
+    tagSearchQuery,
+    setTagSearchQuery,
+    selectedTags,
+    toggleTag,
+    loading,
+    visibleTags,
+    showAllTags,
+}: DropdownProps) => (
+    <div className="dropdown dropdown-right dropdown-bottom absolute right-4">
+        <div
+            tabIndex={0}
+            role="button"
+            className="cursor-pointer"
+            onClick={toggleDropdown}
+        >
+            <div className="text-gray-400">
+                <SlidersHorizontal />
+            </div>
+        </div>
 
+        <div className="dropdown-content menu bg-base-100 rounded-box z-[1] mt-4 sm:w-[100px] md:w-300px lg:w-[500px] p-6 shadow">
+            <TagSearchInput
+                tagSearchQuery={tagSearchQuery}
+                setTagSearchQuery={setTagSearchQuery}
+            />
+            <SelectedTags selectedTags={selectedTags} toggleTag={toggleTag} />
+            <div className="divider">Tags</div>
+            {loading ? (
+                <TagLoader />
+            ) : (
+                <TagList
+                    visibleTags={visibleTags}
+                    toggleTag={toggleTag}
+                    selectedTags={selectedTags}
+                    showAllTags={showAllTags}
+                />
+            )}
+        </div>
+    </div>
+);
 
+const TagSearchInput = ({ tagSearchQuery, setTagSearchQuery }: TagSearchInputProps) => (
+    <div className="relative ml-2">
+        <div className="relative flex items-center">
+            <Search className="text-gray-500 absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+            <input
+                placeholder="Search tags..."
+                value={tagSearchQuery}
+                onChange={(e) => setTagSearchQuery(e.target.value)}
+                className="input input-bordered border-gray-500 border-1 w-sm pl-8 h-8 bg-base-200/50 rounded-full text-sm"
+            />
+        </div>
+    </div>
+);
 
+const SelectedTags = ({ selectedTags, toggleTag }: SelectedTagsProps) => (
+    selectedTags.length > 0 && (
+        <div>
+            <div className="divider">Selected Tags</div>
+            <div className="flex flex-wrap gap-2 mb-4">
+                {selectedTags.map(tag => (
+                    <button
+                        key={tag.tag_id}
+                        onClick={() => toggleTag(tag)}
+                        className="px-3 py-1 rounded-lg text-sm bg-primary text-primary-content"
+                    >
+                        {tag.tag}
+                    </button>
+                ))}
+            </div>
+        </div>
+    )
+);
 
+const TagLoader = () => (
+    <div className="px-3 py-1 rounded-lg text-sm text-base-content opacity-60 italic">
+        Loading...
+    </div>
+);
+
+const TagList = ({ visibleTags, toggleTag, selectedTags, showAllTags }: TagListProps) => (
+    <div>
+        {visibleTags.length === 0 ? (
+            <div className="px-3 py-1 rounded-lg text-sm text-base-content opacity-60 italic">
+                No matching tags available
+            </div>
+        ) : (
+            <div className="flex flex-wrap gap-2">
+                {visibleTags.map(tag => (
+                    <button
+                        key={tag.tag_id}
+                        onClick={() => toggleTag(tag)}
+                        className={`px-3 py-1 rounded-lg text-sm transition-colors ${selectedTags.some(t => t.tag_id === tag.tag_id)
+                            ? 'bg-primary text-primary-content'
+                            : 'bg-base-200 hover:bg-base-300 text-base-content'
+                            }`}
+                    >
+                        {tag.tag}
+                    </button>
+                ))}
+                {!showAllTags && visibleTags.length > 18 && (
+                    <span className="px-3 py-1 rounded-lg text-sm text-base-content opacity-60 italic">
+                        more...
+                    </span>
+                )}
+            </div>
+        )}
+    </div>
+);

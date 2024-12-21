@@ -1,11 +1,15 @@
+import { useState } from "react";
+import { useUserContext } from "../contexts/userContext";
 import { useNavigate } from "react-router-dom";
-import { MessageSquareText } from "lucide-react";
+import { MessageSquareText, MoreVertical, Edit, Trash } from 'lucide-react';
 import { NewsProps } from "../interfaces/newsInterface";
 import { Bookmark } from "./Bookmark";
 import { Upvote } from "./Upvote";
+import { showToast } from "../utils/toast";
 
-export function NewsCard({
+export const ArticleCard = ({
     news_id,
+    user_id,
     title,
     releaseDate,
     thumbnail,
@@ -14,9 +18,15 @@ export function NewsCard({
     tags,
     username,
     hasUpvoted,
-    hasBookmarked
-}: NewsProps['news']) {
+    hasBookmarked,
+    description,
+    onDelete
+}: NewsProps['news'] & { onDelete?: (news_id: number) => void }) => {
     const navigate = useNavigate();
+    const { userState } = useUserContext()
+    const isUser = userState.user?.user_id === user_id;
+
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const preventClick = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -26,10 +36,26 @@ export function NewsCard({
         navigate("/news-view", {
             state: {
                 news: {
-                    news_id,
+                    news_id
                 }
             }
         });
+    };
+
+    const handleDelete = async () => {
+        try {
+            if (!onDelete) return;
+            setIsDeleting(true);
+            await onDelete(news_id);
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                showToast("error", `${error.message}: An error occurred while deleting the news.`);
+            } else {
+                showToast("error", "An unknown error occurred while deleting the news.");
+            }
+        } finally {
+            setIsDeleting(false);
+        }
     };
 
     return (
@@ -44,6 +70,54 @@ export function NewsCard({
                     className="w-full h-64 object-cover object-center"
                 />
             </figure>
+            <div className="absolute top-2 right-2 dropdown">
+                {isUser && (
+                    <div
+                        tabIndex={0}
+                        role="button"
+                        className="btn btn-circle btn-ghost group hover:opacity-100 focus:opacity-100"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <MoreVertical className="w-6 h-6 text-base-content hover:text-primary transition-colors" />
+                    </div>
+                )}
+                {isUser && (
+                    <ul
+                        tabIndex={0}
+                        className="dropdown-content menu bg-base-100 rounded-box z-[50] w-52 p-2 shadow"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <li>
+                            <button
+                                className="flex items-center w-full text-left"
+                                onClick={() =>
+                                    navigate('/edit', {
+                                        state: {
+                                            news_id,
+                                            title,
+                                            releaseDate,
+                                            description,
+                                            thumbnail,
+                                            tags
+                                        },
+                                    })
+                                }
+                            >
+                                <Edit className="h-4 w-4 mr-2" /> Edit
+                            </button>
+                        </li>
+                        <li>
+                            <button
+                                className="flex items-center w-full text-left text-red-600"
+                                onClick={handleDelete}
+                                disabled={isDeleting}
+                            >
+                                <Trash className="h-4 w-4 mr-2" /> {isDeleting ? 'Deleting...' : 'Delete'}
+                            </button>
+                        </li>
+                    </ul>
+                )}
+            </div>
             <div className="card-body p-4">
                 <div className="flex items-start justify-between gap-2">
                     <div className="space-y-2">
@@ -54,7 +128,7 @@ export function NewsCard({
                             <span className="font-semibold">@{username}</span>
                         </div>
                         <div className="flex gap-2 flex-wrap mt-2">
-                            {tags.slice(0, 3).map((tag, index) => ( //line 56
+                            {tags.slice(0, 3).map((tag, index) => (
                                 <div
                                     key={index}
                                     className="badge badge-outline badge-md font-semibold"
