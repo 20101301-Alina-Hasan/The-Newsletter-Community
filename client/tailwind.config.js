@@ -11,44 +11,31 @@ export default {
   },
   plugins: [daisyui,],
   daisyui: {
-    themes: ["retro", "halloween", "garden", "autumn", "nord", "cupcake"],
-    // themes: [],
+    themes: ["retro", "halloween", "garden", "autumn", "nord", "cupcake",
+      {
+        cupcake: {
+          ...require("daisyui/src/theming/themes")["cupcake"],
+          primary: "#ffce67",
+          secondary: "#b8e3c8",
+          neutral: "#ef798a",
+          accent: "#68cd3f",
+          "secondary-content": "#000000",
+          "neutral-content": "#000000",
+        },
+      },
+      {
+        halloween: {
+          ...require("daisyui/src/theming/themes")["halloween"],
+          neutral: "#B81C21",
+        },
+      }
+    ],
+
 
   },
   fontFamily: {
     'body': [
-      'Inter',
-      'ui-sans-serif',
-      'system-ui',
-      '-apple-system',
-      'system-ui',
-      'Segoe UI',
-      'Roboto',
-      'Helvetica Neue',
-      'Arial',
-      'Noto Sans',
       'sans-serif',
-      'Apple Color Emoji',
-      'Segoe UI Emoji',
-      'Segoe UI Symbol',
-      'Noto Color Emoji'
     ],
-    'sans': [
-      'Inter',
-      'ui-sans-serif',
-      'system-ui',
-      '-apple-system',
-      'system-ui',
-      'Segoe UI',
-      'Roboto',
-      'Helvetica Neue',
-      'Arial',
-      'Noto Sans',
-      'sans-serif',
-      'Apple Color Emoji',
-      'Segoe UI Emoji',
-      'Segoe UI Symbol',
-      'Noto Color Emoji'
-    ]
   }
 }

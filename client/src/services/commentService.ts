@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from 'axios';
-import Cookies from 'js-cookie';
 
 export const fetchComments = async (news_id: number) => {
     try {
@@ -16,12 +15,11 @@ export const fetchComments = async (news_id: number) => {
     }
 };
 
-export const addComment = async (news_id: number, comment: string) => {
+export const addComment = async (news_id: number, comment: string, token: string) => {
     try {
         if (!news_id || !comment) {
             throw new Error('All fields (news_id, user_id and comment) are required.');
         }
-        const token = Cookies.get('access_token');
         const response = await axios.post(`http://localhost:3000/api/comments/${news_id}`, { comment }, {
             headers: {
                 'Content-Type': 'application/json',
@@ -36,12 +34,11 @@ export const addComment = async (news_id: number, comment: string) => {
     }
 };
 
-export const editComment = async (comment_id: number, editedComment: string) => {
+export const editComment = async (comment_id: number, editedComment: string, token: string) => {
     try {
         if (!comment_id || !editedComment) {
             throw new Error('All parameters (news_id, comment_id, updatedComment) are required.');
         }
-        const token = Cookies.get('access_token');
         const commentData = {
             comment_id,
             comment: editedComment,
@@ -61,12 +58,11 @@ export const editComment = async (comment_id: number, editedComment: string) => 
     }
 };
 
-export const deleteComment = async (comment_id: number) => {
+export const deleteComment = async (comment_id: number, token: string) => {
     try {
         if (!comment_id) {
             throw new Error('comment_id is required.');
         }
-        const token = Cookies.get('access_token');
         const response = await axios.delete(`http://localhost:3000/api/comments/${comment_id}`, {
             headers: {
                 'Content-Type': 'application/json',

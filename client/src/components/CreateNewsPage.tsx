@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState, useContext, useEffect, useMemo } from 'react';
-import { UserContext, UserContextType } from '../interfaces/userInterfaces';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useUserContext } from '../contexts/userContext';
 import { useNavigate } from 'react-router-dom';
 import { createNews } from '../services/newsService';
 import { showToast } from '../utils/toast';
@@ -17,9 +17,10 @@ export function CreateNewsPage() {
     const [selectedTags, setSelectedTags] = useState<number[]>([]);
     const [tags, setTags] = useState<any[]>([]);
     const [tagSearchQuery, setTagSearchQuery] = useState('');
-    const { userState } = useContext(UserContext) as UserContextType;
     const { uploadToCloudinary, isUploading } = useCloudinaryUpload();
+    const { userState } = useUserContext();
     const navigate = useNavigate();
+    const token = userState.token;
 
     useEffect(() => {
         if (!userState.token) {
@@ -86,7 +87,7 @@ export function CreateNewsPage() {
             formData.append('description', content);
             formData.append('thumbnail', thumbnailUrl);
             selectedTags.forEach((tag_id) => formData.append('tag_ids[]', String(tag_id)));
-            await createNews(formData);
+            await createNews(formData, token);
             setTitle('');
             setContent('');
             setThumbnail(null);
@@ -197,10 +198,10 @@ export function CreateNewsPage() {
                     <div className="flex justify-end space-x-2">
                         <button
                             type="submit"
-                            className="btn btn-primary"
+                            className="btn btn-primary font-bold"
                             disabled={isUploading}
                         >
-                            Publish Article
+                            Publish
                         </button>
                         <button
                             type="button"

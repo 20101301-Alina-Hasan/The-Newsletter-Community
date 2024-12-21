@@ -28,7 +28,6 @@ function App() {
 
   const initializeUser = async () => {
     const token = localStorage.getItem('access_token');
-    console.log("Initializing...", token);
     if (token) {
       const response = await fetchUser(token);
       if (response.status === 200) {

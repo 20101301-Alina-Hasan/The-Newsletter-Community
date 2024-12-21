@@ -27,7 +27,6 @@ export function NewsView() {
             if (!news_id) {
                 throw new Error("News ID is missing");
             }
-            console.log("token sent", token, "news_id sent", news_id)
             const fetchedNews = await fetchNews(news_id, token);
             console.log(fetchedNews);
             setNews(fetchedNews);
@@ -125,8 +124,8 @@ export function NewsView() {
                             <Comment news_id={news.news_id} />
                         </div>
                     </div>
-                </div>
-            </div>
+                </div >
+            </div >
         </>
     );
 }

@@ -230,28 +230,28 @@ export const createNews = async (req: AuthRequest, res: Response) => {
             return;
         }
 
-        let news; //--dummy news insert
-        for (let i = 0; i <= 60; i++) {
+        // let news; //--dummy news insert
+        // for (let i = 0; i <= 60; i++) {
 
-            let t = `${title}+${i}`;
-            news = await db.News.create({
-                user_id,
-                title: t,
-                releaseDate,
-                description,
-                thumbnail
-            });
+        //     let t = `${title}+${i}`;
+        //     news = await db.News.create({
+        //         user_id,
+        //         title: t,
+        //         releaseDate,
+        //         description,
+        //         thumbnail
+        //     });
 
 
-        }
+        // }
 
-        // const news = await db.News.create({
-        //     user_id,
-        //     title,
-        //     releaseDate,
-        //     description,
-        //     thumbnail
-        // });
+        const news = await db.News.create({
+            user_id,
+            title,
+            releaseDate,
+            description,
+            thumbnail
+        });
 
         if (tag_ids && Array.isArray(tag_ids) && tag_ids.length > 0) {
             const validTagIds = tag_ids.map((tag_id) => parseInt(tag_id, 10)).filter((tag_id) => !isNaN(tag_id));

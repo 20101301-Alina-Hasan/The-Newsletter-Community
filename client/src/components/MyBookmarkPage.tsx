@@ -52,12 +52,12 @@ export const MyBookmarkPage = () => {
                 <div className="flex justify-between items-center pb-6 my-10">
                     <div className="flex gap-4">
                         <HashLink to="/dashboard#my-articles" scroll={(el) => el.scrollIntoView({ behavior: 'smooth', block: 'start' })}>
-                            <a className="btn btn-primary" >
+                            <a className="btn btn-primary rounded-lg" >
                                 My Articles
                             </a>
                         </HashLink>
                         <HashLink to="/#explore" scroll={(el) => el.scrollIntoView({ behavior: 'smooth', block: 'start' })}>
-                            <a className="btn btn-secondary font-bold">
+                            <a className="btn btn-secondary rounded-lg font-bold">
                                 Explore
                             </a>
                         </HashLink>

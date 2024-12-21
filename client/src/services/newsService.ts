@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios, { AxiosRequestConfig } from 'axios';
-import Cookies from 'js-cookie';
+// import Cookies from 'js-cookie';
 import { NewsProps } from '../interfaces/newsInterface';
 
 const fetchFactory = async (endpoint: string, config?: AxiosRequestConfig): Promise<NewsProps['news'][]> => {
@@ -65,9 +65,8 @@ export const searchNews = async (query?: string, tagIds?: number[], token?: stri
     return await fetchFactory(endpoint, config);
 };
 
-export const createNews = async (formData: FormData) => {
+export const createNews = async (formData: FormData, token: string) => {
     try {
-        const token = Cookies.get('access_token');
         const response = await axios.post('http://localhost:3000/api/news/', formData, {
             headers: {
                 'Content-Type': 'application/json',
@@ -81,13 +80,8 @@ export const createNews = async (formData: FormData) => {
     }
 };
 
-export const updateNews = async (formData: FormData, news_id: number) => {
+export const updateNews = async (formData: FormData, news_id: number, token: string) => {
     try {
-        console.log('Logging FormData contents:');
-        formData.forEach((value, key) => {
-            console.log(`${key}: ${value}`);
-        });
-        const token = Cookies.get('access_token');
         const response = await axios.put(`http://localhost:3000/api/news/${news_id}`, formData, {
             headers: {
                 'Content-Type': 'application/json',
@@ -101,9 +95,8 @@ export const updateNews = async (formData: FormData, news_id: number) => {
     }
 }
 
-export const deleteNews = async (news_id: number) => {
+export const deleteNews = async (news_id: number, token: string) => {
     try {
-        const token = Cookies.get('access_token');
         const response = await axios.delete(`http://localhost:3000/api/news/${news_id}`, {
             headers: {
                 'Content-Type': 'application/json',

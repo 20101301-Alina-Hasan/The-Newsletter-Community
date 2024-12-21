@@ -8,6 +8,7 @@ import { Outlet } from 'react-router-dom';
 import { showToast } from '../utils/toast';
 import { BookMarked, FilePlus } from 'lucide-react';
 import { SearchIcon } from './Icons/SearchIcon';
+import { Newspaper } from 'lucide-react';
 // import Cookies from 'js-cookie';
 
 export function Navbar() {
@@ -26,7 +27,7 @@ export function Navbar() {
             <div className="navbar bg-base-100 px-4 py-4 h-18 border-b-gray-500 border-b-[0.05rem]">
                 <div className="flex-1">
                     <a className="btn btn-ghost text-xl font-serif font-extrabold" onClick={() => navigate('/')}>
-                        <SearchIcon />
+                        <Newspaper />
                         The Newsletter Community
                     </a>
                 </div>
@@ -34,11 +35,11 @@ export function Navbar() {
                     <div className="flex items-center gap-2">
                         {userState.token ? (
                             <div className="space-x-4">
-                                <a className="btn btn-primary h-8 font-bold" onClick={() => navigate('/create')}>
+                                <a className="btn btn-primary rounded-lg  h-8 font-bold" onClick={() => navigate('/create')}>
                                     <FilePlus />
                                 </a>
                                 <HashLink to="/dashboard#bookmarks" scroll={(el) => el.scrollIntoView({ behavior: 'smooth', block: 'start' })}>
-                                    <a className="btn bg-red-700 hover:bg-red-800 text-white h-8 font-bold" >
+                                    <a className="btn rounded-lg btn-neutral h-8 font-bold" >
                                         <BookMarked />
                                     </a>
                                 </HashLink>

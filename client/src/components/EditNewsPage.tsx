@@ -7,6 +7,7 @@ import { updateNews } from '../services/newsService';
 import { useCloudinaryUpload } from '../utils/upload';
 import { fetchTags } from '../services/tagService';
 import { Search } from 'lucide-react';
+import { useUserContext } from '../contexts/userContext';
 
 export function EditNewsPage() {
     const location = useLocation();
@@ -19,6 +20,8 @@ export function EditNewsPage() {
     const [tags, setTags] = useState<{ tag_id: number; tag: string }[]>([]);
     const [tagSearchQuery, setTagSearchQuery] = useState<string>('');
     const { uploadToCloudinary, isUploading } = useCloudinaryUpload();
+    const { userState } = useUserContext();
+    const token = userState.token;
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -83,7 +86,7 @@ export function EditNewsPage() {
             formData.append('description', content);
             formData.append('thumbnail', thumbnailUrl);
             selectedTags.forEach(tag_id => formData.append('tag_ids[]', String(tag_id)));
-            await updateNews(formData, news_id);
+            await updateNews(formData, news_id, token);
             showToast('success', 'Your article has been successfully updated.');
             navigate(-1);
         } catch (error: any) {
@@ -189,8 +192,8 @@ export function EditNewsPage() {
                         </div>
                     )}
                     <div className="flex justify-end space-x-2">
-                        <button type="submit" className="btn btn-primary">
-                            Update Article
+                        <button type="submit" className="btn btn-primary font-bold">
+                            Save
                         </button>
                         <button
                             type="button"

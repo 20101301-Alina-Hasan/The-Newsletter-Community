@@ -102,14 +102,13 @@ export const NewsPage = () => {
             <div className="w-full h-[0.1rem] bg-red-800" />
 
             <div className="flex justify-between items-center my-10">
-                {/* Pass the query and selectedTags to SearchBar */}
                 <SearchBar
                     onSearch={handleSearch}
                 />
                 <div className="flex gap-4">
                     <button
                         onClick={handleNavigation}
-                        className="btn btn-primary"
+                        className="btn btn-primary rounded-lg font-bold"
                     >
                         My Articles
                     </button>

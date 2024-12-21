@@ -50,7 +50,7 @@ export function Upvote({ news_id, hasUpvoted, upvotes }: UpvoteProps) {
     return (
         <div className="flex items-center space-x-2">
             <button
-                className={`btn btn-circle btn-xs ${isUpvoted ? 'btn-accent' : 'btn-ghost'}`}
+                className={`btn btn-circle btn-xs ${isUpvoted ? 'btn-accent border-none' : 'btn-ghost'}`}
                 onClick={handleUpvote}
                 disabled={isLoading}
             >

@@ -50,7 +50,7 @@ export function Comment({ news_id }: CommentsProps) {
     const handleUpdateComment = async (comment_id: number) => {
         try {
             if (!editedComment) return;
-            await editComment(comment_id, editedComment);
+            await editComment(comment_id, editedComment, token);
             const updatedComments = comments.map((comment) =>
                 comment?.comment_id === comment_id
                     ? { ...comment, comment: editedComment }
@@ -66,7 +66,7 @@ export function Comment({ news_id }: CommentsProps) {
 
     const handleDeleteComment = async (comment_id: number) => {
         try {
-            await deleteComment(comment_id);
+            await deleteComment(comment_id, token);
             const updatedComments = await fetchComments(news_id);
             setComments(updatedComments);
             setCommentCount(updatedComments.length);
@@ -85,7 +85,7 @@ export function Comment({ news_id }: CommentsProps) {
             }
             if (!newComment.trim()) return;
             console.log(news_id, newComment);
-            await addComment(news_id, newComment);
+            await addComment(news_id, newComment, token);
             const comments = await fetchComments(news_id);
             setComments([...comments]);
             setCommentCount(comments.length);
@@ -128,7 +128,7 @@ export function Comment({ news_id }: CommentsProps) {
                     </div>
                     <button
                         type="submit"
-                        className="btn btn-primary"
+                        className="btn btn-primary rounded-lg"
                     >
                         Post
                     </button>
@@ -189,7 +189,7 @@ export function Comment({ news_id }: CommentsProps) {
                                                 value={editedComment}
                                                 onChange={handleEditChange}
                                                 rows={4}
-                                                className="w-full p-4 bg-base-200 border-0 focus:ring-0 focus:outline-secondary text-base-content"
+                                                className="w-full p-4 bg-base-200 border-0 focus:ring-0 focus:outline-primary text-base-content"
                                             />
                                             <button
                                                 onClick={() => handleUpdateComment(comment.comment_id)}

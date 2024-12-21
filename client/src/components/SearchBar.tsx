@@ -72,7 +72,7 @@ export function SearchBar({ onSearch }: FilterDropdownProps) {
         <div className="flex items-center gap-2">
             <div className="relative flex items-center w-full mr-4">
 
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+                <Search className="text-gray-500 absolute left-3 top-1/2 size-[1.25rem] -translate-y-1/2 text-muted-foreground pointer-events-none" />
 
                 <input
                     type="text"
@@ -89,7 +89,7 @@ export function SearchBar({ onSearch }: FilterDropdownProps) {
                         className="cursor-pointer"
                         onClick={() => setIsDropdownOpen(prev => !prev)}
                     >
-                        <div className="text-gray-500">
+                        <div className="text-gray-400">
                             <SlidersHorizontal />
                         </div>
                     </div>
@@ -98,7 +98,7 @@ export function SearchBar({ onSearch }: FilterDropdownProps) {
 
                         <div className="relative ml-2">
                             <div className="relative flex items-center">
-                                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+                                <Search className="text-gray-500 absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
                                 <input
                                     placeholder="Search tags..."
                                     value={tagSearchQuery}
@@ -165,7 +165,7 @@ export function SearchBar({ onSearch }: FilterDropdownProps) {
 
             <button
                 onClick={handleSearchSubmit}
-                className="btn btn-sm btn-primary h-12"
+                className="btn btn-sm btn-primary h-12 rounded-lg"
             >
                 Search
             </button>
