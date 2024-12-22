@@ -24,6 +24,7 @@ export const fetchUserInteractions = async (user_id: number, news_id: number[]):
 
 export const buildNewsObject = async (news: any, userInteractions?: UserInteraction) => {
     const { upvotes, commentCount } = await fetchCounts(news.news_id);
+    const tag_ids = news.Tags.map((tag: any) => tag.tag_id);
     const newsObject: any = {
         news_id: news.news_id,
         user_id: news.user_id,
@@ -32,7 +33,7 @@ export const buildNewsObject = async (news: any, userInteractions?: UserInteract
         description: news.description,
         thumbnail: news.thumbnail,
         username: news.User.username,
-        tags: news.Tags,
+        tag_ids: tag_ids,
         upvotes,
         commentCount,
     };

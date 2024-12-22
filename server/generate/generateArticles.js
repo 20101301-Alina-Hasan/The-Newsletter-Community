@@ -58,7 +58,7 @@ const generateRandomArticleData = (i) => ({
     tag_ids: [faker.number.int({ min: 51, max: 71 }), faker.number.int({ min: 1, max: 26 })]
 });
 
-const generateArticles = async (token, batch = 700000) => {
+const generateArticles = async (token, batch = 100000) => {
     for (let i = 0; i < batch; i++) {
         const articleData = generateRandomArticleData(i);
         try {

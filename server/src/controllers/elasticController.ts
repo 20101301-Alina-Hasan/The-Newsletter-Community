@@ -13,12 +13,12 @@ export const getArticlesFromElastic = async (req: Request, res: Response) => {
             size: 9999,
         });
 
-        const games = result.hits.hits.map((hit: any) => ({
+        const articles = result.hits.hits.map((hit: any) => ({
             id: hit._id,
             ...hit._source,
         }));
 
-        res.status(200).json(games);
+        res.status(200).json(articles);
     } catch (error) {
         res.status(500).send({ error: "Failed to fetch articles from Elasticsearch" });
     }
