@@ -10,7 +10,7 @@ export const getArticlesFromElastic = async (req: Request, res: Response) => {
                     match_all: {},
                 },
             },
-            size: 10000,
+            size: 9999,
         });
 
         const games = result.hits.hits.map((hit: any) => ({
@@ -20,6 +20,6 @@ export const getArticlesFromElastic = async (req: Request, res: Response) => {
 
         res.status(200).json(games);
     } catch (error) {
-        res.status(500).send({ error: "Failed to fetch games from Elasticsearch" });
+        res.status(500).send({ error: "Failed to fetch articles from Elasticsearch" });
     }
 };

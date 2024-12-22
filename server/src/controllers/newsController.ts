@@ -219,7 +219,6 @@ export const createNews = async (req: AuthRequest, res: Response) => {
     try {
         const { title, releaseDate, description, thumbnail, tag_ids } = req.body;
         const user_id = req.user.userId;
-        console.log("Tag_ids", tag_ids)
         if (!title || !releaseDate || !description) {
             res.status(400).json({ message: "All fields are required." });
             return;
@@ -257,8 +256,6 @@ export const createNews = async (req: AuthRequest, res: Response) => {
             const validTagIds = tag_ids.map((tag_id) => parseInt(tag_id, 10)).filter((tag_id) => !isNaN(tag_id));
             await news.addTags(validTagIds);
         }
-
-        console.log("done");
 
         res.status(201).json({ message: "News created successfully!", news });
         return;

@@ -38,7 +38,7 @@ app.use('/api/news', newsRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/upvotes', upvoteRoutes);
 app.use('/api/bookmarks', bookmarkRoutes);
-app.get("/api/articles", getArticlesFromElastic);
+app.get('/api/articles', getArticlesFromElastic);
 
 
 app.get('*', (req, res) => { res.status(404).send('Sorry, not found 😞'); })
