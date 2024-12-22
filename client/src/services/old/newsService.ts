@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios, { AxiosRequestConfig } from 'axios';
+// import Cookies from 'js-cookie';
 import { NewsProps } from '../interfaces/newsInterface';
 
 const fetchFactory = async (endpoint: string, config?: AxiosRequestConfig): Promise<NewsProps['news'][]> => {
@@ -14,11 +15,11 @@ const fetchFactory = async (endpoint: string, config?: AxiosRequestConfig): Prom
         throw new Error(error.response?.data?.message || 'Failed to fetch news.');
     }
 };
-
 export const fetchNews = async (news_id?: number, token?: string, all?: boolean, bookmarked?: boolean, page?: number) => {
     let endpoint = '';
 
     if (token) {
+        endpoint = '/user';
         if (news_id) endpoint += `/${news_id}`;
         if (bookmarked) endpoint += '/bookmark';
     } else if (news_id) {
@@ -26,28 +27,12 @@ export const fetchNews = async (news_id?: number, token?: string, all?: boolean,
     }
 
     if (all) {
-        endpoint = '/all';
+        endpoint += '/all';
     }
 
     if (page) {
         endpoint += `/?page=${page}`;
     }
-
-    const config: AxiosRequestConfig = token
-        ? { headers: { Authorization: `Bearer ${token}` } }
-        : {};
-
-    console.log("Token:", token);
-    console.log("Endpoint:", endpoint);
-    return await fetchFactory(endpoint, config);
-};
-
-
-export const fetchNewsByID = async (news_id?: number, token?: string) => {
-    let endpoint = '';
-
-    if (!token && news_id) endpoint += '/public';
-    endpoint += `/${news_id}`;
 
     const config: AxiosRequestConfig = token
         ? { headers: { Authorization: `Bearer ${token}` } }
@@ -64,10 +49,11 @@ export const searchNews = async (query?: string, tagIds?: number[], token?: stri
     let endpoint = '';
 
     if (token) {
+        endpoint += '/user'
         config.headers = {
             Authorization: `Bearer ${token}`,
         };
-    } else endpoint += '/all'
+    }
 
     endpoint += '/search';
 

@@ -11,10 +11,7 @@ export interface NewsProps {
         thumbnail?: string;
         upvotes: number;
         commentCount: number;
-        tags: {
-            tag_id: number,
-            tag: string,
-        }[],
+        tag_ids: number[];
         username: string;
         hasUpvoted: boolean;
         hasBookmarked: boolean;

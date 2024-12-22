@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useUserContext } from "../contexts/userContext";
 import { useNavigate } from "react-router-dom";
 import { MessageSquareText, MoreVertical, Edit, Trash } from 'lucide-react';
@@ -6,6 +6,7 @@ import { NewsProps } from "../interfaces/newsInterface";
 import { Bookmark } from "./Bookmark";
 import { Upvote } from "./Upvote";
 import { showToast } from "../utils/toast";
+import { fetchTagByID } from "../services/tagService";
 
 export const ArticleCard = ({
     news_id,
@@ -15,18 +16,18 @@ export const ArticleCard = ({
     thumbnail,
     upvotes,
     commentCount,
-    tags,
+    tag_ids,
     username,
     hasUpvoted,
     hasBookmarked,
     description,
     onDelete
 }: NewsProps['news'] & { onDelete?: (news_id: number) => void }) => {
-    const navigate = useNavigate();
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [tags, setTags] = useState<number[]>([]);
     const { userState } = useUserContext()
     const isUser = userState.user?.user_id === user_id;
-
-    const [isDeleting, setIsDeleting] = useState(false);
+    const navigate = useNavigate();
 
     const preventClick = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -57,6 +58,21 @@ export const ArticleCard = ({
             setIsDeleting(false);
         }
     };
+
+    useEffect(() => {
+        const fetchTags = async () => {
+            try {
+                const fetchedTags = await Promise.all(tag_ids.map((tag_id: number) => fetchTagByID(tag_id)));
+                setTags(fetchedTags);
+            } catch {
+                showToast("error", "Error fetching tags");
+            }
+        };
+
+        if (tag_ids.length > 0) {
+            fetchTags();
+        }
+    }, [tag_ids]);
 
     return (
         <div
@@ -133,7 +149,7 @@ export const ArticleCard = ({
                                     key={index}
                                     className="badge badge-outline badge-md font-semibold"
                                 >
-                                    #{tag.tag}
+                                    #{tag}
                                 </div>
                             ))}
                             {tags.length > 3 && (
