@@ -1,14 +1,10 @@
-// @ts-nocheck
-
-import { Request, Response } from "express";
+import { Response } from "express";
 import { AuthRequest } from "../interfaces/authInterface";
-import { fetchCounts, fetchUserInteractions, buildNewsObject, buildNewsObjectESClient } from "../helper/newsHelper";
-import { UserInteraction } from "../interfaces/newsInterface";
-import { client } from "../config/elasticSearch";
+import { fetchUserInteractions, buildNewsObject } from "../helper/newsHelper";
+import { UserInteraction } from "../interfaces/userInterface";
 import db from "../models";
 import { Op } from "sequelize";
-import { match } from "assert";
-import { formatDate } from "../utils/time";
+
 
 const getNews = async (query: any, res: Response) => {
     try {
@@ -234,18 +230,22 @@ export const getNewsById = async (req: AuthRequest, res: Response): Promise<void
             return;
         }
 
-        const newsObject = await buildNewsObject(news);
+        let userInteractions;
 
         if (user_id) {
-            const userInteractions = await fetchUserInteractions(Number(user_id), [Number(news_id)]);
-            newsObject.hasUpvoted = userInteractions.upvotedNewsIds.includes(news.news_id);
-            newsObject.hasBookmarked = userInteractions.bookmarkedNewsIds.includes(news.news_id);
+            userInteractions = await fetchUserInteractions(Number(user_id), [Number(news_id)]);
+            // newsObject.hasUpvoted = userInteractions.upvotedNewsIds.includes(news.news_id);
+            // newsObject.hasBookmarked = userInteractions.bookmarkedNewsIds.includes(news.news_id);
         }
 
+        const newsObject = await buildNewsObject(news, userInteractions);
+
         res.status(200).json({ news: newsObject });
+        return;
     } catch (error) {
         console.error("Error fetching news by ID:", error);
         res.status(500).json({ message: "Internal server error." });
+        return;
     }
 };
 

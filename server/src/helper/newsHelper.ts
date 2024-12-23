@@ -3,12 +3,10 @@ import { formatDate } from "../utils/time";
 import db from "../models";
 
 export const fetchCounts = async (news_id: number): Promise<UserCount> => {
-    console.log("entered", news_id)
     const [upvotes, commentCount] = await Promise.all([
         db.Upvote.count({ where: { news_id } }),
         db.Comment.count({ where: { news_id } }),
     ]);
-    console.log("returning", upvotes, commentCount);
     return { upvotes, commentCount };
 };
 
@@ -38,11 +36,15 @@ export const buildNewsObject = async (news: any, userInteractions?: UserInteract
         upvotes,
         commentCount,
     };
+    console.log("obj", newsObject, userInteractions);
 
     if (userInteractions) {
         newsObject.hasUpvoted = userInteractions.upvotedNewsIds.includes(news.news_id);
         newsObject.hasBookmarked = userInteractions.bookmarkedNewsIds.includes(news.news_id);
     }
+
+    console.log("with intercations", newsObject);
+
     return newsObject;
 };
 

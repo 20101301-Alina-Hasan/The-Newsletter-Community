@@ -6,7 +6,7 @@ export const authenticateUser = async (req: AuthRequest, res: Response, next: Ne
     const header = req.headers.authorization;
 
     if (!header) {
-        res.status(401).json({ message: 'Unauthorized. Token is missing.' });
+        res.status(401).json({ message: 'Unauthorized. Header is missing.' });
         return;
     }
 
