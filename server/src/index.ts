@@ -14,7 +14,7 @@ import commentRoutes from './routes/commentRoute';
 import upvoteRoutes from './routes/upvoteRoute';
 import bookmarkRoutes from './routes/bookmarkRoute';
 import { createArticleIndex } from './elasticSearchSetup';
-import { getArticlesFromElastic } from './controllers/elasticController';
+import { getArticlesFromElastic } from './controllers/esClient/elasticController';
 
 dotenv.config();
 

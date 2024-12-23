@@ -1,12 +1,14 @@
-import { UserCount, UserInteraction } from "../interfaces/newsInterface";
+import { UserCount, UserInteraction } from "../interfaces/userInterface";
 import { formatDate } from "../utils/time";
 import db from "../models";
 
 export const fetchCounts = async (news_id: number): Promise<UserCount> => {
+    console.log("entered", news_id)
     const [upvotes, commentCount] = await Promise.all([
         db.Upvote.count({ where: { news_id } }),
         db.Comment.count({ where: { news_id } }),
     ]);
+    console.log("returning", upvotes, commentCount);
     return { upvotes, commentCount };
 };
 
@@ -24,7 +26,6 @@ export const fetchUserInteractions = async (user_id: number, news_id: number[]):
 
 export const buildNewsObject = async (news: any, userInteractions?: UserInteraction) => {
     const { upvotes, commentCount } = await fetchCounts(news.news_id);
-    const tag_ids = news.Tags.map((tag: any) => tag.tag_id);
     const newsObject: any = {
         news_id: news.news_id,
         user_id: news.user_id,
@@ -33,7 +34,7 @@ export const buildNewsObject = async (news: any, userInteractions?: UserInteract
         description: news.description,
         thumbnail: news.thumbnail,
         username: news.User.username,
-        tag_ids: tag_ids,
+        tags: news.Tags,
         upvotes,
         commentCount,
     };
@@ -44,3 +45,4 @@ export const buildNewsObject = async (news: any, userInteractions?: UserInteract
     }
     return newsObject;
 };
+

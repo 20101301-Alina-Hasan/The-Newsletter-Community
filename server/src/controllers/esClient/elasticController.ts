@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { client } from "../config/elasticSearch";
+import { client } from "../../config/elasticSearch";
 
 export const getArticlesFromElastic = async (req: Request, res: Response) => {
     try {
