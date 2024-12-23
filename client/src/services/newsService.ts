@@ -5,9 +5,8 @@ import { NewsProps } from '../interfaces/newsInterface';
 const fetchFactory = async (endpoint: string, config?: AxiosRequestConfig): Promise<NewsProps['news'][]> => {
     try {
         const baseUrl = `http://localhost:3000/api/news${endpoint}`;
-        // const url = user_id ? `${baseUrl}?user_id=${user_id}` : baseUrl;
-        console.log(baseUrl);
         const response = await axios.get(baseUrl, config);
+        console.log("In Service, Response:", response.data.news);
         return response.data.news || [];
     } catch (error: any) {
         console.error(`Error fetching from ${endpoint}:`, error);

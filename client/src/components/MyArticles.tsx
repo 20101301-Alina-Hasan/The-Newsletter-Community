@@ -49,6 +49,7 @@ export const MyArticles = () => {
             setLoading(true);
             const TagIds = tags.map((tag) => tag.tag_id);
             const news = await searchNews(query, TagIds, token);
+            console.log("Search Results:", news);
             setNoResults(news.length === 0);
             setNewsList(news);
             setHasSearched(true);

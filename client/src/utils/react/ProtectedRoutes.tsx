@@ -1,8 +1,7 @@
-import { UserContext, UserContextType } from "../../interfaces/userInterfaces";
 import { Outlet, Navigate } from "react-router-dom";
-import { useContext } from "react";
+import { useUserContext } from "../../contexts/userContext";
 
 export const ProtectedRoutes = () => {
-    const { userState } = useContext(UserContext) as UserContextType;
+    const { userState } = useUserContext();
     return userState.token ? <Outlet /> : <Navigate to='/signup' />
 }

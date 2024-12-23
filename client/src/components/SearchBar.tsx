@@ -63,8 +63,15 @@ export function SearchBar({ onSearch, searchQuery, selectedTags }: FilterDropdow
         setFilterState(prev => ({ ...prev, searchQuery: query }));
     };
 
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            handleSearchSubmit();
+        }
+    };
+
     const handleSearchSubmit = () => {
-        console.log("Search query to be sent:", filterState.searchQuery);
+        if (filterState.searchQuery) filterState.searchQuery = filterState.searchQuery.toLowerCase();
         onSearch(filterState.searchQuery, filterState.selectedTags);
     };
 
@@ -89,6 +96,7 @@ export function SearchBar({ onSearch, searchQuery, selectedTags }: FilterDropdow
                 <SearchInput
                     value={filterState.searchQuery}
                     onChange={handleSearchChange}
+                    onKeyDown={handleKeyDown}
                 />
                 <Dropdown
                     isOpen={isDropdownOpen}
@@ -114,12 +122,13 @@ const SearchIcon = () => (
     <Search className="text-gray-500 absolute left-3 top-1/2 size-[1.25rem] -translate-y-1/2 text-muted-foreground pointer-events-none" />
 );
 
-const SearchInput = ({ value, onChange }: { value: string; onChange: (event: React.ChangeEvent<HTMLInputElement>) => void }) => (
+const SearchInput = ({ value, onChange, onKeyDown }: { value: string; onChange: (event: React.ChangeEvent<HTMLInputElement>) => void; onKeyDown: (event: React.KeyboardEvent<HTMLInputElement>) => void }) => (
     <input
         type="text"
         placeholder="Search"
         value={value}
         onChange={onChange}
+        onKeyDown={onKeyDown}
         className="input input-bordered h-12 w-full border-1 border-gray-500 rounded-full pl-10 pr-12"
     />
 );
@@ -237,5 +246,4 @@ const TagList = ({ visibleTags, toggleTag, selectedTags, showAllTags, filteredTa
         )}
     </div>
 );
-
 

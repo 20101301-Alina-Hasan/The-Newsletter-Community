@@ -101,7 +101,7 @@ export const Explore = () => {
         const scrollHeight = document.documentElement.scrollHeight;
         const clientHeight = document.documentElement.clientHeight;
 
-        if (scrollTop + clientHeight >= scrollHeight) {
+        if (scrollTop + clientHeight >= scrollHeight - 50) { // Subtracting 50px to trigger load before reaching the bottom
             setPage((prevPage) => prevPage + 1);
         }
     }, [loading, hasMore]);

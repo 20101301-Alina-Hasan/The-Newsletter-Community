@@ -9,7 +9,6 @@ import { Bookmark } from "./Bookmark";
 import { Comment } from "./Comment";
 import { LoaderIcon } from "./Icons/LoaderIcon";
 import { fetchNewsByID } from '../services/newsService';
-import { fetchTagByID } from "../services/tagService";
 import { NewsProps } from "../interfaces/newsInterface";
 import { useUserContext } from "../contexts/userContext";
 
@@ -17,8 +16,6 @@ export function View() {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [news, setNews] = useState<NewsProps["news"][]>([]);
-    const [tagIds, setTagIds] = useState<number[]>([]);
-    const [tags, setTags] = useState<string[]>([]);
     const navigate = useNavigate();
     const { state } = useLocation();
     const { news_id } = state?.news || {};
@@ -31,34 +28,13 @@ export function View() {
                 throw new Error("News ID is missing");
             }
             const fetchedNews = await fetchNewsByID(news_id, token);
-
-            console.log(fetchedNews);
-            console.log(fetchedNews.tag_ids);
-            setTagIds(fetchedNews.tag_ids);
             setNews(fetchedNews);
-
         } catch (error: any) {
             setError(error.message || "An unexpected error occurred.");
         } finally {
             setLoading(false);
         }
     };
-
-    useEffect(() => {
-        const fetchTags = async () => {
-            try {
-                const fetchedTags = await Promise.all(tagIds.map((tag_id: number) => fetchTagByID(tag_id)));
-                setTags(fetchedTags);
-            } catch {
-                showToast("error", "Error fetching tags");
-            }
-        };
-
-        if (tagIds.length > 0) {
-            fetchTags();
-        }
-    }, [tagIds]);
-
 
     useEffect(() => {
         loadNews();
@@ -107,9 +83,9 @@ export function View() {
                         </div>
 
                         <div className="flex my-4 gap-2 flex-wrap">
-                            {tags.map((tag, index) => (
+                            {news.tags.map((tag, index) => (
                                 <div key={index} className='badge badge-outline font-medium'>
-                                    #{tag}
+                                    #{tag.tag}
                                 </div>
                             ))}
                         </div>
