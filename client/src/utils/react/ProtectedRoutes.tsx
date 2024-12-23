@@ -3,5 +3,7 @@ import { useUserContext } from "../../contexts/userContext";
 
 export const ProtectedRoutes = () => {
     const { userState } = useUserContext();
-    return userState.token ? <Outlet /> : <Navigate to='/signup' />
+    const token = userState.token || localStorage.getItem('access_token');
+
+    return token ? <Outlet /> : <Navigate to='/signup' />
 }

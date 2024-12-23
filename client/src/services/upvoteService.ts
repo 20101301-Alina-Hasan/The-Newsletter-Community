@@ -8,7 +8,6 @@ export const fetchUpvotes = async (news_id: number) => {
             throw new Error('News ID is required to fetch upvotes.');
         }
         const response = await axios.get(`http://localhost:3000/api/upvotes/${news_id}`);
-        console.log("Upvotes Response:", response.data);
         return response.data.upvotes;
     } catch (error: any) {
         console.error(`${error.message}: Error retrieving upvotes.`);
@@ -18,7 +17,6 @@ export const fetchUpvotes = async (news_id: number) => {
 
 export const addUpvote = async (news_id: number, token: string) => {
     try {
-        // const token = Cookies.get('access_token');
         if (!token) {
             throw new Error('Unauthorized. Token is missing.');
         }
@@ -31,7 +29,6 @@ export const addUpvote = async (news_id: number, token: string) => {
                 Authorization: `Bearer ${token}`,
             },
         });
-        console.log("Upvotes Response:", response.data);
         return response.data;
     } catch (error: any) {
         console.error(`${error.message}: Error retrieving upvotes.`);
@@ -41,7 +38,6 @@ export const addUpvote = async (news_id: number, token: string) => {
 
 export const removeUpvote = async (news_id: number, token: string) => {
     try {
-        // const token = Cookies.get('access_token');
         if (!news_id) {
             throw new Error('News ID is required to fetch upvotes.');
         }
@@ -51,7 +47,6 @@ export const removeUpvote = async (news_id: number, token: string) => {
                 Authorization: `Bearer ${token}`,
             },
         });
-        console.log("Upvotes Response:", response.data);
         return response.data;
     } catch (error: any) {
         console.error(`${error.message}: Error retrieving upvotes.`);

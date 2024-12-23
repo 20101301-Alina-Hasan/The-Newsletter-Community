@@ -1,11 +1,28 @@
 import { useState, useEffect } from 'react';
 import { useUserContext } from '../contexts/userContext';
 import { NewsProps } from '../interfaces/newsInterface';
-import { fetchNews, deleteNews } from '../services/newsService';
+import { deleteNews, fetchNewsByBookmark } from '../services/newsService';
 import { HashLink } from 'react-router-hash-link';
 import { ArticleCard } from './ArticleCard';
 import { LoaderIcon } from './Icons/LoaderIcon';
 import { showToast } from '../utils/toast';
+
+interface BookmarkListProps {
+    news: NewsProps['news'][];
+    onDelete: (newsId: number) => void;
+}
+
+export const BookmarkList = ({ news, onDelete }: BookmarkListProps) => (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-10 my-10">
+        {news.map((newsItem) => (
+            <ArticleCard
+                key={newsItem.news_id}
+                {...newsItem}
+                onDelete={() => onDelete(newsItem.news_id)} // Pass the delete function
+            />
+        ))}
+    </div>
+);
 
 export const Loader = () => (
     <div className="flex justify-center items-center">
@@ -31,23 +48,6 @@ export const NoArticles = () => (
                 Explore Articles
             </a>
         </HashLink>
-    </div>
-);
-
-interface BookmarkListProps {
-    news: NewsProps['news'][];
-    onDelete: (newsId: number) => void;
-}
-
-export const BookmarkList = ({ news, onDelete }: BookmarkListProps) => (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-10 my-10">
-        {news.map((newsItem) => (
-            <ArticleCard
-                key={newsItem.news_id}
-                {...newsItem}
-                onDelete={() => onDelete(newsItem.news_id)} // Pass the delete function
-            />
-        ))}
     </div>
 );
 
@@ -103,7 +103,7 @@ export const MyBookmarks = () => {
     useEffect(() => {
         const loadBookmarkedNews = async () => {
             try {
-                const bookmarks = await fetchNews(undefined, token, false, true);
+                const bookmarks = await fetchNewsByBookmark(token);
                 setBookmarkedNews(bookmarks);
             } catch (error: unknown) {
                 if (error instanceof Error) {

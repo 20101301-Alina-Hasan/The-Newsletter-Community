@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect, useMemo } from 'react';
 import { useUserContext } from '../contexts/userContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { createNews } from '../services/newsService';
 import { showToast } from '../utils/toast';
 import { useCloudinaryUpload } from '../utils/upload';
@@ -18,14 +18,13 @@ export function CreateNewsPage() {
     const [tags, setTags] = useState<any[]>([]);
     const [tagSearchQuery, setTagSearchQuery] = useState('');
     const { uploadToCloudinary, isUploading } = useCloudinaryUpload();
+    const { state } = useLocation();
+    const { loadNews } = state?.news || {};
     const { userState } = useUserContext();
     const navigate = useNavigate();
     const token = userState.token;
 
     useEffect(() => {
-        if (!userState.token) {
-            navigate('/');
-        }
         const getTags = async () => {
             try {
                 const response = await fetchTags();

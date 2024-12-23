@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { useUserContext } from '../contexts/userContext';
 import { useNavigate } from 'react-router-dom';
 import { SearchBar } from './SearchBar';
@@ -22,25 +21,29 @@ export const MyArticles = () => {
     const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [newsToDelete, setNewsToDelete] = useState<number | null>(null);
-
     const { userState } = useUserContext();
     const token = userState.token;
+    const user_id = userState.user?.user_id;
 
-    const loadNews = useCallback(async () => {
+    const loadNews = async () => {
         try {
-            const news = await fetchNews(undefined, token, false);
+            const news = await fetchNews(token, user_id);
             setNewsList(news);
             setNoResults(false);
-        } catch (error: any) {
-            setError(error.message || "An unexpected error occurred.");
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                setError(error.message || "An unexpected error occurred.");
+            } else {
+                setError("An unexpected error occurred.");
+            }
         } finally {
             setLoading(false);
         }
-    }, [token]);
+    };
 
     useEffect(() => {
         if (token) loadNews();
-    }, [token, loadNews]);
+    }, [token, user_id]);
 
     const handleSearch = async (query: string, tags: Tag[]) => {
         try {
@@ -49,13 +52,16 @@ export const MyArticles = () => {
             setLoading(true);
             const TagIds = tags.map((tag) => tag.tag_id);
             const news = await searchNews(query, TagIds, token);
-            console.log("Search Results:", news);
             setNoResults(news.length === 0);
             setNewsList(news);
             setHasSearched(true);
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Error searching news:", error);
-            setError(error.message || "An unexpected error occurred during search.");
+            if (error instanceof Error) {
+                setError(error.message || "An unexpected error occurred during search.");
+            } else {
+                setError("An unexpected error occurred during search.");
+            }
         } finally {
             setLoading(false);
         }
@@ -83,6 +89,8 @@ export const MyArticles = () => {
             setNewsToDelete(null);
         }
     };
+
+
 
     if (loading) {
         return <LoaderIcon />;
@@ -117,7 +125,7 @@ export const MyArticles = () => {
     );
 };
 
-const PromptDelete = ({ onDelete, onCancel }: any) => (
+const PromptDelete = ({ onDelete, onCancel }: { onDelete: () => void; onCancel: () => void }) => (
     <div className="modal modal-open">
         <div className="modal-box">
             <h3 className="text-lg font-semibold">Confirm Delete</h3>
@@ -156,7 +164,16 @@ const HeaderSection = () => (
 );
 
 
-const SearchSection = ({ onSearch, loadNews, hasSearched, setHasSearched, searchQuery, selectedTags }: any) => {
+interface SearchSectionProps {
+    onSearch: (query: string, tags: Tag[]) => void;
+    loadNews: () => void;
+    hasSearched: boolean;
+    setHasSearched: (value: boolean) => void;
+    searchQuery: string;
+    selectedTags: Tag[];
+}
+
+const SearchSection = ({ onSearch, loadNews, hasSearched, setHasSearched, searchQuery, selectedTags }: SearchSectionProps) => {
     const navigate = useNavigate();
     const handleBack = () => {
         setHasSearched(false);
@@ -194,7 +211,14 @@ const SearchSection = ({ onSearch, loadNews, hasSearched, setHasSearched, search
     );
 };
 
-const ContentGrid = ({ newsList, noResults, loadNews, onConfirmDelete }: any) => (
+interface ContentGridProps {
+    newsList: NewsProps['news'][];
+    noResults: boolean;
+    loadNews: () => void;
+    onConfirmDelete: (news_id: number) => void;
+}
+
+const ContentGrid = ({ newsList, noResults, loadNews, onConfirmDelete }: ContentGridProps) => (
     noResults ? (
         <NoResults loadNews={loadNews} />
     ) : newsList.length === 0 ? (
@@ -263,7 +287,17 @@ const MainSection = ({
     searchQuery,
     loadNews,
     onConfirmDelete,
-}: any) => {
+}: {
+    onSearch: (query: string, tags: Tag[]) => void;
+    newsList: NewsProps['news'][];
+    noResults: boolean;
+    hasSearched: boolean;
+    setHasSearched: (value: boolean) => void;
+    selectedTags: Tag[];
+    searchQuery: string;
+    loadNews: () => void;
+    onConfirmDelete: (news_id: number) => void;
+}) => {
     return (
         <div className="min-h-screen bg-base-200">
             <div className="container mx-auto px-32 py-16">

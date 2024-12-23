@@ -71,7 +71,6 @@ export function SearchBar({ onSearch, searchQuery, selectedTags }: FilterDropdow
     };
 
     const handleSearchSubmit = () => {
-        if (filterState.searchQuery) filterState.searchQuery = filterState.searchQuery.toLowerCase();
         onSearch(filterState.searchQuery, filterState.selectedTags);
     };
 

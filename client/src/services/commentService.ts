@@ -7,7 +7,6 @@ export const fetchComments = async (news_id: number) => {
             throw new Error('News ID is required to fetch comments.');
         }
         const response = await axios.get(`http://localhost:3000/api/comments/${news_id}`);
-        console.log("Comment Response:", response.data);
         return response.data.comments || [];
     } catch (error: any) {
         console.error(`${error.message}: Error retrieving comments.`);
@@ -26,7 +25,7 @@ export const addComment = async (news_id: number, comment: string, token: string
                 Authorization: `Bearer ${token}`,
             },
         });
-        console.log('Add Comment Response:', response.data);
+
         return response.data;
     } catch (error: any) {
         console.error(`${error.message}: Error updating the comment.`);
@@ -50,7 +49,7 @@ export const editComment = async (comment_id: number, editedComment: string, tok
                 Authorization: `Bearer ${token}`,
             },
         });
-        console.log('Edit Comment Response:', response.data);
+
         return response.data;
     } catch (error: any) {
         console.error(`${error.message}: Error updating the comment.`);
@@ -69,7 +68,7 @@ export const deleteComment = async (comment_id: number, token: string) => {
                 Authorization: `Bearer ${token}`,
             },
         });
-        console.log('Delete Comment Response:', response.data);
+
         return response.data;
     } catch (error: any) {
         console.error(`${error.message}: Error deleting the comment.`);

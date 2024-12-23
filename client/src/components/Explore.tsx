@@ -27,10 +27,11 @@ export const Explore = () => {
     const navigate = useNavigate();
     const { userState } = useUserContext();
     const token = userState.token;
+    const user_id = userState.user?.user_id;
 
     const loadNews = useCallback(async () => {
         try {
-            const news = await fetchNews(undefined, token, true, false, page);
+            const news = await fetchNews(token, user_id, true, page);
             if (news.length === 0) {
                 setHasMore(false);
             } else {

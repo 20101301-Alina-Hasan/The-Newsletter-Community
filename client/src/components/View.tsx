@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-// @ts-nocheck
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { MessageSquareText } from "lucide-react";
@@ -15,7 +12,7 @@ import { useUserContext } from "../contexts/userContext";
 export function View() {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-    const [news, setNews] = useState<NewsProps["news"][]>([]);
+    const [news, setNews] = useState<NewsProps["news"]>();
     const navigate = useNavigate();
     const { state } = useLocation();
     const { news_id } = state?.news || {};
@@ -29,8 +26,13 @@ export function View() {
             }
             const fetchedNews = await fetchNewsByID(news_id, token);
             setNews(fetchedNews);
-        } catch (error: any) {
-            setError(error.message || "An unexpected error occurred.");
+
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                setError(error.message);
+            } else {
+                setError("An unexpected error occurred.");
+            }
         } finally {
             setLoading(false);
         }
@@ -83,7 +85,7 @@ export function View() {
                         </div>
 
                         <div className="flex my-4 gap-2 flex-wrap">
-                            {news.tags.map((tag, index) => (
+                            {news.tags.map((tag, index) => ( //line 90
                                 <div key={index} className='badge badge-outline font-medium'>
                                     #{tag.tag}
                                 </div>

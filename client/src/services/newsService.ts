@@ -1,63 +1,46 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios, { AxiosRequestConfig } from 'axios';
 import { NewsProps } from '../interfaces/newsInterface';
 
 const fetchFactory = async (endpoint: string, config?: AxiosRequestConfig): Promise<NewsProps['news'][]> => {
     try {
         const baseUrl = `http://localhost:3000/api/news${endpoint}`;
+        console.log("URL", baseUrl);
         const response = await axios.get(baseUrl, config);
-        console.log("In Service, Response:", response.data.news);
         return response.data.news || [];
-    } catch (error: any) {
-        console.error(`Error fetching from ${endpoint}:`, error);
-        throw new Error(error.response?.data?.message || 'Failed to fetch news.');
+    } catch (error: unknown) {
+        if (axios.isAxiosError(error) && error.response) {
+            console.error(`Error fetching from ${endpoint}:`, error.response.data);
+            throw new Error(error.response.data.message || 'Failed to fetch news.');
+        } else {
+            console.error(`Error fetching from ${endpoint}:`, error);
+            throw new Error('Failed to fetch news.');
+        }
     }
 };
 
-export const fetchNews = async (news_id?: number, token?: string, all?: boolean, bookmarked?: boolean, page?: number) => {
-    let endpoint = '';
-
-    if (token) {
-        if (news_id) endpoint += `/${news_id}`;
-        if (bookmarked) endpoint += '/bookmark';
-    } else if (news_id) {
-        endpoint += `/${news_id}`;
-    }
+export const fetchNews = async (token?: string, user_id?: number, all?: boolean, page?: number) => {
+    let endpoint = '/';
 
     if (all) {
-        endpoint = '/all';
+        endpoint += 'all/';
+    }
+
+    if (user_id) {
+        endpoint += `${user_id}`
     }
 
     if (page) {
-        endpoint += `/?page=${page}`;
+        endpoint += `?page=${page}`;
     }
 
     const config: AxiosRequestConfig = token
         ? { headers: { Authorization: `Bearer ${token}` } }
         : {};
 
-    console.log("Token:", token);
-    console.log("Endpoint:", endpoint);
     return await fetchFactory(endpoint, config);
 };
 
-
-export const fetchNewsByID = async (news_id?: number, token?: string) => {
-    let endpoint = '';
-
-    if (!token && news_id) endpoint += '/public';
-    endpoint += `/${news_id}`;
-
-    const config: AxiosRequestConfig = token
-        ? { headers: { Authorization: `Bearer ${token}` } }
-        : {};
-
-    console.log("Token:", token);
-    console.log("Endpoint:", endpoint);
-    return await fetchFactory(endpoint, config);
-};
-
-export const searchNews = async (query?: string, tagIds?: number[], token?: string) => {
+export const searchNews = async (query?: string, tagIds?: number[], token?: string, user_id?: number) => {
     const params: string[] = [];
     const config: AxiosRequestConfig = {};
     let endpoint = '';
@@ -70,12 +53,46 @@ export const searchNews = async (query?: string, tagIds?: number[], token?: stri
 
     endpoint += '/search';
 
+    if (user_id) endpoint += `/${user_id}`
+
     if (query) params.push(`query=${query}`);
     if (tagIds && tagIds.length > 0) params.push(`tag_ids=${tagIds.join(',')}`);
 
     endpoint += `/${params.length > 0 ? `?${params.join('&')}` : ''}`;
-    console.log("endpoint", endpoint)
-    return await fetchFactory(endpoint, config);
+
+    const baseUrl = `http://localhost:3000/api/news${endpoint}`;
+    console.log("URL", baseUrl);
+    const response = await axios.get(baseUrl, config);
+
+    return response.data.news || [];
+};
+
+export const fetchNewsByBookmark = async (token: string) => {
+    const endpoint = '/bookmark';
+    const config: AxiosRequestConfig = token
+        ? { headers: { Authorization: `Bearer ${token}` } }
+        : {};
+
+    const baseUrl = `http://localhost:3000/api/news${endpoint}`;
+    const response = await axios.get(baseUrl, config);
+    return response.data.news || [];
+}
+
+export const fetchNewsByID = async (news_id: number, token?: string) => {
+    let endpoint = '';
+    if (!token) endpoint = '/public';
+    else endpoint = '/private';
+
+    endpoint += `/${news_id}`;
+
+    const config: AxiosRequestConfig = token
+        ? { headers: { Authorization: `Bearer ${token}` } }
+        : {};
+
+
+    const baseUrl = `http://localhost:3000/api/news${endpoint}`;
+    const response = await axios.get(baseUrl, config);
+    return response.data.news || {};
 };
 
 export const createNews = async (formData: FormData, token: string) => {
