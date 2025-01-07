@@ -23,3 +23,5 @@ export const getArticlesFromElastic = async (req: Request, res: Response) => {
         res.status(500).send({ error: "Failed to fetch articles from Elasticsearch" });
     }
 };
+
+

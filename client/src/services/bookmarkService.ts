@@ -11,7 +11,7 @@ export const addBookmark = async (news_id: number, token: string) => {
         if (!news_id) {
             throw new Error('News ID is required to fetch bookmarks.');
         }
-        const response = await axios.post(`http://localhost:3000/api/bookmarks/${news_id}`, {}, {
+        const response = await axios.post(`http://localhost:4000/api/bookmarks/${news_id}`, {}, {
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`,
@@ -31,7 +31,7 @@ export const removeBookmark = async (news_id: number, token: string) => {
         if (!news_id) {
             throw new Error('News ID is required to fetch bookmarks.');
         }
-        const response = await axios.delete(`http://localhost:3000/api/bookmarks/${news_id}`, {
+        const response = await axios.delete(`http://localhost:4000/api/bookmarks/${news_id}`, {
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`,

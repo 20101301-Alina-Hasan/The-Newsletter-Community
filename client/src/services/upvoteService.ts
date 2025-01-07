@@ -7,7 +7,7 @@ export const fetchUpvotes = async (news_id: number) => {
         if (!news_id) {
             throw new Error('News ID is required to fetch upvotes.');
         }
-        const response = await axios.get(`http://localhost:3000/api/upvotes/${news_id}`);
+        const response = await axios.get(`http://localhost:4000/api/upvotes/${news_id}`);
         return response.data.upvotes;
     } catch (error: any) {
         console.error(`${error.message}: Error retrieving upvotes.`);
@@ -23,7 +23,7 @@ export const addUpvote = async (news_id: number, token: string) => {
         if (!news_id) {
             throw new Error('News ID is required to fetch upvotes.');
         }
-        const response = await axios.post(`http://localhost:3000/api/upvotes/${news_id}`, {}, {
+        const response = await axios.post(`http://localhost:4000/api/upvotes/${news_id}`, {}, {
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`,
@@ -41,7 +41,7 @@ export const removeUpvote = async (news_id: number, token: string) => {
         if (!news_id) {
             throw new Error('News ID is required to fetch upvotes.');
         }
-        const response = await axios.delete(`http://localhost:3000/api/upvotes/${news_id}`, {
+        const response = await axios.delete(`http://localhost:4000/api/upvotes/${news_id}`, {
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`,

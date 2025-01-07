@@ -24,6 +24,7 @@ export function View() {
             if (!news_id) {
                 throw new Error("News ID is missing");
             }
+
             const fetchedNews = await fetchNewsByID(news_id, token);
             setNews(fetchedNews);
 
@@ -39,8 +40,12 @@ export function View() {
     };
 
     useEffect(() => {
-        loadNews();
-    }, []);
+        const timeout = setTimeout(() => {
+            loadNews();
+        }, 500);
+
+        return () => clearTimeout(timeout);
+    }, [token]);
 
     if (loading) {
         return <LoaderIcon />

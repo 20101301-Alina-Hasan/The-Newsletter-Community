@@ -14,10 +14,17 @@ export const useTheme = (): ThemeContextType => {
 };
 
 export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const [darkMode, setDarkMode] = useState(true);
+    const storedTheme = localStorage.getItem("theme");
+    const initialTheme = storedTheme === "light" ? false : true;
+    const [darkMode, setDarkMode] = useState(initialTheme);
 
     const toggleTheme = () => {
-        setDarkMode((mode) => !mode);
+        // setDarkMode((mode) => !mode);
+        setDarkMode((mode) => {
+            const newMode = !mode;
+            localStorage.setItem("theme", newMode ? "dark" : "light");
+            return newMode;
+        });
     };
 
     useEffect(() => {

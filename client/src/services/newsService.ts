@@ -3,7 +3,7 @@ import { NewsProps } from '../interfaces/newsInterface';
 
 const fetchFactory = async (endpoint: string, config?: AxiosRequestConfig): Promise<NewsProps['news'][]> => {
     try {
-        const baseUrl = `http://localhost:3000/api/news${endpoint}`;
+        const baseUrl = `http://localhost:4000/api/news${endpoint}`;
         console.log("URL", baseUrl);
         const response = await axios.get(baseUrl, config);
         return response.data.news || [];
@@ -60,7 +60,7 @@ export const searchNews = async (query?: string, tagIds?: number[], token?: stri
 
     endpoint += `/${params.length > 0 ? `?${params.join('&')}` : ''}`;
 
-    const baseUrl = `http://localhost:3000/api/news${endpoint}`;
+    const baseUrl = `http://localhost:4000/api/news${endpoint}`;
     console.log("URL", baseUrl);
     const response = await axios.get(baseUrl, config);
 
@@ -73,7 +73,7 @@ export const fetchNewsByBookmark = async (token: string) => {
         ? { headers: { Authorization: `Bearer ${token}` } }
         : {};
 
-    const baseUrl = `http://localhost:3000/api/news${endpoint}`;
+    const baseUrl = `http://localhost:4000/api/news${endpoint}`;
     const response = await axios.get(baseUrl, config);
     return response.data.news || [];
 }
@@ -90,14 +90,14 @@ export const fetchNewsByID = async (news_id: number, token?: string) => {
         : {};
 
 
-    const baseUrl = `http://localhost:3000/api/news${endpoint}`;
+    const baseUrl = `http://localhost:4000/api/news${endpoint}`;
     const response = await axios.get(baseUrl, config);
     return response.data.news || {};
 };
 
 export const createNews = async (formData: FormData, token: string) => {
     try {
-        const response = await axios.post('http://localhost:3000/api/news/', formData, {
+        const response = await axios.post('http://localhost:4000/api/news/', formData, {
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`,
@@ -112,7 +112,7 @@ export const createNews = async (formData: FormData, token: string) => {
 
 export const updateNews = async (formData: FormData, news_id: number, token: string) => {
     try {
-        const response = await axios.put(`http://localhost:3000/api/news/${news_id}`, formData, {
+        const response = await axios.put(`http://localhost:4000/api/news/${news_id}`, formData, {
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`,
@@ -127,7 +127,7 @@ export const updateNews = async (formData: FormData, news_id: number, token: str
 
 export const deleteNews = async (news_id: number, token: string) => {
     try {
-        const response = await axios.delete(`http://localhost:3000/api/news/${news_id}`, {
+        const response = await axios.delete(`http://localhost:4000/api/news/${news_id}`, {
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`,

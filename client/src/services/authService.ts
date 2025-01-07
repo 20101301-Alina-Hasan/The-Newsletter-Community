@@ -3,7 +3,7 @@ import axios from 'axios';
 
 export const fetchUser = async (token: string) => {
     try {
-        const response = await axios.get('http://localhost:3000/api/users/me', {
+        const response = await axios.get('http://localhost:4000/api/users/me', {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -22,7 +22,7 @@ export const fetchUser = async (token: string) => {
 
 export const loginUser = async (email: string, password: string) => {
     try {
-        const response = await axios.post('http://localhost:3000/api/users/login', {
+        const response = await axios.post('http://localhost:4000/api/users/login', {
             email,
             password,
         });
@@ -44,7 +44,7 @@ export const loginUser = async (email: string, password: string) => {
 
 export const registerUser = async (name: string, username: string, email: string, password: string) => {
     try {
-        const response = await axios.post('http://localhost:3000/api/users/signup', {
+        const response = await axios.post('http://localhost:4000/api/users/signup', {
             name,
             username,
             email,

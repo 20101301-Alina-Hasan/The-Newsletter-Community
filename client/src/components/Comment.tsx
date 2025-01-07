@@ -195,7 +195,7 @@ export function Comment({ news_id }: CommentsProps) {
                                                 onClick={() => handleUpdateComment(comment.comment_id)}
                                                 className="btn btn-primary mt-2"
                                             >
-                                                Update Comment
+                                                Update
                                             </button>
                                         </div>
                                     ) : (

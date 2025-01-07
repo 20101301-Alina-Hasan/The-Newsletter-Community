@@ -93,7 +93,7 @@ export function CreateNewsPage() {
             setThumbnailUrl('');
             setSelectedTags([]);
             showToast('success', 'Congratulations! Your article has been published.');
-            navigate(-1);
+            navigate('/');
         } catch (error: any) {
             showToast('error', `${error.message}: An article with this title already exists. Please enter a different title.`);
         }

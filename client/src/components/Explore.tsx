@@ -35,7 +35,14 @@ export const Explore = () => {
             if (news.length === 0) {
                 setHasMore(false);
             } else {
-                setNewsList((prevNews) => [...prevNews, ...news]);
+                setNewsList((prevNews) => {
+                    const uniqueNews = [...prevNews, ...news].filter((value, index, self) =>
+                        index === self.findIndex((t) => (
+                            t.news_id === value.news_id
+                        ))
+                    );
+                    return uniqueNews;
+                });
             }
         } catch (error: unknown) {
             if (error instanceof Error) {
@@ -122,9 +129,13 @@ export const Explore = () => {
 
     useEffect(() => {
         if (hasMore) {
-            loadNews();
+            const timeout = setTimeout(() => {
+                loadNews();
+            }, 500);
+
+            return () => clearTimeout(timeout);
         }
-    }, [page, hasMore, loadNews]);
+    }, [token, page, hasMore, loadNews]);
 
     if (loading && page === 1) {
         return <LoaderIcon />;

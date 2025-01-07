@@ -27,6 +27,10 @@ export const MyArticles = () => {
 
     const loadNews = async () => {
         try {
+            if (!token) {
+                setError('Token is not available yet');
+                return;
+            }
             const news = await fetchNews(token, user_id);
             setNewsList(news);
             setNoResults(false);
@@ -42,8 +46,12 @@ export const MyArticles = () => {
     };
 
     useEffect(() => {
-        if (token) loadNews();
-    }, [token, user_id]);
+        const timeout = setTimeout(() => {
+            loadNews();
+        }, 500);
+
+        return () => clearTimeout(timeout);
+    }, [token]);
 
     const handleSearch = async (query: string, tags: Tag[]) => {
         try {
@@ -90,8 +98,6 @@ export const MyArticles = () => {
         }
     };
 
-
-
     if (loading) {
         return <LoaderIcon />;
     }
@@ -117,6 +123,7 @@ export const MyArticles = () => {
                 setHasSearched={setHasSearched}
                 onConfirmDelete={confirmDelete}
                 loadNews={loadNews}
+                loading={loading}
                 searchQuery={searchQuery}
                 selectedTags={selectedTags}
             />
@@ -286,6 +293,7 @@ const MainSection = ({
     selectedTags,
     searchQuery,
     loadNews,
+    loading,
     onConfirmDelete,
 }: {
     onSearch: (query: string, tags: Tag[]) => void;
@@ -296,12 +304,18 @@ const MainSection = ({
     selectedTags: Tag[];
     searchQuery: string;
     loadNews: () => void;
+    loading: boolean;
     onConfirmDelete: (news_id: number) => void;
 }) => {
     return (
         <div className="min-h-screen bg-base-200">
             <div className="container mx-auto px-32 py-16">
                 <HeaderSection />
+                {loading && (
+                    <div className="flex justify-center my-8">
+                        <LoaderIcon />
+                    </div>
+                )}
                 <SearchSection
                     onSearch={onSearch}
                     loadNews={loadNews}
