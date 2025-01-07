@@ -1,6 +1,6 @@
-# 📰 Blog Style News Portal Application | The Newsletter Community
+# 📰 Blog-Style News Portal Application | The Newsletter Community
 
-A dynamic news portal application allows users to view, create, search, filter, upvote, comment, and bookmark articles. This project uses the PERN stack (PostgreSQL, Express, React, Node.js) and additional technologies like Elasticsearch, Docker, and Tailwind CSS. Components are almost entirely daisy UI.
+A blog-style news portal application allows users to view, create, search, filter, upvote, comment, and bookmark articles. This project uses the PERN stack (PostgreSQL, Express, React, Node.js) and additional technologies like Elasticsearch, Docker, and Tailwind CSS. Components are almost entirely daisy UI.
 
 ## 🔧 Features
 
