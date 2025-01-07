@@ -73,3 +73,7 @@ Watch the project presentation on YouTube: [News Portal Presentation](https://yo
 ## 🛠️ Contributing
 
 Contributions are welcome! If you'd like to add new features or fix bugs, feel free to submit a pull request.
+
+## 📧 Contact
+
+For questions or inquiries, reach out via [asif93@student.sust.edu](mailto:alina.aman.hasan@gmail.com).
