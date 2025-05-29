@@ -84,13 +84,14 @@ Watch the project presentation on YouTube: [News Portal Presentation](https://yo
 
 ---
 
-## 🛠️ Contributing
+## Contributing 🙌 
 
-Contributions are welcome! If you'd like to add new features or fix bugs, feel free to submit a pull request.
+Contributions are welcome! If you have suggestions or want to collaborate, feel free to open an issue or pull request.
+
+## Contact 📧 
+
+For questions or inquiries, reach out via [alina.hasan@g.bracu.ac.bd](mailto:alina.hasan@g.bracu.ac.bd)
 
 ---
 
-
-## 📧 Contact
-
-For questions or inquiries, reach out via [asif93@student.sust.edu](mailto:alina.aman.hasan@gmail.com).
+Feel free to ⭐ the repo if you find it useful.
