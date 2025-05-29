@@ -53,7 +53,7 @@ This project draws inspiration from **Daily Dev**, a blog portal designed for de
 
 ```bash
 # Clone the repository
-git clone https://github.com/20101301-Alina-Hasan/News-Portal.git
+git clone https://github.com/20101301-Alina-Hasan/The-Newsletter-Community.git
 cd News-Portal
 ```
 
